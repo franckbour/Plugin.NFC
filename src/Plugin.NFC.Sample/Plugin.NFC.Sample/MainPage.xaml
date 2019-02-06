@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:NFCSample"
+             x:Class="NFCSample.MainPage">
+
+    <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+        <Label Text="Plugin NFC Sample" FontSize="Large" HorizontalOptions="CenterAndExpand" />
+        <Button Text="Write Tag" Clicked="Button_Clicked_StartWriting" />
+        <Button Text="Clear Tag" Clicked="Button_Clicked_FormatTag" />
+    </StackLayout>
+
+</ContentPage>

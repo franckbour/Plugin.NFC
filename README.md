@@ -68,7 +68,6 @@ An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 * Add `Proximity` capability to the `Package.appxmanifest`
 ```xml
 <Capabilities>
-    <Capability Name="internetClient" />
     <DeviceCapability Name="proximity" />
 </Capabilities>
 ```

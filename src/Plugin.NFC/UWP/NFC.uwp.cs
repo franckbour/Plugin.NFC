@@ -1,130 +1,175 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using Windows.Networking.Proximity;
 
 namespace Plugin.NFC
 {
-    /// <summary>
-    /// Interface for NFC
-    /// </summary>
-    public class NFCImplementation : INFC
-    {
-        public event EventHandler OnTagConnected;
-        public event EventHandler OnTagDisconnected;
-        public event NdefMessageReceivedEventHandler OnMessageReceived;
-        public event NdefMessagePublishedEventHandler OnMessagePublished;
-        public event TagDiscoveredEventHandler OnTagDiscovered;
+	/// <summary>
+	/// Windows implementation of <see cref="INFC"/>
+	/// </summary>
+	public class NFCImplementation : INFC
+	{
+		public event EventHandler OnTagConnected;
+		public event EventHandler OnTagDisconnected;
+		public event NdefMessageReceivedEventHandler OnMessageReceived;
+		public event NdefMessagePublishedEventHandler OnMessagePublished;
+		public event TagDiscoveredEventHandler OnTagDiscovered;
 
-        readonly ProximityDevice _defaultDevice;
-        long ndefSubscriptionId = -1;
+		readonly ProximityDevice _defaultDevice;
+		long ndefSubscriptionId = -1;
 
-        public bool IsAvailable => _defaultDevice != null;
+		/// <summary>
+		/// Checks if NFC Feature is available
+		/// </summary>
+		public bool IsAvailable => _defaultDevice != null;
 
-        public bool IsEnabled
-        {
-            get
-            {
-                if (IsAvailable && _defaultDevice != null)
-                {
-                    try
-                    {
-                        return _defaultDevice.MaxMessageBytes > 0;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new NotSupportedException("NFC Feature is not supported", ex);
-                    } 
-                }
-                return false;
-            }
-        }
+		/// <summary>
+		/// Checks if NFC Feature is enabled
+		/// </summary>
+		public bool IsEnabled
+		{
+			get
+			{
+				if (IsAvailable && _defaultDevice != null)
+				{
+					try
+					{
+						return _defaultDevice.MaxMessageBytes > 0;
+					}
+					catch (Exception ex)
+					{
+						throw new NotSupportedException("NFC Feature is not supported", ex);
+					} 
+				}
+				return false;
+			}
+		}
 
-        public bool IsWritingTagSupported => true;
+		/// <summary>
+		/// Checks if writing mode is supported
+		/// </summary>
+		public bool IsWritingTagSupported => true;
 
-        public NFCImplementation()
-        {
-            _defaultDevice = ProximityDevice.GetDefault();
-        }
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public NFCImplementation()
+		{
+			_defaultDevice = ProximityDevice.GetDefault();
+		}
 
-        public void SetSpecificMimeTypes(params string[] types)
-        {
+		/// <summary>
+		/// Sets specific mime types for NDEF detection
+		/// </summary>
+		/// <param name="types">Mime types</param>
+		public void SetSpecificMimeTypes(params string[] types) { }
 
-        }
+		/// <summary>
+		/// Starts tags detection
+		/// </summary>
+		public void StartListening()
+		{
+			_defaultDevice.DeviceArrived += OnDeviceArrived;
+			_defaultDevice.DeviceDeparted += OnDeviceDeparted;
+			ndefSubscriptionId = _defaultDevice.SubscribeForMessage("NDEF", OnNdefMessageReceived);
+		}
 
-        public void StartListening()
-        {
-            _defaultDevice.DeviceArrived += OnDeviceArrived;
-            _defaultDevice.DeviceDeparted += OnDeviceDeparted;
-            ndefSubscriptionId = _defaultDevice.SubscribeForMessage("NDEF", OnNdefMessageReceived);
-        }
+		/// <summary>
+		/// Stops tags detection
+		/// </summary>
+		public void StopListening()
+		{
+			_defaultDevice.DeviceArrived -= OnDeviceArrived;
+			_defaultDevice.DeviceDeparted -= OnDeviceDeparted;
 
-        public void StopListening()
-        {
-            _defaultDevice.DeviceArrived -= OnDeviceArrived;
-            _defaultDevice.DeviceDeparted -= OnDeviceDeparted;
+			if (ndefSubscriptionId != -1)
+			{
+				_defaultDevice.StopSubscribingForMessage(ndefSubscriptionId);
+				ndefSubscriptionId = -1;
+			}
+		}
 
-            if (ndefSubscriptionId != -1)
-            {
-                _defaultDevice.StopSubscribingForMessage(ndefSubscriptionId);
-                ndefSubscriptionId = -1;
-            }
-        }
+		/// <summary>
+		/// Starts tag publishing (writing or formatting)
+		/// </summary>
+		/// <param name="clearMessage">Format tag</param>
+		public void StartPublishing(bool clearMessage = false)
+		{
+			if (!IsWritingTagSupported)
+				return;
 
-        public void StartPublishing(bool clearMessage = false)
-        {
-            if (!IsWritingTagSupported)
-                return;
+			throw new NotImplementedException();
+		}
 
-            throw new NotImplementedException();
-        }
+		/// <summary>
+		/// Stops tag publishing
+		/// </summary>
+		public void StopPublishing()
+		{
+			if (!IsWritingTagSupported)
+				return;
 
-        public void StopPublishing()
-        {
-            if (!IsWritingTagSupported)
-                return;
+			throw new NotImplementedException();
+		}
 
-            throw new NotImplementedException();
-        }
+		/// <summary>
+		/// Publish or write a message on a tag
+		/// </summary>
+		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
+		public void PublishMessage(ITagInfo tagInfo)
+		{
+			if (!IsWritingTagSupported)
+				return;
 
-        public void PublishMessage(ITagInfo tagInfo)
-        {
-            if (!IsWritingTagSupported)
-                return;
+			throw new NotImplementedException();
+		}
 
-            throw new NotImplementedException();
-        }
+		/// <summary>
+		/// Format tag
+		/// </summary>
+		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
+		public void ClearMessage(ITagInfo tagInfo)
+		{
+			if (!IsWritingTagSupported)
+				return;
 
-        public void ClearMessage(ITagInfo tagInfo)
-        {
-            if (!IsWritingTagSupported)
-                return;
-
-            throw new NotImplementedException();
-        }
+			throw new NotImplementedException();
+		}
 
 		#region Private
 
-		void OnDeviceDeparted(ProximityDevice sender) => OnTagConnected?.Invoke(null, EventArgs.Empty);
+		/// <summary>
+		/// Event raised when a tag is connected
+		/// </summary>
+		/// <param name="sender">Object <see cref="ProximityDevice"/></param>
+		void OnDeviceArrived(ProximityDevice sender) => OnTagConnected?.Invoke(null, EventArgs.Empty);
 
-		void OnDeviceArrived(ProximityDevice sender) => OnTagDisconnected?.Invoke(null, EventArgs.Empty);
+		/// <summary>
+		/// Event raised when a tag is disconnected
+		/// </summary>
+		/// <param name="sender">Object <see cref="ProximityDevice"/></param>
+		void OnDeviceDeparted(ProximityDevice sender) => OnTagDisconnected?.Invoke(null, EventArgs.Empty);
 
+		/// <summary>
+		/// Event raised when a NDEF message is received
+		/// </summary>
+		/// <param name="sender">Object <see cref="ProximityDevice"/></param>
+		/// <param name="message">Object <see cref="ProximityMessage"/></param>
 		void OnNdefMessageReceived(ProximityDevice sender, ProximityMessage message)
-        {
-            var rawMsg = message.Data.ToArray();
+		{
+			var rawMsg = message.Data.ToArray();
 
 			// Todo : create TagInfo
 			// May be use ndef-nfc for windows : https://andijakl.github.io/ndef-nfc/ and https://github.com/andijakl/ndef-nfc
 			var tagInfo = new TagInfo
-            {
-                IsWritable = false,
-                Records = new NFCNdefRecord[] { new NFCNdefRecord { TypeFormat = NFCNdefTypeFormat.WellKnown, Payload = rawMsg } }
-            };
-        
-            OnMessageReceived?.Invoke(tagInfo);
-        }
+			{
+				IsWritable = false,
+				Records = new NFCNdefRecord[] { new NFCNdefRecord { TypeFormat = NFCNdefTypeFormat.WellKnown, Payload = rawMsg } }
+			};
+		
+			OnMessageReceived?.Invoke(tagInfo);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

@@ -105,11 +105,11 @@ For more examples, see sample application in the repository.
 
 ## Credits
 Special thanks to:
-- James Montemagno : [GitHub](https://github.com/jamesmontemagno)
-- Matthew Leibowitz ([Xamarin.Essentials PR #131](https://github.com/xamarin/Essentials/pull/131)) : [GitHub](https://github.com/mattleibow)
-- Alessandro Pozone ([NFCForms](https://github.com/poz1/NFCForms)) : [GitHub](https://github.com/poz1)
-- Ultz ([XNFC](https://github.com/Ultz/XNFC)) : [GitHub](https://github.com/Ultz)
-- Sven-Michael Stübe ([xamarin-nfc](https://github.com/smstuebe/xamarin-nfc)) : [GitHub](https://github.com/smstuebe)
+- James Montemagno ([@jamesmontemagno](https://github.com/jamesmontemagno)).
+- Matthew Leibowitz ([@mattleibow](https://github.com/mattleibow)) for [Xamarin.Essentials PR #131](https://github.com/xamarin/Essentials/pull/131).
+- Alessandro Pozone ([@poz1](https://github.com/poz1)) for [NFCForms](https://github.com/poz1/NFCForms).
+- Ultz ([@ultz](https://github.com/Ultz)) for [XNFC](https://github.com/Ultz/XNFC).
+- Sven-Michael Stübe ([@smstuebe](https://github.com/smstuebe)) for [xamarin-nfc](https://github.com/smstuebe/xamarin-nfc).
 
 ## License
 ```

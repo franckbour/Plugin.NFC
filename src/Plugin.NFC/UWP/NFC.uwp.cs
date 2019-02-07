@@ -104,25 +104,19 @@ namespace Plugin.NFC
             throw new NotImplementedException();
         }
 
-        #region Private
+		#region Private
 
-        void OnDeviceDeparted(ProximityDevice sender)
-        {
-            OnTagConnected?.Invoke(null, EventArgs.Empty);
-        }
-        void OnDeviceArrived(ProximityDevice sender)
-        {
-            OnTagDisconnected?.Invoke(null, EventArgs.Empty);
-        }
-        void OnNdefMessageReceived(ProximityDevice sender, ProximityMessage message)
+		void OnDeviceDeparted(ProximityDevice sender) => OnTagConnected?.Invoke(null, EventArgs.Empty);
+
+		void OnDeviceArrived(ProximityDevice sender) => OnTagDisconnected?.Invoke(null, EventArgs.Empty);
+
+		void OnNdefMessageReceived(ProximityDevice sender, ProximityMessage message)
         {
             var rawMsg = message.Data.ToArray();
 
-            // Use ndef-nfc for windows : https://andijakl.github.io/ndef-nfc/ and https://github.com/andijakl/ndef-nfc
-
-
-            // Todo : create TagInfo
-            TagInfo tagInfo = new TagInfo
+			// Todo : create TagInfo
+			// May be use ndef-nfc for windows : https://andijakl.github.io/ndef-nfc/ and https://github.com/andijakl/ndef-nfc
+			var tagInfo = new TagInfo
             {
                 IsWritable = false,
                 Records = new NFCNdefRecord[] { new NFCNdefRecord { TypeFormat = NFCNdefTypeFormat.WellKnown, Payload = rawMsg } }

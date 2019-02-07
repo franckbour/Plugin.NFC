@@ -27,13 +27,11 @@ namespace Plugin.NFC
 
         bool _isWriting;
         bool _isFormatting;
-        Context _currentContext;
-        Activity _currentActivity;
         Tag _currentTag;
 
-        public Context CurrentContext => _currentContext ??  (_currentContext = CrossNFC.AppContext);
+        Context CurrentContext => CrossNFC.AppContext;
 
-        public Activity CurrentActivity => _currentActivity ?? (_currentActivity = CrossNFC.GetCurrentActivity(true));
+		Activity CurrentActivity => CrossNFC.GetCurrentActivity(true);
 
         public bool IsAvailable
         {
@@ -94,22 +92,13 @@ namespace Plugin.NFC
             _isFormatting = clearMessage;
         }
 
-        public void StopPublishing()
-        {
-            DisablePublishing();
-        }
+		public void StopPublishing() => DisablePublishing();
 
-        public void PublishMessage(ITagInfo tagInfo)
-        {
-            WriteOrClearMessage(tagInfo);
-        }
+		public void PublishMessage(ITagInfo tagInfo) => WriteOrClearMessage(tagInfo);
 
-        public void ClearMessage(ITagInfo tagInfo)
-        {
-            WriteOrClearMessage(tagInfo, true);
-        }
+		public void ClearMessage(ITagInfo tagInfo) => WriteOrClearMessage(tagInfo, true);
 
-        internal void WriteOrClearMessage(ITagInfo tagInfo, bool clearMessage = false)
+		internal void WriteOrClearMessage(ITagInfo tagInfo, bool clearMessage = false)
         {
             if (_currentTag == null)
                 throw new Exception("Tag error: No tag to write");
@@ -117,7 +106,7 @@ namespace Plugin.NFC
             if (tagInfo == null)
                 throw new Exception("TagInfo error: No tag to write");
 
-            Ndef ndef = Ndef.Get(_currentTag);
+            var ndef = Ndef.Get(_currentTag);
             if (ndef != null)
             {
                 try
@@ -240,14 +229,14 @@ namespace Plugin.NFC
             if (tag == null)
                 return null;
 
-            Ndef ndef = Ndef.Get(tag);
+            var ndef = Ndef.Get(tag);
             if (ndef == null)
                 return null;
 
             if (ndefMessage == null)
                 ndefMessage = ndef.CachedNdefMessage;
 
-            TagInfo nTag = new TagInfo()
+            var nTag = new TagInfo()
             {
                 IsWritable = ndef.IsWritable
             };
@@ -294,12 +283,12 @@ namespace Plugin.NFC
         }
         NdefRecord GetEmptyNdefRecord()
         {
-            byte[] empty = Array.Empty<byte>();
+            var empty = Array.Empty<byte>();
             return new NdefRecord(NdefRecord.TnfEmpty, empty, empty, empty);
         }
         NdefMessage GetEmptyNdefMessage()
         {
-            NdefRecord[] records = new NdefRecord[1];
+            var records = new NdefRecord[1];
             records[0] = GetEmptyNdefRecord();
             return new NdefMessage(records);
         }

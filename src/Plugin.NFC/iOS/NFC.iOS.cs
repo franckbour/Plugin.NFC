@@ -39,17 +39,11 @@ namespace Plugin.NFC
             
         }
 
-        public void StartListening()
-        {
-            _session?.BeginSession();
-        }
+		public void StartListening() => _session?.BeginSession();
 
-        public void StopListening()
-        {
-            _session?.InvalidateSession();
-        }
+		public void StopListening() => _session?.InvalidateSession();
 
-        public void StartPublishing(bool clearMessage = false)
+		public void StartPublishing(bool clearMessage = false)
         {
             if (!IsWritingTagSupported)
                 return;
@@ -88,7 +82,7 @@ namespace Plugin.NFC
             if (messages != null && messages.Length > 0)
             {
                 var first = messages[0];
-                TagInfo tagInfo = new TagInfo
+                var tagInfo = new TagInfo
                 {
                     IsWritable = false,
                     Records = GetRecords(first.Records)
@@ -126,7 +120,7 @@ namespace Plugin.NFC
         NFCNdefRecord[] GetRecords(NFCNdefPayload[] records)
         {
             var results = new NFCNdefRecord[records.Length];
-            for (int i = 0; i < records.Length; i++)
+            for (var i = 0; i < records.Length; i++)
             {
                 var record = records[i];
                 var ndefRecord = new NFCNdefRecord

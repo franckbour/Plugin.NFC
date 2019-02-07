@@ -7,7 +7,7 @@ namespace NFCSample
 {
 	public partial class MainPage : ContentPage
 	{
-		const string alert_title = "Test NFC";
+		const string alert_title = "NFC";
 		public const string MIME_TYPE = "application/com.companyname.nfcsample";
 
 		public MainPage()
@@ -27,59 +27,66 @@ namespace NFCSample
 				if (!CrossNFC.Current.IsEnabled)
 					await ShowAlert("NFC is disabled");
 
-				//CrossNFC.Current.SetSpecificMimeTypes(MIME_TYPE);
-
-				// Register NFC events
-				CrossNFC.Current.OnMessageReceived += Current_OnMessageReceived;
-				CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
-				CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
+				SuscribeEvents();
 
 				// Start NFC tag listening
 				CrossNFC.Current.StartListening();
+				//SuscribeEvents();
 			}
+		}
+
+		void SuscribeEvents()
+		{
+			CrossNFC.Current.OnMessageReceived += Current_OnMessageReceived;
+			CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
+			CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
+		}
+
+		void UnsuscribeEvents()
+		{
+			CrossNFC.Current.OnMessageReceived -= Current_OnMessageReceived;
+			CrossNFC.Current.OnMessagePublished -= Current_OnMessagePublished;
+			CrossNFC.Current.OnTagDiscovered -= Current_OnTagDiscovered;
 		}
 
 		protected override bool OnBackButtonPressed()
 		{
+			UnsuscribeEvents();
 			CrossNFC.Current.StopListening();
 			return base.OnBackButtonPressed();
 		}
 
-		private void Current_OnMessageReceived(ITagInfo tagInfo)
+		async void Current_OnMessageReceived(ITagInfo tagInfo)
 		{
-			Device.BeginInvokeOnMainThread(async () =>
+			if (tagInfo == null)
 			{
-				if (tagInfo == null)
-				{
-					await ShowAlert("No tag found");
-					return;
-				}
+				await ShowAlert("No tag found");
+				return;
+			}
 
-				if (tagInfo.IsEmpty)
-				{
-					await ShowAlert("Empty tag");
-				}
-				else
-				{
-					var first = tagInfo.Records[0];
-					var type = first.TypeFormat.ToString();
-					var raw = Encoding.UTF8.GetString(first.Payload);
-					await ShowAlert($"{type} => {first.Message} [{raw}] ({first.MimeType})");
-				}
-			});
+			if (tagInfo.IsEmpty)
+			{
+				await ShowAlert("Empty tag");
+			}
+			else
+			{
+				var first = tagInfo.Records[0];
+				var type = first.TypeFormat.ToString();
+				var raw = Encoding.UTF8.GetString(first.Payload);
+				await ShowAlert($"{type} => {first.Message} [{raw}] ({first.MimeType})");
+			}
 		}
 
-		private async void Current_OnMessagePublished(ITagInfo tagInfo)
+		async void Current_OnMessagePublished(ITagInfo tagInfo)
 		{
+			CrossNFC.Current.StopPublishing();
 			if (tagInfo.IsEmpty)
 				await ShowAlert("Formatting tag successfully");
 			else
 				await ShowAlert("Writing tag successfully");
-
-			CrossNFC.Current.StopPublishing();
 		}
 
-		private async void Current_OnTagDiscovered(ITagInfo tagInfo, bool format)
+		async void Current_OnTagDiscovered(ITagInfo tagInfo, bool format)
 		{
 			if (!CrossNFC.Current.IsWritingTagSupported)
 			{
@@ -89,11 +96,11 @@ namespace NFCSample
 
 			try
 			{
-				NFCNdefRecord record = new NFCNdefRecord
+				var record = new NFCNdefRecord
 				{
-					TypeFormat = NFCNdefTypeFormat.Uri,
-					//MimeType = MIME_TYPE,
-					Payload = NFCUtils.EncodeToByteArray("https://www.google.fr"),
+					TypeFormat = NFCNdefTypeFormat.Mime,
+					MimeType = MIME_TYPE,
+					Payload = NFCUtils.EncodeToByteArray("Hi Buddy!"),
 				};
 
 				tagInfo.Records = new[] { record };
@@ -109,19 +116,17 @@ namespace NFCSample
 			}
 		}
 
-		private void Button_Clicked_StartWriting(object sender, System.EventArgs e)
-		{
-			CrossNFC.Current.StartPublishing();
-		}
+		void Button_Clicked_StartWriting(object sender, System.EventArgs e) => CrossNFC.Current.StartPublishing();
 
-		private void Button_Clicked_FormatTag(object sender, System.EventArgs e)
-		{
-			CrossNFC.Current.StartPublishing(clearMessage: true);
-		}
+		void Button_Clicked_FormatTag(object sender, System.EventArgs e) => CrossNFC.Current.StartPublishing(clearMessage: true);
 
-		private Task ShowAlert(string message)
-		{
-			return DisplayAlert(alert_title, message, "Annuler");
-		}
+		Task ShowAlert(string message) => DisplayAlert(alert_title, message, "Cancel");
+
+		//protected override void OnDisappearing()
+		//{
+		//	UnsuscribeEvents();
+		//	base.OnDisappearing();
+		//}
+
 	}
 }

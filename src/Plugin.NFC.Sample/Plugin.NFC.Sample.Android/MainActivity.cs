@@ -28,11 +28,5 @@ namespace NFCSample.Droid
 			base.OnNewIntent(intent);
 			CrossNFC.OnNewIntent(intent);
 		}
-
-		protected override void OnResume()
-		{
-			base.OnResume();
-			CrossNFC.Current.StartListening();
-		}
 	}
 }

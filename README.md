@@ -91,6 +91,18 @@ CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
 CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
 ```
 
+### Launch app when a compatible tag is detected
+
+You can use `IntentFilter` attribute on your `MainActivity` to initialize tag listening.
+```csharp
+[IntentFilter(new[] { NfcAdapter.ActionNdefDiscovered }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = "application/com.companyname.yourapp")]
+public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity 
+{
+    ...
+}
+```
+In this case, we will receive tags supporting NDEF mapped to a specified MIME Type "`application/com.companyname.yourapp`".
+
 ### Read a tag
 * Start listening with `CrossNFC.Current.StartListening()`.
 * When a NDEF message is received, the event `OnMessageReceived` is raised.

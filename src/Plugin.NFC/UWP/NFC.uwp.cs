@@ -59,12 +59,6 @@ namespace Plugin.NFC
 		}
 
 		/// <summary>
-		/// Sets specific mime types for NDEF detection
-		/// </summary>
-		/// <param name="types">Mime types</param>
-		public void SetSpecificMimeTypes(params string[] types) { }
-
-		/// <summary>
 		/// Starts tags detection
 		/// </summary>
 		public void StartListening()

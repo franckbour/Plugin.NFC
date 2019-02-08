@@ -1,5 +1,4 @@
 ﻿using Plugin.NFC;
-using System;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -30,10 +29,16 @@ namespace NFCSample
 
 				SuscribeEvents();
 
-				// Start NFC tag listening
+				// Start NFC tag listening manually
 				CrossNFC.Current.StartListening();
-				//SuscribeEvents();
 			}
+		}
+
+		protected override bool OnBackButtonPressed()
+		{
+			UnsuscribeEvents();
+			CrossNFC.Current.StopListening();
+			return base.OnBackButtonPressed();
 		}
 
 		void SuscribeEvents()
@@ -48,13 +53,6 @@ namespace NFCSample
 			CrossNFC.Current.OnMessageReceived -= Current_OnMessageReceived;
 			CrossNFC.Current.OnMessagePublished -= Current_OnMessagePublished;
 			CrossNFC.Current.OnTagDiscovered -= Current_OnTagDiscovered;
-		}
-
-		protected override bool OnBackButtonPressed()
-		{
-			UnsuscribeEvents();
-			CrossNFC.Current.StopListening();
-			return base.OnBackButtonPressed();
 		}
 
 		async void Current_OnMessageReceived(ITagInfo tagInfo)
@@ -99,11 +97,11 @@ namespace NFCSample
 			{
 				var record = new NFCNdefRecord
 				{
-					//TypeFormat = NFCNdefTypeFormat.Mime,
-					//MimeType = MIME_TYPE,
-					//Payload = NFCUtils.EncodeToByteArray("Hi Buddy!")
-					TypeFormat = NFCNdefTypeFormat.Uri,
-					Payload = NFCUtils.EncodeToByteArray("http://google.fr")
+					TypeFormat = NFCNdefTypeFormat.Mime,
+					MimeType = MIME_TYPE,
+					Payload = NFCUtils.EncodeToByteArray("Hi Buddy!")
+					//TypeFormat = NFCNdefTypeFormat.Uri,
+					//Payload = NFCUtils.EncodeToByteArray("http://google.fr")
 				};
 
 				tagInfo.Records = new[] { record };
@@ -119,26 +117,12 @@ namespace NFCSample
 			}
 		}
 
-		byte[] SetUriPayload(string uri)
-		{
-			var uriField = Encoding.ASCII.GetBytes(uri);
-			var payload = new byte[uriField.Length + 1];
-			payload[0] = 0x01;
-			Array.Copy(uriField, 0, payload, 1, uriField.Length);
-			return payload;
-		}
-
 		void Button_Clicked_StartWriting(object sender, System.EventArgs e) => CrossNFC.Current.StartPublishing();
 
 		void Button_Clicked_FormatTag(object sender, System.EventArgs e) => CrossNFC.Current.StartPublishing(clearMessage: true);
 
+		void Debug(string message) => System.Diagnostics.Debug.WriteLine(message);
+
 		Task ShowAlert(string message) => DisplayAlert(alert_title, message, "Cancel");
-
-		//protected override void OnDisappearing()
-		//{
-		//	UnsuscribeEvents();
-		//	base.OnDisappearing();
-		//}
-
 	}
 }

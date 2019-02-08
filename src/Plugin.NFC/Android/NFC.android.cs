@@ -22,7 +22,6 @@ namespace Plugin.NFC
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 
-		readonly List<string> _mimeTypes = new List<string>();
 		readonly NfcAdapter _nfcAdapter;
 
 		bool _isWriting;
@@ -71,16 +70,6 @@ namespace Plugin.NFC
 		}
 
 		/// <summary>
-		/// Sets specific mime types for NDEF detection
-		/// </summary>
-		/// <param name="types">Mime types</param>
-		public void SetSpecificMimeTypes(params string[] types)
-		{
-			foreach (var type in types)
-				_mimeTypes.Add(type);
-		}
-
-		/// <summary>
 		/// Starts tags detection
 		/// </summary>
 		public void StartListening()
@@ -89,8 +78,6 @@ namespace Plugin.NFC
 			var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, 0);
 
 			var ndefFilter = new IntentFilter(NfcAdapter.ActionNdefDiscovered);
-			if (_mimeTypes.Count > 0)
-				_mimeTypes.ForEach(x => ndefFilter.AddDataType(x));
 			ndefFilter.AddDataType("*/*");
 
 			var tagFilter = new IntentFilter(NfcAdapter.ActionTagDiscovered);
@@ -252,7 +239,6 @@ namespace Plugin.NFC
 					}
 				}
 			}
-
 		}
 
 		#region Private
@@ -300,6 +286,7 @@ namespace Plugin.NFC
 				return null;
 
 			var ndef = Ndef.Get(tag);
+
 			if (ndef == null)
 				return null;
 

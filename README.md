@@ -1,6 +1,8 @@
 # ![NFC logo][logo] Plugin.NFC
 A Cross-Platform NFC (Near Field Communication) plugin to easily read and write NFC tags in your application.
 
+This plugin uses NDEF (NFC Data Exchange Format) for maximum compatibilty between NFC devices, tag types, and operating systems.
+
 ## Build Status
 Type|Status|NuGet|MyGet
 :---|:---|:---|:---
@@ -50,7 +52,7 @@ protected override void OnNewIntent(Intent intent)
 
 ### iOS Specific
 
-> WARNING : DUE TO APPLE RESTRICTION, ONLY READING TAG IS AVAILABLE.
+> Due to Apple restriction, only reading tag is supported.
 
 An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 * Add `Near Field Communication Tag Reading` capabilty in your `Entitlements.plist`
@@ -63,7 +65,7 @@ An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 
 ### Windows Specific
 
-> WARNING : ONLY NDEF IS SUPPORTED.
+> Only NDEF tags are supported on Windows.
 
 * Add `Proximity` capability to the `Package.appxmanifest`
 ```xml
@@ -94,13 +96,20 @@ CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
 * When a NDEF message is received, the event `OnMessageReceived` is raised.
 
 ### Write a tag
-* To write a tag, call `CrossNFC.Current.StartPublishing()`, then `CrossNFC.Current.PublishMessage(ITagInfo)` when tag is discovered. Do not forget to call `CrossNFC.Current.StopPublishing()` once the tag has been written.
+* To write a tag, call `CrossNFC.Current.StartPublishing()`
+* Then `CrossNFC.Current.PublishMessage(ITagInfo)` when `OnTagDiscovered` event is raised. 
+* Do not forget to call `CrossNFC.Current.StopPublishing()` once the tag has been written.
 
 ### Clear a tag
-* To clear a tag, call `CrossNFC.Current.StartPublishing(clearMessage: true)`, then `CrossNFC.Current.PublishMessage(ITagInfo)` when tag is discovered. Do not forget to call `CrossNFC.Current.StopPublishing()` once the tag has been cleared.
+* To clear a tag, call `CrossNFC.Current.StartPublishing(clearMessage: true)`
+* Then `CrossNFC.Current.PublishMessage(ITagInfo)` when `OnTagDiscovered` event is raised.
+* Do not forget to call `CrossNFC.Current.StopPublishing()` once the tag has been cleared.
 
 
 For more examples, see sample application in the repository.
+
+## Contributing
+Feel free to contribute. PRs are accepted and welcomed.
 
 ## Credits
 Special thanks to:

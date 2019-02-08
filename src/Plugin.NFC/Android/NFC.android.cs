@@ -279,7 +279,7 @@ namespace Plugin.NFC
 				var ndefRecord = new NFCNdefRecord
 				{
 					TypeFormat = (NFCNdefTypeFormat)records[i].Tnf,
-					
+					Uri = records[i].ToUri()?.ToString(),
 					MimeType = records[i].ToMimeType(),
 					Payload = records[i].GetPayload()
 				};

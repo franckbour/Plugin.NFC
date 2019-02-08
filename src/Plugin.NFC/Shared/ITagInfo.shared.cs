@@ -52,9 +52,14 @@
 		public byte[] Payload { get; set; }
 
 		/// <summary>
+		/// Uri
+		/// </summary>
+		public string Uri { get; set; }
+
+		/// <summary>
 		/// String formatted payload
 		/// </summary>
-		public string Message => NFCUtils.GetMessage(TypeFormat, Payload);
+		public string Message => NFCUtils.GetMessage(TypeFormat, Payload, Uri);
 	}
 
 	/// <summary>

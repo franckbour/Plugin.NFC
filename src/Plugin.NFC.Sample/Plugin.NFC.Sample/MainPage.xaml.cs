@@ -1,4 +1,5 @@
 ﻿using Plugin.NFC;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -98,9 +99,11 @@ namespace NFCSample
 			{
 				var record = new NFCNdefRecord
 				{
-					TypeFormat = NFCNdefTypeFormat.Mime,
-					MimeType = MIME_TYPE,
-					Payload = NFCUtils.EncodeToByteArray("Hi Buddy!"),
+					//TypeFormat = NFCNdefTypeFormat.Mime,
+					//MimeType = MIME_TYPE,
+					//Payload = NFCUtils.EncodeToByteArray("Hi Buddy!")
+					TypeFormat = NFCNdefTypeFormat.Uri,
+					Payload = NFCUtils.EncodeToByteArray("http://google.fr")
 				};
 
 				tagInfo.Records = new[] { record };
@@ -114,6 +117,15 @@ namespace NFCSample
 			{
 				await ShowAlert(ex.Message);
 			}
+		}
+
+		byte[] SetUriPayload(string uri)
+		{
+			var uriField = Encoding.ASCII.GetBytes(uri);
+			var payload = new byte[uriField.Length + 1];
+			payload[0] = 0x01;
+			Array.Copy(uriField, 0, payload, 1, uriField.Length);
+			return payload;
 		}
 
 		void Button_Clicked_StartWriting(object sender, System.EventArgs e) => CrossNFC.Current.StartPublishing();

@@ -28,19 +28,29 @@ namespace Plugin.NFC
 		/// </summary>
 		/// <param name="type">type of <see cref="NFCNdefTypeFormat"/></param>
 		/// <param name="payload">record payload</param>
+		/// <param name="uri">record uri</param>
 		/// <returns>String formatted payload</returns>
-		internal static string GetMessage(NFCNdefTypeFormat type, byte[] payload)
+		internal static string GetMessage(NFCNdefTypeFormat type, byte[] payload, string uri)
 		{
 			var message = string.Empty;
-			if (type != NFCNdefTypeFormat.WellKnown)
-			{
-				message = Encoding.UTF8.GetString(payload, 0, payload.Length);
-			}
+
+			if (!string.IsNullOrWhiteSpace(uri))
+				message = uri;
 			else
 			{
-				var languageCodeLength = payload[0] & 0063;
-				return Encoding.UTF8.GetString(payload, languageCodeLength + 1, payload.Length - languageCodeLength - 1);
+				if (type == NFCNdefTypeFormat.WellKnown)
+				{
+					// NDEF_WELLKNOWN Text record
+					var languageCodeLength = payload[0] & 0x63;
+					message = Encoding.UTF8.GetString(payload, languageCodeLength + 1, payload.Length - languageCodeLength - 1);
+				}
+				else
+				{
+					// Other NDEF types
+					message = Encoding.UTF8.GetString(payload, 0, payload.Length);
+				}
 			}
+
 			return message;
 		}
 
@@ -60,7 +70,7 @@ namespace Plugin.NFC
 		{
 			if (record == null)
 				return string.Empty;
-			return GetMessage(record.TypeFormat, record.Payload);
+			return GetMessage(record.TypeFormat, record.Payload, record.Uri);
 		}
 	}
 }

@@ -27,7 +27,7 @@ namespace NFCSample
 				if (!CrossNFC.Current.IsEnabled)
 					await ShowAlert("NFC is disabled");
 
-				SuscribeEvents();
+				SubscribeEvents();
 
 				// Start NFC tag listening manually
 				CrossNFC.Current.StartListening();
@@ -36,19 +36,19 @@ namespace NFCSample
 
 		protected override bool OnBackButtonPressed()
 		{
-			UnsuscribeEvents();
+			UnsubscribeEvents();
 			CrossNFC.Current.StopListening();
 			return base.OnBackButtonPressed();
 		}
 
-		void SuscribeEvents()
+		void SubscribeEvents()
 		{
 			CrossNFC.Current.OnMessageReceived += Current_OnMessageReceived;
 			CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
 			CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
 		}
 
-		void UnsuscribeEvents()
+		void UnsubscribeEvents()
 		{
 			CrossNFC.Current.OnMessageReceived -= Current_OnMessageReceived;
 			CrossNFC.Current.OnMessagePublished -= Current_OnMessagePublished;

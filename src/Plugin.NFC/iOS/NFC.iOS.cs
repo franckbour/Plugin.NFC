@@ -40,6 +40,8 @@ namespace Plugin.NFC
 		/// </summary>
 		public NFCImplementation()
 		{
+			if (!IsAvailable)
+				return;
 			_session = new NFCNdefReaderSession(this, DispatchQueue.CurrentQueue, true);
 		}
 

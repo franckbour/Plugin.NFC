@@ -18,7 +18,9 @@ namespace Plugin.NFC
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 
-		readonly NFCNdefReaderSession _session;
+		readonly string writingNotSupportedMessage = "Writing NFC Tag is not supported on iOS";
+
+		NFCNdefReaderSession NfcSession { get; set; }
 
 		/// <summary>
 		/// Checks if NFC Feature is available
@@ -38,69 +40,44 @@ namespace Plugin.NFC
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public NFCImplementation()
-		{
-			if (!IsAvailable)
-				return;
-			_session = new NFCNdefReaderSession(this, DispatchQueue.CurrentQueue, true);
-		}
+		public NFCImplementation() { }
 
 		/// <summary>
 		/// Starts tags detection
 		/// </summary>
-		public void StartListening() => _session?.BeginSession();
+		public void StartListening()
+		{
+			NfcSession = new NFCNdefReaderSession(this, DispatchQueue.CurrentQueue, true);
+			NfcSession?.BeginSession();
+		}
 
 		/// <summary>
 		/// Stops tags detection
 		/// </summary>
-		public void StopListening() => _session?.InvalidateSession();
+		public void StopListening() => NfcSession?.InvalidateSession();
 
 		/// <summary>
 		/// Starts tag publishing (writing or formatting)
 		/// </summary>
 		/// <param name="clearMessage">Format tag</param>
-		public void StartPublishing(bool clearMessage = false)
-		{
-			if (!IsWritingTagSupported)
-				return;
-
-			throw new NotSupportedException("Writing NFC Tag is not supported on iOS");
-		}
+		public void StartPublishing(bool clearMessage = false) => throw new NotSupportedException(writingNotSupportedMessage);
 
 		/// <summary>
 		/// Stops tag publishing
 		/// </summary>
-		public void StopPublishing()
-		{
-			if (!IsWritingTagSupported)
-				return;
-
-			throw new NotSupportedException("Writing NFC Tag is not supported on iOS");
-		}
+		public void StopPublishing() => throw new NotSupportedException(writingNotSupportedMessage);
 
 		/// <summary>
 		/// Publish or write a message on a tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		public void PublishMessage(ITagInfo tagInfo)
-		{
-			if (!IsWritingTagSupported)
-				return;
-
-			throw new NotSupportedException("Writing NFC Tag is not supported on iOS");
-		}
+		public void PublishMessage(ITagInfo tagInfo) => throw new NotSupportedException(writingNotSupportedMessage);
 
 		/// <summary>
 		/// Format tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		public void ClearMessage(ITagInfo tagInfo)
-		{
-			if (!IsWritingTagSupported)
-				return;
-
-			throw new NotSupportedException("Writing NFC Tag is not supported on iOS");
-		}
+		public void ClearMessage(ITagInfo tagInfo) => throw new NotSupportedException(writingNotSupportedMessage);
 
 		/// <summary>
 		/// Event raised when tag is detected

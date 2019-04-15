@@ -63,6 +63,12 @@ An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 </array>
 ```
 
+* Add a NFC feature description in your Info.plist
+```xml
+<key>NFCReaderUsageDescription</key>
+<string>NFC tag to read NDEF messages into the application</string>
+```
+
 ### Windows Specific
 
 > Only NDEF tags are supported on Windows.
@@ -129,7 +135,7 @@ Special thanks to:
 - Matthew Leibowitz ([@mattleibow](https://github.com/mattleibow)) for [Xamarin.Essentials PR #131](https://github.com/xamarin/Essentials/pull/131).
 - Alessandro Pozone ([@poz1](https://github.com/poz1)) for [NFCForms](https://github.com/poz1/NFCForms).
 - Ultz ([@ultz](https://github.com/Ultz)) for [XNFC](https://github.com/Ultz/XNFC).
-- Sven-Michael Stübe ([@smstuebe](https://github.com/smstuebe)) for [xamarin-nfc](https://github.com/smstuebe/xamarin-nfc).
+- Sven-Michael StÃ¼be ([@smstuebe](https://github.com/smstuebe)) for [xamarin-nfc](https://github.com/smstuebe/xamarin-nfc).
 
 ## License
 ```

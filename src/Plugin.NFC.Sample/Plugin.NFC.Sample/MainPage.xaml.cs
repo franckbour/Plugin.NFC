@@ -1,4 +1,5 @@
 ﻿using Plugin.NFC;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -29,8 +30,11 @@ namespace NFCSample
 
 				SubscribeEvents();
 
-				// Start NFC tag listening manually
-				CrossNFC.Current.StartListening();
+				if (Device.RuntimePlatform != Device.iOS)
+				{
+					// Start NFC tag listening manually
+					CrossNFC.Current.StartListening();
+				}
 			}
 		}
 
@@ -78,11 +82,18 @@ namespace NFCSample
 
 		async void Current_OnMessagePublished(ITagInfo tagInfo)
 		{
-			CrossNFC.Current.StopPublishing();
-			if (tagInfo.IsEmpty)
-				await ShowAlert("Formatting tag successfully");
-			else
-				await ShowAlert("Writing tag successfully");
+			try
+			{
+				CrossNFC.Current.StopPublishing();
+				if (tagInfo.IsEmpty)
+					await ShowAlert("Formatting tag successfully");
+				else
+					await ShowAlert("Writing tag successfully");
+			}
+			catch (System.Exception ex)
+			{
+				await ShowAlert(ex.Message);
+			}
 		}
 
 		async void Current_OnTagDiscovered(ITagInfo tagInfo, bool format)
@@ -117,9 +128,41 @@ namespace NFCSample
 			}
 		}
 
-		void Button_Clicked_StartWriting(object sender, System.EventArgs e) => CrossNFC.Current.StartPublishing();
+		async void Button_Clicked_StartListening(object sender, System.EventArgs e)
+		{
+			try
+			{
+				CrossNFC.Current.StartListening();
+			}
+			catch (Exception ex)
+			{
+				await ShowAlert(ex.Message);
+			}
+		}
 
-		void Button_Clicked_FormatTag(object sender, System.EventArgs e) => CrossNFC.Current.StartPublishing(clearMessage: true);
+		async void Button_Clicked_StartWriting(object sender, System.EventArgs e)
+		{
+			try
+			{
+				CrossNFC.Current.StartPublishing();
+			}
+			catch (System.Exception ex)
+			{
+				await ShowAlert(ex.Message);
+			}
+		}
+
+		async void Button_Clicked_FormatTag(object sender, System.EventArgs e)
+		{
+			try
+			{
+				CrossNFC.Current.StartPublishing(clearMessage: true);
+			}
+			catch (System.Exception ex)
+			{
+				await ShowAlert(ex.Message);
+			}
+		}
 
 		void Debug(string message) => System.Diagnostics.Debug.WriteLine(message);
 

@@ -6,7 +6,8 @@
 
     <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
         <Label Text="Plugin NFC Sample" FontSize="Large" HorizontalOptions="CenterAndExpand" />
-        <Button Text="Write Tag" Clicked="Button_Clicked_StartWriting" />
+		<Button Text="Read Tag" Clicked="Button_Clicked_StartListening"/>
+		<Button Text="Write Tag" Clicked="Button_Clicked_StartWriting" />
         <Button Text="Clear Tag" Clicked="Button_Clicked_FormatTag" />
     </StackLayout>
 

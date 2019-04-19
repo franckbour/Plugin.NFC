@@ -12,7 +12,7 @@ Plugin.NFC | [NC] | [NC] | [NC]
 Platform|Version|Development Status|Tested on
 :---|:---|:---|:---
 Android|4.4+|Working|Google Nexus 5, Huawei Mate 10 Pro
-iOS|11+|_**Work In Progress**_|No iOS devices available
+iOS|11+|Working|iPhone 7 (_simple "text/plain" NDEF message_)
 Windows|10.0.16299+|_**Work In Progress**_|No Windows devices available
 
 ## Setup

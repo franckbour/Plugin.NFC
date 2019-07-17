@@ -151,7 +151,7 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
+    <PackageReference Include="Xamarin.Forms" Version="4.1.0.581479" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
@@ -160,8 +160,8 @@
       <Name>Plugin.NFC</Name>
     </ProjectReference>
     <ProjectReference Include="..\Plugin.NFC.Sample\Plugin.NFC.Sample.csproj">
-      <Project>{3E07E5BF-4562-4CAC-8AF5-83EB72AB4A20}</Project>
-      <Name>NFCSample</Name>
+      <Project>{6DC6D95B-BAFC-45A8-AFC2-B1C508094CA3}</Project>
+      <Name>Plugin.NFC.Sample</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

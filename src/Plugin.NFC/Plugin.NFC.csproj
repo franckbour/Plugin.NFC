@@ -29,7 +29,7 @@
     <LangVersion>latest</LangVersion>
     
     <!--TODO: Fill these in-->
-    <PackageLicenseUrl>https://github.com/franckbour/Plugin.NFC/blob/master/LICENSE</PackageLicenseUrl>
+		<PackageLicenseExpression>https://raw.githubusercontent.com/franckbour/Plugin.NFC/master/LICENSE?token=ABWDSSGD65GPH2432EXAJDC5F3ZXS</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/franckbour/Plugin.NFC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/franckbour/Plugin.NFC</RepositoryUrl>
     <PackageReleaseNotes>https://github.com/franckbour/Plugin.NFC/blob/master/CHANGELOG.md</PackageReleaseNotes>
@@ -39,7 +39,6 @@
     <Title>NFC Plugin for Xamarin and Windows</Title>
     <Summary>A Cross-Platform plugin to easily read and write NFC tags.</Summary>
     <Description>Cross-Platform NFC (Near Field Communication) plugin to easily read and write NFC tags in your application.</Description>
-    
     
     <Owners>Franck Bour</Owners>
     <Authors>Franck Bour</Authors>

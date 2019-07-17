@@ -3,10 +3,10 @@ A Cross-Platform NFC (Near Field Communication) plugin to easily read and write 
 
 This plugin uses NDEF (NFC Data Exchange Format) for maximum compatibilty between NFC devices, tag types, and operating systems.
 
-## Build Status
-Type|Status|NuGet|MyGet
-:---|:---|:---|:---
-Plugin.NFC | [![Build status](https://dev.azure.com/franckbour/franckbour/_apis/build/status/Plugin.NFC-CI)](https://dev.azure.com/franckbour/franckbour/_build/latest?definitionId=1) | ![Nuget](https://img.shields.io/nuget/v/Plugin.NFC.svg?label=Nuget) | ![MyGet](https://img.shields.io/myget/plugin-nfc/v/Plugin.NFC.svg?label=MyGet)
+## Status
+|Package|Build|NuGet|MyGet
+|:---|:---|:---|:---
+|Plugin.NFC | [![Build status](https://dev.azure.com/franckbour/franckbour/_apis/build/status/Plugin.NFC-CI)](https://dev.azure.com/franckbour/franckbour/_build/latest?definitionId=1) | ![Nuget](https://img.shields.io/nuget/v/Plugin.NFC.svg?label=Nuget) | ![MyGet](https://img.shields.io/myget/plugin-nfc/v/Plugin.NFC.svg?label=MyGet)
 
 CI Feed : https://www.myget.org/F/plugin-nfc/api/v3/index.json
 
@@ -15,7 +15,7 @@ Platform|Version|Development Status|Tested on
 :---|:---|:---|:---
 Android|4.4+|Working|Google Nexus 5, Huawei Mate 10 Pro
 iOS|11+|Working|iPhone 7 (_simple "text/plain" NDEF message_)
-Windows|10.0.16299+|_**Work In Progress**_|No Windows devices available
+Windows|10.0.16299+|_Pending_|No Windows devices available
 
 ## Setup
 ### Android Specific
@@ -132,37 +132,11 @@ For more examples, see sample application in the repository.
 Feel free to contribute. PRs are accepted and welcomed.
 
 ## Credits
-Special thanks to:
+This plugin is based on the great work of many developers in addition to mine. Many thanks to:
 - James Montemagno ([@jamesmontemagno](https://github.com/jamesmontemagno)).
 - Matthew Leibowitz ([@mattleibow](https://github.com/mattleibow)) for [Xamarin.Essentials PR #131](https://github.com/xamarin/Essentials/pull/131).
 - Alessandro Pozone ([@poz1](https://github.com/poz1)) for [NFCForms](https://github.com/poz1/NFCForms).
 - Ultz ([@ultz](https://github.com/Ultz)) for [XNFC](https://github.com/Ultz/XNFC).
 - Sven-Michael Stübe ([@smstuebe](https://github.com/smstuebe)) for [xamarin-nfc](https://github.com/smstuebe/xamarin-nfc).
-
-## License
-```
-The MIT License (MIT)
- 
-Copyright (c) 2019 Franck Bour
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
 
 [logo]: https://github.com/franckbour/Plugin.NFC/raw/master/art/nfc48.png "NFC Logo"

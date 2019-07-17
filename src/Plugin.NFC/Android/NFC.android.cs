@@ -74,6 +74,9 @@ namespace Plugin.NFC
 		/// </summary>
 		public void StartListening()
 		{
+			if (_nfcAdapter == null)
+				return;
+
 			var intent = new Intent(CurrentActivity, CurrentActivity.GetType()).AddFlags(ActivityFlags.SingleTop);
 			var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, 0);
 
@@ -81,7 +84,7 @@ namespace Plugin.NFC
 			ndefFilter.AddDataType("*/*");
 
 			var tagFilter = new IntentFilter(NfcAdapter.ActionTagDiscovered);
-			tagFilter.AddCategory(Intent.CategoryDefault);
+			tagFilter.AddCategory(Intent.CategoryDefault);	
 
 			var filters = new IntentFilter[] { ndefFilter, tagFilter };
 

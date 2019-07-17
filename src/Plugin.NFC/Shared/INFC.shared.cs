@@ -65,6 +65,7 @@ namespace Plugin.NFC
 		/// Event raised when tag is connected
 		/// </summary>
 		event EventHandler OnTagConnected;
+
 		/// <summary>
 		/// Event raised when tag is disconnected
 		/// </summary>

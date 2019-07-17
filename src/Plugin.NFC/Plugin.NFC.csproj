@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/1.6.61">
+﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.29">
 
   <PropertyGroup>
     <!--Work around so the conditions work below-->

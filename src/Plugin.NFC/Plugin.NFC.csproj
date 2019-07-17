@@ -29,7 +29,7 @@
     <LangVersion>latest</LangVersion>
     
     <!--TODO: Fill these in-->
-		<PackageLicenseExpression>https://raw.githubusercontent.com/franckbour/Plugin.NFC/master/LICENSE</PackageLicenseExpression>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/franckbour/Plugin.NFC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/franckbour/Plugin.NFC</RepositoryUrl>
     <PackageReleaseNotes>https://github.com/franckbour/Plugin.NFC/blob/master/CHANGELOG.md</PackageReleaseNotes>

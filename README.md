@@ -6,7 +6,9 @@ This plugin uses NDEF (NFC Data Exchange Format) for maximum compatibilty betwee
 ## Build Status
 Type|Status|NuGet|MyGet
 :---|:---|:---|:---
-Plugin.NFC | [NC] | ![Nuget](https://img.shields.io/nuget/v/Plugin.NFC.svg?label=Nuget) | ![MyGet](https://img.shields.io/myget/dicsit-developer/v/Plugin.NFC.svg?label=MyGet)
+Plugin.NFC | [NC] | ![Nuget](https://img.shields.io/nuget/v/Plugin.NFC.svg?label=Nuget) | ![MyGet](https://img.shields.io/myget/plugin-nfc/v/Plugin.NFC.svg?label=MyGet)
+
+CI Feed : https://www.myget.org/F/plugin-nfc/api/v3/index.json
 
 ## Supported Platforms
 Platform|Version|Development Status|Tested on

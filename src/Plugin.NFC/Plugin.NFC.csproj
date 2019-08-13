@@ -33,7 +33,7 @@
     <PackageProjectUrl>https://github.com/franckbour/Plugin.NFC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/franckbour/Plugin.NFC</RepositoryUrl>
     <PackageReleaseNotes>https://github.com/franckbour/Plugin.NFC/blob/master/CHANGELOG.md</PackageReleaseNotes>
-    <PackageIconUrl>https://github.com/franckbour/Test/raw/master/art/nfc128.png</PackageIconUrl>
+    <PackageIconUrl>https://github.com/franckbour/Plugin.NFC/raw/master/art/nfc128.png</PackageIconUrl>
     <PackageTags>xamarin, windows, ios, android, xamarin.forms, plugin, NFC</PackageTags>
     
     <Title>NFC Plugin for Xamarin and Windows</Title>

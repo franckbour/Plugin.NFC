@@ -63,14 +63,14 @@ namespace Plugin.NFC
 	/// </summary>
 	class ActivityLifecycleContextListener : Java.Lang.Object, Application.IActivityLifecycleCallbacks
 	{
-		WeakReference<Activity> currentActivity = new WeakReference<Activity>(null);
+		WeakReference<Activity> _currentActivity = new WeakReference<Activity>(null);
 
 		internal Context Context => Activity ?? Application.Context;
 
 		internal Activity Activity
 		{
-			get => currentActivity.TryGetTarget(out var a) ? a : null;
-			set => currentActivity.SetTarget(value);
+			get => _currentActivity.TryGetTarget(out var a) ? a : null;
+			set => _currentActivity.SetTarget(value);
 		}
 
 		void Application.IActivityLifecycleCallbacks.OnActivityCreated(Activity activity, Bundle savedInstanceState) => Activity = activity;

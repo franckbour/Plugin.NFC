@@ -55,13 +55,13 @@ dotnet_naming_rule.methods_and_properties_must_be_pascal_case.symbols = method_a
 dotnet_naming_rule.methods_and_properties_must_be_pascal_case.style = pascal_case_style
 
 # Non-public members must be lower-case
-dotnet_naming_symbols.non_public_symbols.applicable_kinds = property,method,event,delegate
-dotnet_naming_symbols.non_public_symbols.applicable_accessibilities = private
-dotnet_naming_style.all_lower_case_style.capitalization = camel_case
+#dotnet_naming_symbols.non_public_symbols.applicable_kinds = property,event,delegate
+#dotnet_naming_symbols.non_public_symbols.applicable_accessibilities = private
+#dotnet_naming_style.all_lower_case_style.capitalization = camel_case
 
-dotnet_naming_rule.non_public_members_must_be_lower_case.severity = warning
-dotnet_naming_rule.non_public_members_must_be_lower_case.symbols = non_public_symbols
-dotnet_naming_rule.non_public_members_must_be_lower_case.style = all_lower_case_style
+#dotnet_naming_rule.non_public_members_must_be_lower_case.severity = warning
+#dotnet_naming_rule.non_public_members_must_be_lower_case.symbols = non_public_symbols
+#dotnet_naming_rule.non_public_members_must_be_lower_case.style = all_lower_case_style
 
 # Private fields must start with an underscore
 dotnet_naming_symbols.private_fields.applicable_kinds = field

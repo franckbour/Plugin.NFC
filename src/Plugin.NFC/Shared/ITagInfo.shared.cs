@@ -6,6 +6,16 @@
 	public interface ITagInfo
 	{
 		/// <summary>
+		/// Tag Raw Identifier
+		/// </summary>
+		byte[] Identifier { get; }
+
+		/// <summary>
+		/// Tag Serial Number
+		/// </summary>
+		string SerialNumber { get; }
+		
+		/// <summary>
 		/// Writable tag
 		/// </summary>
 		bool IsWritable { get; set; }

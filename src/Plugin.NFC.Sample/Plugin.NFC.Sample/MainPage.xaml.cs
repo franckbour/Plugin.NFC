@@ -73,10 +73,17 @@ namespace NFCSample
 			}
 			else
 			{
+				// Customized serial number
+				var identifier = tagInfo.Identifier;
+				var serialNumber = NFCUtils.ByteArrayToHexString(identifier, ":");
+
+				// Basic serial number
+				//var serialNumber = tagInfo.SerialNumber;
+
 				var first = tagInfo.Records[0];
 				var type = first.TypeFormat.ToString();
 				var raw = Encoding.UTF8.GetString(first.Payload);
-				await ShowAlert($"{type} => {first.Message} [{raw}] ({first.MimeType})");
+				await ShowAlert($"{type} [SN: {serialNumber}] => {first.Message} [{raw}] ({first.MimeType})");
 			}
 		}
 

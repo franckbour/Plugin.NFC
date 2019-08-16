@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Linq;
 
 namespace Plugin.NFC
 {
@@ -72,5 +73,16 @@ namespace Plugin.NFC
 				return string.Empty;
 			return GetMessage(record.TypeFormat, record.Payload, record.Uri);
 		}
+
+        /// <summary>
+        /// Convert bytes array into hexadecimal string
+        /// </summary>
+        /// <param name="bytes">Bytes Array</param>
+        /// <param name="separator">Separator</param>
+        /// <returns>Hexadecimal string</returns>
+        public static string ByteArrayToHexString(byte[] bytes, string separator = null)
+        {
+            return bytes == null ? string.Empty : string.Join(separator ?? string.Empty, bytes.Select(b => b.ToString("X2")));
+        }
 	}
 }

@@ -19,7 +19,10 @@ namespace Plugin.NFC
 			if (records != null && records.Length > 0)
 			{
 				for (var i = 0; i < records.Length; i++)
-					size += records[i].Payload.Length;
+				{
+					if (records[i] != null)
+						size += records[i].Payload.Length;
+				}
 			}
 			return size;
 		}
@@ -33,8 +36,7 @@ namespace Plugin.NFC
 		/// <returns>String formatted payload</returns>
 		internal static string GetMessage(NFCNdefTypeFormat type, byte[] payload, string uri)
 		{
-			var message = string.Empty;
-
+			string message;
 			if (!string.IsNullOrWhiteSpace(uri))
 				message = uri;
 			else
@@ -42,8 +44,13 @@ namespace Plugin.NFC
 				if (type == NFCNdefTypeFormat.WellKnown)
 				{
 					// NDEF_WELLKNOWN Text record
-					var languageCodeLength = payload[0] & 0x63;
-					message = Encoding.UTF8.GetString(payload, languageCodeLength + 1, payload.Length - languageCodeLength - 1);
+					var status = payload[0];
+					var enc = status & 0x80;
+					var languageCodeLength = status & 0x3F;
+					if (enc == 0)
+						message = Encoding.UTF8.GetString(payload, languageCodeLength + 1, payload.Length - languageCodeLength - 1);
+					else
+						message = Encoding.Unicode.GetString(payload, languageCodeLength + 1, payload.Length - languageCodeLength - 1);
 				}
 				else
 				{
@@ -51,7 +58,6 @@ namespace Plugin.NFC
 					message = Encoding.UTF8.GetString(payload, 0, payload.Length);
 				}
 			}
-
 			return message;
 		}
 

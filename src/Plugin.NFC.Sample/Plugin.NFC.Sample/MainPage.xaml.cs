@@ -8,8 +8,10 @@ namespace NFCSample
 {
 	public partial class MainPage : ContentPage
 	{
-		const string alert_title = "NFC";
+		public const string ALERT_TITLE = "NFC";
 		public const string MIME_TYPE = "application/com.companyname.nfcsample";
+
+		NFCNdefTypeFormat _type;
 
 		public MainPage()
 		{
@@ -67,23 +69,25 @@ namespace NFCSample
 				return;
 			}
 
-			if (tagInfo.IsEmpty)
+			
+
+			// Customized serial number
+			var identifier = tagInfo.Identifier;
+			var serialNumber = NFCUtils.ByteArrayToHexString(identifier, ":");
+			var title = $"Tag [{serialNumber}]";
+
+			if (!tagInfo.IsSupported)
 			{
-				await ShowAlert("Empty tag");
+				await ShowAlert("Unsupported tag", title);
+			}
+			else if (tagInfo.IsEmpty)
+			{
+				await ShowAlert("Empty tag", title);
 			}
 			else
 			{
-				// Customized serial number
-				var identifier = tagInfo.Identifier;
-				var serialNumber = NFCUtils.ByteArrayToHexString(identifier, ":");
-
-				// Basic serial number
-				//var serialNumber = tagInfo.SerialNumber;
-
 				var first = tagInfo.Records[0];
-				var type = first.TypeFormat.ToString();
-				var raw = Encoding.UTF8.GetString(first.Payload);
-				await ShowAlert($"{type} [SN: {serialNumber}] => {first.Message} [{raw}] ({first.MimeType})");
+				await ShowAlert(GetMessage(first), title);
 			}
 		}
 
@@ -113,21 +117,47 @@ namespace NFCSample
 
 			try
 			{
-				var record = new NFCNdefRecord
+				NFCNdefRecord record = null;
+				switch(_type)
 				{
-					TypeFormat = NFCNdefTypeFormat.Mime,
-					MimeType = MIME_TYPE,
-					Payload = NFCUtils.EncodeToByteArray("Hi Buddy!")
-					//TypeFormat = NFCNdefTypeFormat.Uri,
-					//Payload = NFCUtils.EncodeToByteArray("http://google.fr")
-				};
+					case NFCNdefTypeFormat.WellKnown:
+						record = new NFCNdefRecord
+						{
+							TypeFormat = NFCNdefTypeFormat.WellKnown,
+							MimeType = MIME_TYPE,
+							Payload = NFCUtils.EncodeToByteArray("This is a text message!")
+						};
+						break;
+					case NFCNdefTypeFormat.Uri:
+						record = new NFCNdefRecord
+						{
+							TypeFormat = NFCNdefTypeFormat.Uri,
+							Payload = NFCUtils.EncodeToByteArray("https://google.fr")
+						};
+						break;
+					case NFCNdefTypeFormat.Mime:
+						record = new NFCNdefRecord
+						{
+							TypeFormat = NFCNdefTypeFormat.Mime,
+							MimeType = MIME_TYPE,
+							Payload = NFCUtils.EncodeToByteArray("This is a custom record!")
+						};
+						break;
+					default:
+						break;
+				}
+
+				if (!format && record == null)
+					throw new Exception("Record can't be null.");
 
 				tagInfo.Records = new[] { record };
 
 				if (format)
 					CrossNFC.Current.ClearMessage(tagInfo);
 				else
+				{
 					CrossNFC.Current.PublishMessage(tagInfo);
+				}
 			}
 			catch (System.Exception ex)
 			{
@@ -147,11 +177,20 @@ namespace NFCSample
 			}
 		}
 
-		async void Button_Clicked_StartWriting(object sender, System.EventArgs e)
+		void Button_Clicked_StartWriting(object sender, System.EventArgs e) => Publish(NFCNdefTypeFormat.WellKnown);
+
+		void Button_Clicked_StartWriting_Uri(object sender, System.EventArgs e) => Publish(NFCNdefTypeFormat.Uri);
+
+		void Button_Clicked_StartWriting_Custom(object sender, System.EventArgs e) => Publish(NFCNdefTypeFormat.Mime);
+
+		void Button_Clicked_FormatTag(object sender, System.EventArgs e) => Publish();
+
+		async void Publish(NFCNdefTypeFormat? type = null)
 		{
 			try
 			{
-				CrossNFC.Current.StartPublishing();
+				if (type.HasValue) _type = type.Value;
+				CrossNFC.Current.StartPublishing(!type.HasValue);
 			}
 			catch (System.Exception ex)
 			{
@@ -159,20 +198,25 @@ namespace NFCSample
 			}
 		}
 
-		async void Button_Clicked_FormatTag(object sender, System.EventArgs e)
+		string GetMessage(NFCNdefRecord record)
 		{
-			try
+			var message = $"Message: {record.Message}";
+			message += Environment.NewLine;
+			message += $"RawMessage: {Encoding.UTF8.GetString(record.Payload)}";
+			message += Environment.NewLine;
+			message += $"Type: {record.TypeFormat.ToString()}";
+
+			if (!string.IsNullOrWhiteSpace(record.MimeType))
 			{
-				CrossNFC.Current.StartPublishing(clearMessage: true);
+				message += Environment.NewLine;
+				message += $"MimeType: {record.MimeType}";
 			}
-			catch (System.Exception ex)
-			{
-				await ShowAlert(ex.Message);
-			}
+
+			return message;
 		}
 
 		void Debug(string message) => System.Diagnostics.Debug.WriteLine(message);
 
-		Task ShowAlert(string message) => DisplayAlert(alert_title, message, "Cancel");
+		Task ShowAlert(string message, string title = null) => DisplayAlert(string.IsNullOrWhiteSpace(title) ? ALERT_TITLE : title, message, "Cancel");
 	}
 }

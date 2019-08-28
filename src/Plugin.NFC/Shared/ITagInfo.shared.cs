@@ -26,6 +26,11 @@
 		bool IsEmpty { get; }
 
 		/// <summary>
+		/// Supported tag
+		/// </summary>
+		bool IsSupported { get; }
+
+		/// <summary>
 		/// Array of <see cref="NFCNdefRecord"/> of tag
 		/// </summary>
 		NFCNdefRecord[] Records { get; set; }

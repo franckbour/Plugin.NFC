@@ -289,21 +289,20 @@ namespace Plugin.NFC
 				return null;
 
 			var ndef = Ndef.Get(tag);
-			if (ndef == null)
-				return null;
+			var nTag = new TagInfo(tag.GetId(), ndef != null);
 
-			if (ndefMessage == null)
-				ndefMessage = ndef.CachedNdefMessage;
-
-			var nTag = new TagInfo(tag.GetId())
+			if (ndef != null)
 			{
-				IsWritable = ndef.IsWritable
-			};
+				nTag.IsWritable = ndef.IsWritable;
 
-			if (ndefMessage != null)
-			{
-				var records = ndefMessage.GetRecords();
-				nTag.Records = GetRecords(records);
+				if (ndefMessage == null)
+					ndefMessage = ndef.CachedNdefMessage;
+
+				if (ndefMessage != null)
+				{
+					var records = ndefMessage.GetRecords();
+					nTag.Records = GetRecords(records);
+				}
 			}
 
 			return nTag;

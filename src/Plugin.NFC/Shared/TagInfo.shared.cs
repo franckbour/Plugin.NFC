@@ -25,7 +25,12 @@
 		/// <summary>
 		/// Empty tag
 		/// </summary>
-		public bool IsEmpty => Records == null || Records.Length == 0 || Records[0].TypeFormat == NFCNdefTypeFormat.Empty;
+		public bool IsEmpty => Records == null || Records.Length == 0 || Records[0] == null ||Records[0].TypeFormat == NFCNdefTypeFormat.Empty;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool IsSupported { get; private set; }
 
 		/// <summary>
 		/// Default constructor
@@ -39,10 +44,12 @@
 		/// Custom contructor
 		/// </summary>
 		/// <param name="identifier">Tag Identifier as <see cref="byte[]"/></param>
-		public TagInfo(byte[] identifier)
+		/// <param name="isNdef">Is Ndef tag</param>
+		public TagInfo(byte[] identifier, bool isNdef = false)
 		{
 			Identifier = identifier;
 			SerialNumber = NFCUtils.ByteArrayToHexString(identifier);
+			IsSupported = isNdef;
 		}
 	}
 }

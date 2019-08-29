@@ -176,7 +176,7 @@ namespace Plugin.NFC
 		public static byte[] ToByteArray(this NSData data)
 		{
 			var bytes = new byte[data.Length];
-			System.Runtime.InteropServices.Marshal.Copy(data.Bytes, bytes, 0, Convert.ToInt32(data.Length));
+			if (data.Length > 0) System.Runtime.InteropServices.Marshal.Copy(data.Bytes, bytes, 0, Convert.ToInt32(data.Length));
 			return bytes;
 		}
 

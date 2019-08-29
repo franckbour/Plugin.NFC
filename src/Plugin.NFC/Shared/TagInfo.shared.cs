@@ -37,7 +37,7 @@
 		/// </summary>
 		public TagInfo()
 		{
-
+			IsSupported = true;
 		}
 
 		/// <summary>
@@ -45,7 +45,7 @@
 		/// </summary>
 		/// <param name="identifier">Tag Identifier as <see cref="byte[]"/></param>
 		/// <param name="isNdef">Is Ndef tag</param>
-		public TagInfo(byte[] identifier, bool isNdef = false)
+		public TagInfo(byte[] identifier, bool isNdef = true)
 		{
 			Identifier = identifier;
 			SerialNumber = NFCUtils.ByteArrayToHexString(identifier);

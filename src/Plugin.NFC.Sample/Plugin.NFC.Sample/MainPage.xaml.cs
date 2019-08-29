@@ -78,7 +78,7 @@ namespace NFCSample
 			// Customized serial number
 			var identifier = tagInfo.Identifier;
 			var serialNumber = NFCUtils.ByteArrayToHexString(identifier, ":");
-			var title = $"Tag [{serialNumber}]";
+			var title = !string.IsNullOrWhiteSpace(serialNumber) ? $"Tag [{serialNumber}]" : "Tag Info";
 
 			if (!tagInfo.IsSupported)
 			{

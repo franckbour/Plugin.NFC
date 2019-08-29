@@ -85,5 +85,10 @@ namespace Plugin.NFC
 		/// Event raised when ndef message has been published
 		/// </summary>
 		event NdefMessagePublishedEventHandler OnMessagePublished;
+
+		/// <summary>
+		/// Event raised when iOS NFC reading session is cancelled
+		/// </summary>
+		event EventHandler OniOSReadingSessionCancelled;
 	}
 }

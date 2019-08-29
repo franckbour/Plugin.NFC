@@ -14,9 +14,10 @@ namespace Plugin.NFC
 		public event NdefMessageReceivedEventHandler OnMessageReceived;
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
+		public event EventHandler OniOSReadingSessionCancelled;
 
 		readonly ProximityDevice _defaultDevice;
-		long ndefSubscriptionId = -1;
+		long _ndefSubscriptionId = -1;
 
 		/// <summary>
 		/// Checks if NFC Feature is available
@@ -65,7 +66,7 @@ namespace Plugin.NFC
 		{
 			_defaultDevice.DeviceArrived += OnDeviceArrived;
 			_defaultDevice.DeviceDeparted += OnDeviceDeparted;
-			ndefSubscriptionId = _defaultDevice.SubscribeForMessage("NDEF", OnNdefMessageReceived);
+			_ndefSubscriptionId = _defaultDevice.SubscribeForMessage("NDEF", OnNdefMessageReceived);
 		}
 
 		/// <summary>
@@ -76,10 +77,10 @@ namespace Plugin.NFC
 			_defaultDevice.DeviceArrived -= OnDeviceArrived;
 			_defaultDevice.DeviceDeparted -= OnDeviceDeparted;
 
-			if (ndefSubscriptionId != -1)
+			if (_ndefSubscriptionId != -1)
 			{
-				_defaultDevice.StopSubscribingForMessage(ndefSubscriptionId);
-				ndefSubscriptionId = -1;
+				_defaultDevice.StopSubscribingForMessage(_ndefSubscriptionId);
+				_ndefSubscriptionId = -1;
 			}
 		}
 

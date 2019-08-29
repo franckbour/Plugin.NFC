@@ -52,6 +52,9 @@ namespace NFCSample
 			CrossNFC.Current.OnMessageReceived += Current_OnMessageReceived;
 			CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
 			CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
+
+			if (Device.RuntimePlatform == Device.iOS)
+				CrossNFC.Current.OniOSReadingSessionCancelled += Current_OniOSReadingSessionCancelled;
 		}
 
 		void UnsubscribeEvents()
@@ -59,6 +62,9 @@ namespace NFCSample
 			CrossNFC.Current.OnMessageReceived -= Current_OnMessageReceived;
 			CrossNFC.Current.OnMessagePublished -= Current_OnMessagePublished;
 			CrossNFC.Current.OnTagDiscovered -= Current_OnTagDiscovered;
+
+			if (Device.RuntimePlatform == Device.iOS)
+				CrossNFC.Current.OniOSReadingSessionCancelled -= Current_OniOSReadingSessionCancelled;
 		}
 
 		async void Current_OnMessageReceived(ITagInfo tagInfo)
@@ -69,12 +75,10 @@ namespace NFCSample
 				return;
 			}
 
-			
-
 			// Customized serial number
 			var identifier = tagInfo.Identifier;
 			var serialNumber = NFCUtils.ByteArrayToHexString(identifier, ":");
-			var title = $"Tag [{serialNumber}]";
+			var title = !string.IsNullOrWhiteSpace(serialNumber) ? $"Tag [{serialNumber}]" : "Tag Info";
 
 			if (!tagInfo.IsSupported)
 			{
@@ -90,6 +94,8 @@ namespace NFCSample
 				await ShowAlert(GetMessage(first), title);
 			}
 		}
+
+		async void Current_OniOSReadingSessionCancelled(object sender, EventArgs e) => await ShowAlert("User has cancelled NFC reading session");
 
 		async void Current_OnMessagePublished(ITagInfo tagInfo)
 		{

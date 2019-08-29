@@ -21,6 +21,7 @@ namespace Plugin.NFC
 		public event NdefMessageReceivedEventHandler OnMessageReceived;
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
+		public event EventHandler OniOSReadingSessionCancelled;
 
 		readonly NfcAdapter _nfcAdapter;
 

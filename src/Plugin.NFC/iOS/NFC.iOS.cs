@@ -17,8 +17,9 @@ namespace Plugin.NFC
 		public event NdefMessageReceivedEventHandler OnMessageReceived;
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
+		public event EventHandler OniOSReadingSessionCancelled;
 
-		readonly string writingNotSupportedMessage = "Writing NFC Tag is not supported on iOS";
+		readonly string _writingNotSupportedMessage = "Writing NFC Tag is not supported on iOS";
 
 		NFCNdefReaderSession NfcSession { get; set; }
 
@@ -60,24 +61,24 @@ namespace Plugin.NFC
 		/// Starts tag publishing (writing or formatting)
 		/// </summary>
 		/// <param name="clearMessage">Format tag</param>
-		public void StartPublishing(bool clearMessage = false) => throw new NotSupportedException(writingNotSupportedMessage);
+		public void StartPublishing(bool clearMessage = false) => throw new NotSupportedException(_writingNotSupportedMessage);
 
 		/// <summary>
 		/// Stops tag publishing
 		/// </summary>
-		public void StopPublishing() => throw new NotSupportedException(writingNotSupportedMessage);
+		public void StopPublishing() => throw new NotSupportedException(_writingNotSupportedMessage);
 
 		/// <summary>
 		/// Publish or write a message on a tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		public void PublishMessage(ITagInfo tagInfo) => throw new NotSupportedException(writingNotSupportedMessage);
+		public void PublishMessage(ITagInfo tagInfo) => throw new NotSupportedException(_writingNotSupportedMessage);
 
 		/// <summary>
 		/// Format tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		public void ClearMessage(ITagInfo tagInfo) => throw new NotSupportedException(writingNotSupportedMessage);
+		public void ClearMessage(ITagInfo tagInfo) => throw new NotSupportedException(_writingNotSupportedMessage);
 
 		/// <summary>
 		/// Event raised when tag is detected
@@ -119,6 +120,8 @@ namespace Plugin.NFC
 					GetCurrentController().PresentViewController(alertController, true, null);
 				});
 			}
+			else if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
+				OniOSReadingSessionCancelled.Invoke(null, EventArgs.Empty);
 		}
 
 		#region Private
@@ -173,7 +176,7 @@ namespace Plugin.NFC
 		public static byte[] ToByteArray(this NSData data)
 		{
 			var bytes = new byte[data.Length];
-			System.Runtime.InteropServices.Marshal.Copy(data.Bytes, bytes, 0, Convert.ToInt32(data.Length));
+			if (data.Length > 0) System.Runtime.InteropServices.Marshal.Copy(data.Bytes, bytes, 0, Convert.ToInt32(data.Length));
 			return bytes;
 		}
 

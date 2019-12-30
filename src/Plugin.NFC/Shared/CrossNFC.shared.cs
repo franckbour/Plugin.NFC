@@ -34,14 +34,18 @@ namespace Plugin.NFC
         {
 #if NETSTANDARD1_0 || NETSTANDARD2_0
             return null;
+#elif XAMARIN_IOS
+			if (NFCUtils.IsWritingSupported())
+				return new NFCImplementation();
+			return new NFCImplementation_Before_iOS13();
 #else
 #pragma warning disable IDE0022 // Use expression body for methods
             return new NFCImplementation();
 #pragma warning restore IDE0022 // Use expression body for methods
 #endif
-        }
+		}
 
-        internal static Exception NotImplementedInReferenceAssembly() =>
+		internal static Exception NotImplementedInReferenceAssembly() =>
             new NotImplementedException("This functionality is not implemented in the portable version of this assembly.  You should reference the NuGet package from your main application project in order to reference the platform-specific implementation.");
 
     }

@@ -82,7 +82,7 @@ namespace NFCSample
 
 			if (!tagInfo.IsSupported)
 			{
-				await ShowAlert("Unsupported tag", title);
+				await ShowAlert("Unsupported tag (app)", title);
 			}
 			else if (tagInfo.IsEmpty)
 			{

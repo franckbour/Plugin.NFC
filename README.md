@@ -1,7 +1,7 @@
 # ![NFC logo][logo] Plugin.NFC
-A Cross-Platform NFC (Near Field Communication) plugin to easily read and write NFC tags in your application.
+A Cross-Platform NFC (_Near Field Communication_) plugin to easily read and write NFC tags in your application.
 
-This plugin uses NDEF (NFC Data Exchange Format) for maximum compatibilty between NFC devices, tag types, and operating systems.
+This plugin uses **NDEF** (_NFC Data Exchange Format_) for maximum compatibilty between NFC devices, tag types, and operating systems.
 
 ## Status
 |Package|Build|NuGet|MyGet
@@ -11,11 +11,12 @@ This plugin uses NDEF (NFC Data Exchange Format) for maximum compatibilty betwee
 CI Feed : https://www.myget.org/F/plugin-nfc/api/v3/index.json
 
 ## Supported Platforms
-Platform|Version|Development Status|Tested on
-:---|:---|:---|:---
-Android|4.4+|Working|Google Nexus 5, Huawei Mate 10 Pro
-iOS|11+|Working|iPhone 7 (_simple "text/plain" NDEF message_)
-Windows|10.0.16299+|_Pending_|No Windows devices available
+Platform|Version|Tested on
+:---|:---|:---
+Android|4.4+|Google Nexus 5, Huawei Mate 10 Pro
+iOS|11+|iPhone 7
+
+> Windows is currently not supported. Pull Requests are welcomed! 
 
 ## Setup
 ### Android Specific
@@ -54,14 +55,16 @@ protected override void OnNewIntent(Intent intent)
 
 ### iOS Specific
 
-> Due to Apple restriction, only reading tag is supported.
+> iOS 13+ is required for writing tags.
 
 An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
+
 * Add `Near Field Communication Tag Reading` capabilty in your `Entitlements.plist`
 ```xml
 <key>com.apple.developer.nfc.readersession.formats</key>
 <array>
     <string>NDEF</string>
+    <string>TAG</string>
 </array>
 ```
 
@@ -71,15 +74,10 @@ An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 <string>NFC tag to read NDEF messages into the application</string>
 ```
 
-### Windows Specific
-
-> Only NDEF tags are supported on Windows.
-
-* Add `Proximity` capability to the `Package.appxmanifest`
+* Add these lines in your Info.plist if you want to interact with ISO 7816 compatible tags
 ```xml
-<Capabilities>
-    <DeviceCapability Name="proximity" />
-</Capabilities>
+<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+<string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
 ```
 
 ## API Usage

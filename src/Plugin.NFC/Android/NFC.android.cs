@@ -60,7 +60,7 @@ namespace Plugin.NFC
 		/// <summary>
 		/// Checks if writing mode is supported
 		/// </summary>
-		public bool IsWritingTagSupported => true;
+		public bool IsWritingTagSupported => NFCUtils.IsWritingSupported();
 
 		/// <summary>
 		/// Default constructor

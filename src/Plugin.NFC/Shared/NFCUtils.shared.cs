@@ -1,5 +1,8 @@
 ﻿using System.Text;
 using System.Linq;
+#if XAMARIN_IOS
+using UIKit;
+#endif
 
 namespace Plugin.NFC
 {
@@ -90,5 +93,21 @@ namespace Plugin.NFC
         {
             return bytes == null ? string.Empty : string.Join(separator ?? string.Empty, bytes.Select(b => b.ToString("X2")));
         }
+
+		/// <summary>
+		/// Checks if writing tags is supported
+		/// </summary>
+		/// <returns>boolean</returns>
+		public static bool IsWritingSupported()
+		{
+#if XAMARIN_IOS
+			var splitted = UIDevice.CurrentDevice.SystemVersion?.Split('.');
+			if (splitted != null && splitted.Length > 0 && int.TryParse(splitted[0], out var majorVersion))
+				return majorVersion >= 13;
+			return false;
+#else
+			return true;
+#endif
+		}
 	}
 }

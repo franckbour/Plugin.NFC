@@ -53,7 +53,8 @@ namespace Plugin.NFC
 		/// Publish or write a message on a tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		void PublishMessage(ITagInfo tagInfo);
+		/// <param name="makeReadOnly">make tag read-only</param>
+		void PublishMessage(ITagInfo tagInfo, bool makeReadOnly = false);
 
 		/// <summary>
 		/// Format tag
@@ -90,5 +91,28 @@ namespace Plugin.NFC
 		/// Event raised when iOS NFC reading session is cancelled
 		/// </summary>
 		event EventHandler OniOSReadingSessionCancelled;
+	}
+
+	/// <summary>
+	/// UI Messages
+	/// </summary>
+	internal static class UIMessages
+	{
+		public const string NFCWritingNotSupported = "Writing NFC Tag is not supported on this device";
+		public const string NFCDialogAlertMessage = "Please hold your phone near a NFC tag";
+
+		public const string NFCErrorRead = "Read error. Please try again";
+		public const string NFCErrorEmptyTag = "Tag is empty";
+		public const string NFCErrorReadOnlyTag = "Tag is not writable";
+		public const string NFCErrorCapacityTag = "Tag's capacity is too low";
+		public const string NFCErrorMissingTag = "Tag is missing";
+		public const string NFCErrorMissingTagInfo = "No Tag Informations: nothing to write";
+		public const string NFCErrorNotSupportedTag = "Tag is not supported";
+		public const string NFCErrorNotCompliantTag = "Tag is not NDEF compliant";
+		public const string NFCErrorWrite = "Nothing to write";
+
+		public const string NFCSuccessRead = "Tag Read Success";
+		public const string NFCSuccessWrite = "Tag Write Success";
+		public const string NFCSuccessClear = "Tag Clear Success";
 	}
 }

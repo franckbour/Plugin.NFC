@@ -105,7 +105,8 @@ namespace Plugin.NFC
 		/// Publish or write a message on a tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		public void PublishMessage(ITagInfo tagInfo) => WriteOrClearMessage(_tag, tagInfo);
+		/// <param name="makeReadOnly">make tag read-only</param>
+		public void PublishMessage(ITagInfo tagInfo, bool makeReadOnly = false) => WriteOrClearMessage(_tag, tagInfo, false, makeReadOnly);
 
 		/// <summary>
 		/// Format tag
@@ -221,7 +222,8 @@ namespace Plugin.NFC
 		/// <param name="tag"><see cref="INFCTag"/></param>
 		/// <param name="tagInfo"><see cref="ITagInfo"/></param>
 		/// <param name="clearMessage">Clear Message</param>
-		internal void WriteOrClearMessage(INFCTag tag, ITagInfo tagInfo, bool clearMessage = false)
+		/// <param name="makeReadOnly">Make a tag read-only</param>
+		internal void WriteOrClearMessage(INFCTag tag, ITagInfo tagInfo, bool clearMessage = false, bool makeReadOnly = false)
 		{
 			if (NfcSession == null)
 				return;
@@ -263,6 +265,11 @@ namespace Plugin.NFC
 				else
 				{
 					ExecuteWriteOrClear(NfcSession, ndefTag, tagInfo, clearMessage);
+				}
+
+				if (!clearMessage && makeReadOnly)
+				{
+					MakeTagReadOnly(NfcSession, tag, ndefTag);
 				}
 			}
 			catch (Exception ex)
@@ -346,8 +353,6 @@ namespace Plugin.NFC
 				ndef = tag.GetNFCFeliCaTag();
 			else
 				ndef = null;
-
-			Console.WriteLine($"NDEF is {ndef}");
 
 			return ndef;
 		}
@@ -500,10 +505,30 @@ namespace Plugin.NFC
 						tagInfo.Records = GetRecords(message.Records);
 						OnMessagePublished?.Invoke(tagInfo);
 						Invalidate(NfcSession);
-					});
+					});					
 				}
 				else
 					Invalidate(session, UIMessages.NFCErrorWrite);
+			});
+		}
+
+		void MakeTagReadOnly(NFCTagReaderSession session, INFCTag tag, INFCNdefTag ndefTag)
+		{
+			session.ConnectTo(tag, (error) =>
+			{
+				if (error != null)
+				{
+					Console.WriteLine(error.LocalizedDescription);
+					return;
+				}
+
+				ndefTag.WriteLock((error) =>
+				{
+					if (error != null)
+						Console.WriteLine("Error when locking a tag on iOS: " + error.LocalizedDescription);
+					else
+						Console.WriteLine("Locking Successful!");
+				});
 			});
 		}
 
@@ -576,7 +601,7 @@ namespace Plugin.NFC
 		/// Publish or write a message on a tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		public void PublishMessage(ITagInfo tagInfo) => throw new NotSupportedException(UIMessages.NFCWritingNotSupported);
+		public void PublishMessage(ITagInfo tagInfo, bool makeReadOnly = false) => throw new NotSupportedException(UIMessages.NFCWritingNotSupported);
 
 		/// <summary>
 		/// Format tag
@@ -914,28 +939,5 @@ namespace Plugin.NFC
             "urn:epc:", // 0x22
             "urn:nfc:", // 0x23
 		};
-	}
-
-	/// <summary>
-	/// UI Messages
-	/// </summary>
-	internal static class UIMessages
-	{
-		public const string NFCWritingNotSupported = "Writing NFC Tag is not supported on this device";
-		public const string NFCDialogAlertMessage = "Please hold your phone near a NFC tag";
-
-		public const string NFCErrorRead = "Read error. Please try again";
-		public const string NFCErrorEmptyTag = "Tag is empty";
-		public const string NFCErrorReadOnlyTag = "Tag is read only";
-		public const string NFCErrorCapacityTag = "Tag is too small";
-		public const string NFCErrorMissingTag = "Tag is missing";
-		public const string NFCErrorMissingTagInfo = "No Tag Informations: nothing to write";
-		public const string NFCErrorNotSupportedTag = "Tag is not supported";
-		public const string NFCErrorNotCompliantTag = "Tag is not NDEF compliant";
-		public const string NFCErrorWrite = "Nothing to write";
-
-		public const string NFCSuccessRead = "Tag Read Success";
-		public const string NFCSuccessWrite = "Tag Write Success";
-		public const string NFCSuccessClear = "Tag Clear Success";
 	}
 }

@@ -124,7 +124,8 @@ namespace Plugin.NFC
 		/// Publish or write a message on a tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		public void PublishMessage(ITagInfo tagInfo) => WriteOrClearMessage(tagInfo);
+		/// <param name="makeReadOnly">make tag read-only</param>
+		public void PublishMessage(ITagInfo tagInfo, bool makeReadOnly = false) => WriteOrClearMessage(tagInfo, false, makeReadOnly);
 
 		/// <summary>
 		/// Format tag
@@ -137,83 +138,98 @@ namespace Plugin.NFC
 		/// </summary>
 		/// <param name="tagInfo"><see cref="ITagInfo"/></param>
 		/// <param name="clearMessage">Clear Message</param>
-		internal void WriteOrClearMessage(ITagInfo tagInfo, bool clearMessage = false)
+		/// <param name="makeReadOnly">Make tag read-only</param>
+		internal void WriteOrClearMessage(ITagInfo tagInfo, bool clearMessage = false, bool makeReadOnly = false)
 		{
-			if (_currentTag == null)
-				throw new Exception("Tag error: No tag to write");
-
-			if (tagInfo == null)
-				throw new Exception("TagInfo error: No tag to write");
-
-			var ndef = Ndef.Get(_currentTag);
-			if (ndef != null)
+			try
 			{
-				try
+				if (_currentTag == null)
+					throw new Exception(UIMessages.NFCErrorMissingTag);
+
+				if (tagInfo == null)
+					throw new Exception(UIMessages.NFCErrorMissingTagInfo);
+
+				var ndef = Ndef.Get(_currentTag);
+				if (ndef != null)
 				{
-					if (!ndef.IsWritable)
-						throw new Exception("Tag is not writable");
-
-					if (ndef.MaxSize < NFCUtils.GetSize(tagInfo.Records))
-						throw new Exception("Tag is too small");
-
-					ndef.Connect();
-					OnTagConnected?.Invoke(null, EventArgs.Empty);
-
-					NdefMessage message = null;
-					if (clearMessage)
+					try
 					{
-						message = GetEmptyNdefMessage();
-					}
-					else
-					{
-						var records = new List<NdefRecord>();
-						for (var i = 0; i < tagInfo.Records.Length; i++)
+						if (!ndef.IsWritable)
+							throw new Exception(UIMessages.NFCErrorReadOnlyTag);
+
+						if (ndef.MaxSize < NFCUtils.GetSize(tagInfo.Records))
+							throw new Exception(UIMessages.NFCErrorCapacityTag);
+
+						ndef.Connect();
+						OnTagConnected?.Invoke(null, EventArgs.Empty);
+
+						NdefMessage message = null;
+						if (clearMessage)
 						{
-							var record = tagInfo.Records[i];
-							if (GetAndroidNdefRecord(record) is NdefRecord ndefRecord)
-								records.Add(ndefRecord);
+							message = GetEmptyNdefMessage();
+						}
+						else
+						{
+							var records = new List<NdefRecord>();
+							for (var i = 0; i < tagInfo.Records.Length; i++)
+							{
+								var record = tagInfo.Records[i];
+								if (GetAndroidNdefRecord(record) is NdefRecord ndefRecord)
+									records.Add(ndefRecord);
+							}
+
+							if (records.Any())
+								message = new NdefMessage(records.ToArray());
 						}
 
-						if (records.Any())
-							message = new NdefMessage(records.ToArray());
-					}
+						if (message != null)
+						{
+							ndef.WriteNdefMessage(message);
 
-					if (message != null)
+							if (!clearMessage && makeReadOnly)
+							{
+								if (!MakeReadOnly(ndef))
+									Console.WriteLine("Cannot lock tag");
+							}
+
+							var nTag = GetTagInfo(_currentTag, ndef.NdefMessage);
+							OnMessagePublished?.Invoke(nTag);
+						}
+						else
+							throw new Exception(UIMessages.NFCErrorWrite);
+					}
+					catch (Android.Nfc.TagLostException tlex)
 					{
-						ndef.WriteNdefMessage(message);
-						var nTag = GetTagInfo(_currentTag, ndef.NdefMessage);
-						OnMessagePublished?.Invoke(nTag);
+						throw new Exception("Tag Lost Error: " + tlex.Message);
 					}
-					else
-						throw new Exception("nothing to write on tag");
-				}
-				catch (Android.Nfc.TagLostException tlex)
-				{
-					throw new Exception("Tag lost error: " + tlex.Message);
-				}
-				catch (Java.IO.IOException ioex)
-				{
-					throw new Exception("Tag IO error: " + ioex.Message);
-				}
-				catch (Android.Nfc.FormatException fe)
-				{
-					throw new Exception("Tag format error: " + fe.Message);
-				}
-				catch (Exception ex)
-				{
-					throw new Exception("Tag other error:" + ex.Message);
-				}
-				finally
-				{
-					if (ndef.IsConnected)
-						ndef.Close();
+					catch (Java.IO.IOException ioex)
+					{
+						throw new Exception("Tag IO Error: " + ioex.Message);
+					}
+					catch (Android.Nfc.FormatException fe)
+					{
+						throw new Exception("Tag Format Error: " + fe.Message);
+					}
+					catch (Exception ex)
+					{
+						throw new Exception("Tag Error:" + ex.Message);
+					}
+					finally
+					{
+						if (ndef.IsConnected)
+							ndef.Close();
 
-					_currentTag = null;
-					OnTagDisconnected?.Invoke(null, EventArgs.Empty);
+						_currentTag = null;
+						OnTagDisconnected?.Invoke(null, EventArgs.Empty);
+					}
 				}
+				else
+					throw new Exception(UIMessages.NFCErrorNotCompliantTag);
+			} 
+			catch (Exception ex)
+			{
+				StopPublishingAndThrowError(ex.Message);
 			}
-			else
-				throw new Exception("Tag Error: NDEF is not supported");
 		}
 
 		/// <summary>
@@ -246,6 +262,16 @@ namespace Plugin.NFC
 		}
 
 		#region Private
+
+		/// <summary>
+		/// Stops publishing and throws error
+		/// </summary>
+		/// <param name="message">message</param>
+		void StopPublishingAndThrowError(string message)
+		{
+			StopPublishing();
+			throw new Exception(message);
+		}
 
 		/// <summary>
 		/// Deactivate publishing
@@ -366,6 +392,34 @@ namespace Plugin.NFC
 			var records = new NdefRecord[1];
 			records[0] = GetEmptyNdefRecord();
 			return new NdefMessage(records);
+		}
+
+		/// <summary>
+		/// Make a tag read-only
+		/// </summary>
+		/// <param name="ndef"><see cref="Ndef"/></param>
+		/// <returns>boolean</returns>
+		bool MakeReadOnly(Ndef ndef)
+		{
+			if (ndef == null)
+				return false;
+
+			var result = false;
+			var newConnection = false;
+			
+			if (!ndef.IsConnected)
+			{
+				newConnection = true;
+				ndef.Connect();
+			}
+
+			if (ndef.CanMakeReadOnly())
+				result = ndef.MakeReadOnly();
+
+			if (newConnection && ndef.IsConnected)
+				ndef.Close();
+
+			return result;
 		}
 
 		#endregion

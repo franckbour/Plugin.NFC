@@ -111,7 +111,8 @@ namespace Plugin.NFC
 		/// Publish or write a message on a tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		public void PublishMessage(ITagInfo tagInfo)
+		/// <param name="makeReadOnly">make tag read-only</param>
+		public void PublishMessage(ITagInfo tagInfo, bool makeReadOnly = false)
 		{
 			if (!IsWritingTagSupported)
 				return;

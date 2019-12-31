@@ -95,11 +95,15 @@ CrossNFC.Current.OnMessageReceived += Current_OnMessageReceived;
 CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
 // Event raised when a tag is discovered. Used for publishing.
 CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
+
+// iOS Only: 
+// Event raised when a user cancelled NFC session.
+CrossNFC.Current.OniOSReadingSessionCancelled += Current_OniOSReadingSessionCancelled;
 ```
 
-### Launch app when a compatible tag is detected
+### Launch app when a compatible tag is detected on Android
 
-You can use `IntentFilter` attribute on your `MainActivity` to initialize tag listening.
+In Android, you can use `IntentFilter` attribute on your `MainActivity` to initialize tag listening.
 ```csharp
 [IntentFilter(new[] { NfcAdapter.ActionNdefDiscovered }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = "application/com.companyname.yourapp")]
 public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity 

@@ -51,5 +51,10 @@
 			SerialNumber = NFCUtils.ByteArrayToHexString(identifier);
 			IsSupported = isNdef;
 		}
+
+		public override string ToString()
+		{
+			return $"TagInfo: identifier: {Identifier}, SerialNumber:{SerialNumber}, IsSupported:{IsSupported}, IsEmpty:{IsEmpty}, IsWritable:{IsWritable}";
+		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.31">
+﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
 
   <PropertyGroup>
     <!--Work around so the conditions work below-->
@@ -113,10 +113,12 @@
   -->
 
 	<!--https://github.com/onovotny/MSBuildSdkExtras/issues/174-->
+	<!--
 	<Target Name="_RemoveNonExistingResgenFile" BeforeTargets="CoreCompile" Condition="'$(_SdkSetAndroidResgenFile)' == 'true' And '$(AndroidResgenFile)' != '' And !Exists('$(AndroidResgenFile)')">
 		<ItemGroup>
 			<Compile Remove="$(AndroidResgenFile)"/>
 		</ItemGroup>
 	</Target>
+	-->
 
 </Project>

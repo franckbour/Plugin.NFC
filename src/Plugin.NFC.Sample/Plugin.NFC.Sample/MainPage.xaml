@@ -4,13 +4,31 @@
              xmlns:local="clr-namespace:NFCSample"
              x:Class="NFCSample.MainPage">
 
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Style TargetType="Button">
+				<Setter Property="BorderColor" Value="Gray" />
+				<Setter Property="BorderWidth" Value="1" />
+				<Setter Property="BackgroundColor" Value="WhiteSmoke" />
+			</Style>
+		</ResourceDictionary>
+	</ContentPage.Resources>
+	
 	<ScrollView>
 		<StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
 			<Label Text="Plugin NFC Sample" FontSize="Large" HorizontalOptions="CenterAndExpand" />
 			<Button Text="Read Tag" Clicked="Button_Clicked_StartListening"/>
-			<Button Text="Write Tag (Text)" Clicked="Button_Clicked_StartWriting" />
-			<Button Text="Write Tag (Uri)" Clicked="Button_Clicked_StartWriting_Uri" />
-			<Button Text="Write Tag (Custom)" Clicked="Button_Clicked_StartWriting_Custom" />
+			<Frame BorderColor="Gray" HasShadow="False">
+				<StackLayout>
+					<StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Spacing="0" Padding="0">
+						<CheckBox x:Name="ChkReadOnly" IsChecked="False" VerticalOptions="Center" Color="Red"/>
+						<Label Text="Make Tag Read-Only" VerticalOptions="Center" TextColor="Red" FontAttributes="Bold"/>
+					</StackLayout>
+					<Button Text="Write Tag (Text)" Clicked="Button_Clicked_StartWriting" />
+					<Button Text="Write Tag (Uri)" Clicked="Button_Clicked_StartWriting_Uri" />
+					<Button Text="Write Tag (Custom)" Clicked="Button_Clicked_StartWriting_Custom" />
+				</StackLayout>
+			</Frame>
 			<Button Text="Clear Tag" Clicked="Button_Clicked_FormatTag" />
 		</StackLayout>
 	</ScrollView>

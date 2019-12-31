@@ -12,6 +12,8 @@ namespace NFCSample
 		public const string MIME_TYPE = "application/com.companyname.nfcsample";
 
 		NFCNdefTypeFormat _type;
+		bool _makeReadOnly = false;
+
 
 		public MainPage()
 		{
@@ -82,7 +84,7 @@ namespace NFCSample
 
 			if (!tagInfo.IsSupported)
 			{
-				await ShowAlert("Unsupported tag", title);
+				await ShowAlert("Unsupported tag (app)", title);
 			}
 			else if (tagInfo.IsEmpty)
 			{
@@ -95,12 +97,13 @@ namespace NFCSample
 			}
 		}
 
-		async void Current_OniOSReadingSessionCancelled(object sender, EventArgs e) => await ShowAlert("User has cancelled NFC reading session");
+		void Current_OniOSReadingSessionCancelled(object sender, EventArgs e) => Debug("User has cancelled NFC Session");
 
 		async void Current_OnMessagePublished(ITagInfo tagInfo)
 		{
 			try
 			{
+				ChkReadOnly.IsChecked = false;
 				CrossNFC.Current.StopPublishing();
 				if (tagInfo.IsEmpty)
 					await ShowAlert("Formatting tag successfully");
@@ -131,14 +134,14 @@ namespace NFCSample
 						{
 							TypeFormat = NFCNdefTypeFormat.WellKnown,
 							MimeType = MIME_TYPE,
-							Payload = NFCUtils.EncodeToByteArray("This is a text message!")
+							Payload = NFCUtils.EncodeToByteArray("Plugin.NFC is awesome!")
 						};
 						break;
 					case NFCNdefTypeFormat.Uri:
 						record = new NFCNdefRecord
 						{
 							TypeFormat = NFCNdefTypeFormat.Uri,
-							Payload = NFCUtils.EncodeToByteArray("https://google.fr")
+							Payload = NFCUtils.EncodeToByteArray("https://github.com/franckbour/Plugin.NFC")
 						};
 						break;
 					case NFCNdefTypeFormat.Mime:
@@ -146,7 +149,7 @@ namespace NFCSample
 						{
 							TypeFormat = NFCNdefTypeFormat.Mime,
 							MimeType = MIME_TYPE,
-							Payload = NFCUtils.EncodeToByteArray("This is a custom record!")
+							Payload = NFCUtils.EncodeToByteArray("Plugin.NFC is awesome!")
 						};
 						break;
 					default:
@@ -162,7 +165,7 @@ namespace NFCSample
 					CrossNFC.Current.ClearMessage(tagInfo);
 				else
 				{
-					CrossNFC.Current.PublishMessage(tagInfo);
+					CrossNFC.Current.PublishMessage(tagInfo, _makeReadOnly);
 				}
 			}
 			catch (System.Exception ex)
@@ -195,6 +198,18 @@ namespace NFCSample
 		{
 			try
 			{
+				if (ChkReadOnly.IsChecked)
+				{
+					if (!await DisplayAlert("Warning", "Make a Tag read-only is permanent and can't be undone. Are you sure?", "Yes", "No"))
+					{
+						ChkReadOnly.IsChecked = false;
+						return;
+					}
+					_makeReadOnly = true;
+				}
+				else
+					_makeReadOnly = false;
+
 				if (type.HasValue) _type = type.Value;
 				CrossNFC.Current.StartPublishing(!type.HasValue);
 			}

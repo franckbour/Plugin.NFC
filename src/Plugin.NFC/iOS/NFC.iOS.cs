@@ -213,7 +213,7 @@ namespace Plugin.NFC
 				});
 			}
 			else if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled && !_customInvalidation)
-				OniOSReadingSessionCancelled.Invoke(null, EventArgs.Empty);
+				OniOSReadingSessionCancelled?.Invoke(null, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -650,7 +650,7 @@ namespace Plugin.NFC
 				});
 			}
 			else if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
-				OniOSReadingSessionCancelled.Invoke(null, EventArgs.Empty);
+				OniOSReadingSessionCancelled?.Invoke(null, EventArgs.Empty);
 		}
 
 		#region Private

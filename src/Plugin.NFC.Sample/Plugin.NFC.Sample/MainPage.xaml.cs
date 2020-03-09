@@ -1,12 +1,13 @@
 ﻿using Plugin.NFC;
 using System;
+using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace NFCSample
 {
-	public partial class MainPage : ContentPage
+	public partial class MainPage : ContentPage, INotifyPropertyChanged
 	{
 		public const string ALERT_TITLE = "NFC";
 		public const string MIME_TYPE = "application/com.companyname.nfcsample";
@@ -14,6 +15,18 @@ namespace NFCSample
 		NFCNdefTypeFormat _type;
 		bool _makeReadOnly = false;
 
+		private bool _nfcIsEnabled;
+		public bool NfcIsEnabled {
+			get => _nfcIsEnabled; 
+			set
+			{
+				_nfcIsEnabled = value;
+				OnPropertyChanged(nameof(NfcIsEnabled));
+				OnPropertyChanged(nameof(NfcIsDisabled));
+			}
+		}
+
+		public bool NfcIsDisabled => !NfcIsEnabled;
 
 		public MainPage()
 		{
@@ -29,7 +42,8 @@ namespace NFCSample
 				if (!CrossNFC.Current.IsAvailable)
 					await ShowAlert("NFC is not available");
 
-				if (!CrossNFC.Current.IsEnabled)
+				NfcIsEnabled = CrossNFC.Current.IsEnabled;
+				if (!NfcIsEnabled)
 					await ShowAlert("NFC is disabled");
 
 				SubscribeEvents();
@@ -54,6 +68,7 @@ namespace NFCSample
 			CrossNFC.Current.OnMessageReceived += Current_OnMessageReceived;
 			CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
 			CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
+			CrossNFC.Current.OnNfcStatusChanged += Current_OnNfcStatusChanged;
 
 			if (Device.RuntimePlatform == Device.iOS)
 				CrossNFC.Current.OniOSReadingSessionCancelled += Current_OniOSReadingSessionCancelled;
@@ -64,9 +79,16 @@ namespace NFCSample
 			CrossNFC.Current.OnMessageReceived -= Current_OnMessageReceived;
 			CrossNFC.Current.OnMessagePublished -= Current_OnMessagePublished;
 			CrossNFC.Current.OnTagDiscovered -= Current_OnTagDiscovered;
+			CrossNFC.Current.OnNfcStatusChanged -= Current_OnNfcStatusChanged;
 
 			if (Device.RuntimePlatform == Device.iOS)
 				CrossNFC.Current.OniOSReadingSessionCancelled -= Current_OniOSReadingSessionCancelled;
+		}
+
+		async void Current_OnNfcStatusChanged(bool isEnabled)
+		{
+			NfcIsEnabled = isEnabled;
+			await ShowAlert($"NFC has been {(isEnabled ? "enabled" : "disabled")}");
 		}
 
 		async void Current_OnMessageReceived(ITagInfo tagInfo)

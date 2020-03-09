@@ -6,6 +6,7 @@ namespace Plugin.NFC
 	public delegate void NdefMessageReceivedEventHandler(ITagInfo tagInfo);
 	public delegate void NdefMessagePublishedEventHandler(ITagInfo tagInfo);
 	public delegate void TagDiscoveredEventHandler(ITagInfo tagInfo, bool format);
+	public delegate void OnNfcStatusChangedEventHandler(bool isEnabled);
 	#endregion
 
 	/// <summary>
@@ -91,6 +92,11 @@ namespace Plugin.NFC
 		/// Event raised when iOS NFC reading session is cancelled
 		/// </summary>
 		event EventHandler OniOSReadingSessionCancelled;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 	}
 
 	/// <summary>

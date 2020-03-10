@@ -15,6 +15,7 @@ namespace Plugin.NFC
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
+		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 
 		readonly ProximityDevice _defaultDevice;
 		long _ndefSubscriptionId = -1;

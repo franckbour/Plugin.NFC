@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Plugin.NFC
 {
@@ -55,7 +56,7 @@ namespace Plugin.NFC
 		/// <summary>
 		/// Checks if NFC Feature is enabled
 		/// </summary>
-		public bool IsEnabled => IsAvailable && _nfcAdapter.IsEnabled;
+		public bool IsEnabled { get; private set; }
 
 		/// <summary>
 		/// Checks if writing mode is supported
@@ -68,6 +69,7 @@ namespace Plugin.NFC
 		public NFCImplementation()
 		{
 			_nfcAdapter = NfcAdapter.GetDefaultAdapter(CurrentContext);
+			IsEnabled = IsAvailable && _nfcAdapter.IsEnabled;
 		}
 
 		/// <summary>
@@ -420,6 +422,115 @@ namespace Plugin.NFC
 				ndef.Close();
 
 			return result;
+		}
+
+		#endregion
+
+		#region NFC Status Event Listener
+
+		NfcBroadcastReceiver _nfcBroadcastReceiver;
+
+		event OnNfcStatusChangedEventHandler _onNfcStatusChangedInternal;
+		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged
+		{
+			add
+			{
+				var wasRunning = _onNfcStatusChangedInternal != null;
+				_onNfcStatusChangedInternal += value;
+				if (!wasRunning && _onNfcStatusChangedInternal != null)
+				{
+					RegisterListener();
+				}
+			}
+			remove
+			{
+				var wasRunning = _onNfcStatusChangedInternal != null;
+				_onNfcStatusChangedInternal -= value;
+				if (wasRunning && _onNfcStatusChangedInternal == null)
+				{
+					UnRegisterListener();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Register NFC Broadcast Receiver
+		/// </summary>
+		void RegisterListener()
+		{
+			_nfcBroadcastReceiver = new NfcBroadcastReceiver(OnNfcStatusChange);
+			CurrentContext?.RegisterReceiver(_nfcBroadcastReceiver, new IntentFilter(NfcAdapter.ActionAdapterStateChanged));
+		}
+
+		/// <summary>
+		/// Unregister NFC Broadcast Receiver
+		/// </summary>
+		void UnRegisterListener()
+		{
+			if (_nfcBroadcastReceiver == null)
+				return;
+
+			try
+			{
+				CurrentContext?.UnregisterReceiver(_nfcBroadcastReceiver);
+			}
+			catch (Java.Lang.IllegalArgumentException ex)
+			{
+				throw new Exception("NFC Broadcast Receiver Error: " + ex.Message);
+			}
+
+			_nfcBroadcastReceiver.Dispose();
+			_nfcBroadcastReceiver = null;
+		}
+
+		/// <summary>
+		/// Called when NFC status has changed
+		/// </summary>
+		/// <param name="value">NFC Availability</param>
+		void OnNfcStatusChange(bool value)
+		{
+			var enabled = IsAvailable && value;
+			IsEnabled = enabled;
+			_onNfcStatusChangedInternal?.Invoke(enabled);
+		}
+		
+		/// <summary>
+		/// Broadcast Receiver to check NFC feature availability
+		/// </summary>
+		[BroadcastReceiver(Enabled = true, Exported = false, Label = "NFC Status Broadcast Receiver")]
+		class NfcBroadcastReceiver : BroadcastReceiver
+		{
+			Action<bool> _onChanged;
+
+			public NfcBroadcastReceiver() { }
+			public NfcBroadcastReceiver(Action<bool> onChanged)
+			{
+				_onChanged = onChanged;
+			}
+
+			public override async void OnReceive(Context context, Intent intent)
+			{
+				if (intent.Action == NfcAdapter.ActionAdapterStateChanged)
+				{
+					bool? isEnabled = null;
+					var state = intent.GetIntExtra(NfcAdapter.ExtraAdapterState, NfcAdapter.StateOff);
+					switch (state)
+					{
+						case NfcAdapter.StateOff:
+							isEnabled = false;
+							break;
+						case NfcAdapter.StateOn:
+							isEnabled = true;
+							break;
+					}
+
+					// await 1500ms to ensure that the status updates
+					await Task.Delay(1500);
+
+					if (isEnabled.HasValue)
+						_onChanged?.Invoke(isEnabled.Value);
+				}
+			}
 		}
 
 		#endregion

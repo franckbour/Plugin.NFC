@@ -21,6 +21,7 @@ namespace Plugin.NFC
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
+		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 
 		bool _isWriting;
 		bool _isFormatting;
@@ -546,6 +547,7 @@ namespace Plugin.NFC
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
+		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 
 		NFCNdefReaderSession NfcSession { get; set; }
 

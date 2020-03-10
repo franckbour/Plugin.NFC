@@ -96,6 +96,10 @@ CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
 // Event raised when a tag is discovered. Used for publishing.
 CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
 
+// Android Only:
+// Event raised when NFC state has changed.
+CrossNFC.Current.OnNfcStatusChanged += Current_OnNfcStatusChanged;
+
 // iOS Only: 
 // Event raised when a user cancelled NFC session.
 CrossNFC.Current.OniOSReadingSessionCancelled += Current_OniOSReadingSessionCancelled;

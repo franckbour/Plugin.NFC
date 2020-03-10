@@ -1,5 +1,8 @@
 ## Changelog
 
+### 0.1.15
+- [Android] Add event listener for NFC status.
+
 ### 0.1.14 
 - [iOS] Fixed OniOSReadingSessionCancelled calls.
 

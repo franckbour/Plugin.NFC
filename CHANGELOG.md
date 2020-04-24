@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.1.16
+- Update Plugin.NFC.csproj
+- Add [sourcelink](https://github.com/dotnet/sourcelink) support
+
 ### 0.1.15
 - [Android] Add event listener for NFC status.
 

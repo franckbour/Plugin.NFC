@@ -68,6 +68,14 @@
 			<Label Margin="0,6,0,0"
 				   Padding="12,6"
                    HorizontalOptions="CenterAndExpand"
+                   IsVisible="{Binding DeviceIsListening}"
+                   Text="Listening for NFC Tag..."
+				   FontAttributes="Bold"
+                   TextColor="Blue"/>
+
+			<Label Margin="0,6,0,0"
+				   Padding="12,6"
+                   HorizontalOptions="CenterAndExpand"
                    IsVisible="{Binding NfcIsDisabled}"
                    Text="NFC IS DISABLED"
 				   FontAttributes="Bold"

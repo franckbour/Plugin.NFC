@@ -104,21 +104,20 @@ namespace Plugin.NFC
 	/// </summary>
 	internal static class UIMessages
 	{
-		public const string NFCWritingNotSupported = "Writing NFC Tag is not supported on this device";
-		public const string NFCDialogAlertMessage = "Please hold your phone near a NFC tag";
-
+		public const string NFCWritingNotSupported = "Writing NFC Tag opration is not supported on this device";
+		public const string NFCDialogAlertMessage = "Please hold your phone near an NFC tag";
 		public const string NFCErrorRead = "Read error. Please try again";
 		public const string NFCErrorEmptyTag = "Tag is empty";
 		public const string NFCErrorReadOnlyTag = "Tag is not writable";
 		public const string NFCErrorCapacityTag = "Tag's capacity is too low";
 		public const string NFCErrorMissingTag = "Tag is missing";
-		public const string NFCErrorMissingTagInfo = "No Tag Informations: nothing to write";
+		public const string NFCErrorMissingTagInfo = "No Tag Information. Nothing to write";
 		public const string NFCErrorNotSupportedTag = "Tag is not supported";
 		public const string NFCErrorNotCompliantTag = "Tag is not NDEF compliant";
 		public const string NFCErrorWrite = "Nothing to write";
 
-		public const string NFCSuccessRead = "Tag Read Success";
-		public const string NFCSuccessWrite = "Tag Write Success";
-		public const string NFCSuccessClear = "Tag Clear Success";
+		public const string NFCSuccessRead = "Tag Read Operation Successful";
+		public const string NFCSuccessWrite = "Tag Write Operation Successful";
+		public const string NFCSuccessClear = "Tag Clear Operation Successful";
 	}
 }

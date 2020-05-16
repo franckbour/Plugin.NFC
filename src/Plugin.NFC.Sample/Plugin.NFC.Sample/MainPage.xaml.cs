@@ -48,11 +48,7 @@ namespace NFCSample
 
 				SubscribeEvents();
 
-				if (Device.RuntimePlatform != Device.iOS)
-				{
-					// Start NFC tag listening manually
-					CrossNFC.Current.StartListening();
-				}
+				await StartListeningIfNotiOS();
 			}
 		}
 
@@ -128,9 +124,9 @@ namespace NFCSample
 				ChkReadOnly.IsChecked = false;
 				CrossNFC.Current.StopPublishing();
 				if (tagInfo.IsEmpty)
-					await ShowAlert("Formatting tag successfully");
+					await ShowAlert("Formatting tag operation successful");
 				else
-					await ShowAlert("Writing tag successfully");
+					await ShowAlert("Writing tag operation successful");
 			}
 			catch (System.Exception ex)
 			{
@@ -196,33 +192,24 @@ namespace NFCSample
 			}
 		}
 
-		async void Button_Clicked_StartListening(object sender, System.EventArgs e)
+		async void Button_Clicked_StartListening(object sender, System.EventArgs e) => await BeginListening();
+
+		async void Button_Clicked_StartWriting(object sender, System.EventArgs e) => await Publish(NFCNdefTypeFormat.WellKnown);
+
+		async void Button_Clicked_StartWriting_Uri(object sender, System.EventArgs e) => await Publish(NFCNdefTypeFormat.Uri);
+
+		async void Button_Clicked_StartWriting_Custom(object sender, System.EventArgs e) => await Publish(NFCNdefTypeFormat.Mime);
+
+		async void Button_Clicked_FormatTag(object sender, System.EventArgs e) => await Publish();
+
+		async Task Publish(NFCNdefTypeFormat? type = null)
 		{
-			try
-			{
-				CrossNFC.Current.StartListening();
-			}
-			catch (Exception ex)
-			{
-				await ShowAlert(ex.Message);
-			}
-		}
-
-		void Button_Clicked_StartWriting(object sender, System.EventArgs e) => Publish(NFCNdefTypeFormat.WellKnown);
-
-		void Button_Clicked_StartWriting_Uri(object sender, System.EventArgs e) => Publish(NFCNdefTypeFormat.Uri);
-
-		void Button_Clicked_StartWriting_Custom(object sender, System.EventArgs e) => Publish(NFCNdefTypeFormat.Mime);
-
-		void Button_Clicked_FormatTag(object sender, System.EventArgs e) => Publish();
-
-		async void Publish(NFCNdefTypeFormat? type = null)
-		{
+			await StartListeningIfNotiOS();
 			try
 			{
 				if (ChkReadOnly.IsChecked)
 				{
-					if (!await DisplayAlert("Warning", "Make a Tag read-only is permanent and can't be undone. Are you sure?", "Yes", "No"))
+					if (!await DisplayAlert("Warning", "Make a Tag read-only operation is permanent and can't be undone. Are you sure you wish to continue?", "Yes", "No"))
 					{
 						ChkReadOnly.IsChecked = false;
 						return;
@@ -261,5 +248,32 @@ namespace NFCSample
 		void Debug(string message) => System.Diagnostics.Debug.WriteLine(message);
 
 		Task ShowAlert(string message, string title = null) => DisplayAlert(string.IsNullOrWhiteSpace(title) ? ALERT_TITLE : title, message, "Cancel");
+
+		/// <summary>
+		/// Task to start listening for NFC tags if the user's device platform is not iOS
+		/// </summary>
+		/// <returns>Task to be performed</returns>
+		async Task StartListeningIfNotiOS()
+		{
+			if (Device.RuntimePlatform == Device.iOS)
+				return;
+			await BeginListening();
+		}
+
+		/// <summary>
+		/// Task to safely start listening for NFC Tags
+		/// </summary>
+		/// <returns>The task to be performed</returns>
+		async Task BeginListening()
+		{
+			try
+			{
+				CrossNFC.Current.StartListening();
+			}
+			catch (Exception ex)
+			{
+				await ShowAlert(ex.Message);
+			}
+		}
 	}
 }

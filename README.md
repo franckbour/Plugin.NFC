@@ -138,7 +138,7 @@ For more examples, see sample application in the repository.
 Feel free to contribute. PRs are accepted and welcomed.
 
 ## Credits
-This plugin is based on the great work of many developers in addition to mine. Many thanks to:
+Inspired by the great work of many developers. Many thanks to:
 - James Montemagno ([@jamesmontemagno](https://github.com/jamesmontemagno)).
 - Matthew Leibowitz ([@mattleibow](https://github.com/mattleibow)) for [Xamarin.Essentials PR #131](https://github.com/xamarin/Essentials/pull/131).
 - Alessandro Pozone ([@poz1](https://github.com/poz1)) for [NFCForms](https://github.com/poz1/NFCForms).

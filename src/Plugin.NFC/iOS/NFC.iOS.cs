@@ -47,9 +47,23 @@ namespace Plugin.NFC
 		public bool IsWritingTagSupported => true;
 
 		/// <summary>
+		/// NFC configuration
+		/// </summary>
+		public NfcConfiguration Configuration { get; private set; }
+
+		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public NFCImplementation() { }
+		public NFCImplementation() 
+		{
+			Configuration = NfcConfiguration.GetDefaultConfiguration();
+		}
+
+		/// <summary>
+		/// Update NFC configuration
+		/// </summary>
+		/// <param name="configuration"><see cref="NfcConfiguration"/></param>
+		public void SetConfiguration(NfcConfiguration configuration) => Configuration.Update(configuration);
 
 		/// <summary>
 		/// Starts tags detection
@@ -62,7 +76,7 @@ namespace Plugin.NFC
 
 			NfcSession = new NFCTagReaderSession(NFCPollingOption.Iso14443 | NFCPollingOption.Iso15693, this, DispatchQueue.CurrentQueue)
 			{
-				AlertMessage = UIMessages.NFCDialogAlertMessage
+				AlertMessage = Configuration.Messages.NFCDialogAlertMessage
 			};
 			NfcSession?.BeginSession();
 		}
@@ -79,7 +93,7 @@ namespace Plugin.NFC
 		public void StartPublishing(bool clearMessage = false)
 		{
 			if (!IsAvailable)
-				throw new InvalidOperationException(UIMessages.NFCWritingNotSupported);
+				throw new InvalidOperationException(Configuration.Messages.NFCWritingNotSupported);
 
 			_customInvalidation = false;
 			_isWriting = true;
@@ -87,7 +101,7 @@ namespace Plugin.NFC
 
 			NfcSession = new NFCTagReaderSession(NFCPollingOption.Iso14443 | NFCPollingOption.Iso15693, this, DispatchQueue.CurrentQueue)
 			{
-				AlertMessage = UIMessages.NFCDialogAlertMessage
+				AlertMessage = Configuration.Messages.NFCDialogAlertMessage
 			};
 			NfcSession?.BeginSession();
 		}
@@ -139,7 +153,7 @@ namespace Plugin.NFC
 
 				if (ndefTag == null)
 				{
-					Invalidate(session, UIMessages.NFCErrorNotCompliantTag);
+					Invalidate(session, Configuration.Messages.NFCErrorNotCompliantTag);
 					return;
 				}
 
@@ -153,7 +167,7 @@ namespace Plugin.NFC
 
 					if (status == NFCNdefStatus.NotSupported)
 					{
-						Invalidate(session, UIMessages.NFCErrorNotSupportedTag);
+						Invalidate(session, Configuration.Messages.NFCErrorNotSupportedTag);
 						return;
 					}
 
@@ -175,17 +189,17 @@ namespace Plugin.NFC
 						{
 							if (error != null)
 							{
-								Invalidate(session, UIMessages.NFCErrorRead);
+								Invalidate(session, Configuration.Messages.NFCErrorRead);
 								return;
 							}
 
 							if (message == null)
 							{
-								Invalidate(session, UIMessages.NFCErrorEmptyTag);
+								Invalidate(session, Configuration.Messages.NFCErrorEmptyTag);
 								return;
 							}
 
-							session.AlertMessage = UIMessages.NFCSuccessRead;
+							session.AlertMessage = Configuration.Messages.NFCSuccessRead;
 
 							nTag.Records = GetRecords(message.Records);
 							OnMessageReceived?.Invoke(nTag);
@@ -231,20 +245,20 @@ namespace Plugin.NFC
 
 			if (tag == null)
 			{
-				Invalidate(NfcSession, UIMessages.NFCErrorMissingTag);
+				Invalidate(NfcSession, Configuration.Messages.NFCErrorMissingTag);
 				return;
 			}
 
 			if (tagInfo == null)
 			{
-				Invalidate(NfcSession, UIMessages.NFCErrorMissingTagInfo);
+				Invalidate(NfcSession, Configuration.Messages.NFCErrorMissingTagInfo);
 				return;
 			}
 
 			var ndefTag = GetNdefTag(tag);
 			if (ndefTag == null)
 			{
-				Invalidate(NfcSession, UIMessages.NFCErrorNotCompliantTag);
+				Invalidate(NfcSession, Configuration.Messages.NFCErrorNotCompliantTag);
 				return;
 			}
 
@@ -461,20 +475,20 @@ namespace Plugin.NFC
 
 				if (status == NFCNdefStatus.ReadOnly)
 				{
-					Invalidate(session, UIMessages.NFCErrorReadOnlyTag);
+					Invalidate(session, Configuration.Messages.NFCErrorReadOnlyTag);
 					return;
 				}
 
 				if (Convert.ToInt32(capacity) < NFCUtils.GetSize(tagInfo.Records))
 				{
-					Invalidate(session, UIMessages.NFCErrorCapacityTag);
+					Invalidate(session, Configuration.Messages.NFCErrorCapacityTag);
 					return;
 				}
 
 				NFCNdefMessage message = null;
 				if (!clearMessage)
 				{
-					session.AlertMessage = UIMessages.NFCSuccessWrite;
+					session.AlertMessage = Configuration.Messages.NFCSuccessWrite;
 
 					var records = new List<NFCNdefPayload>();
 					for (var i = 0; i < tagInfo.Records.Length; i++)
@@ -489,7 +503,7 @@ namespace Plugin.NFC
 				}
 				else
 				{
-					session.AlertMessage = UIMessages.NFCSuccessClear;
+					session.AlertMessage = Configuration.Messages.NFCSuccessClear;
 					message = GetEmptyNdefMessage();
 				}
 
@@ -509,10 +523,17 @@ namespace Plugin.NFC
 					});					
 				}
 				else
-					Invalidate(session, UIMessages.NFCErrorWrite);
+					Invalidate(session, Configuration.Messages.NFCErrorWrite);
 			});
 		}
 
+		/// <summary>
+		/// Make a tag read-only
+		/// WARNING: This operation is permanent
+		/// </summary>
+		/// <param name="session"><see cref="NFCTagReaderSession"/></param>
+		/// <param name="tag"><see cref="ITagInfo"/></param>
+		/// <param name="ndefTag"><see cref="INFCNdefTag"/></param>
 		void MakeTagReadOnly(NFCTagReaderSession session, INFCTag tag, INFCNdefTag ndefTag)
 		{
 			session.ConnectTo(tag, (error) =>
@@ -567,9 +588,23 @@ namespace Plugin.NFC
 		public bool IsWritingTagSupported => false;
 
 		/// <summary>
+		/// NFC configuration
+		/// </summary>
+		public NfcConfiguration Configuration { get; private set; }
+
+		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public NFCImplementation_Before_iOS13() { }
+		public NFCImplementation_Before_iOS13() 
+		{
+			Configuration = NfcConfiguration.GetDefaultConfiguration();
+		}
+
+		/// <summary>
+		/// Update NFC configuration
+		/// </summary>
+		/// <param name="configuration"><see cref="NfcConfiguration"/></param>
+		public void SetConfiguration(NfcConfiguration configuration) => Configuration.Update(configuration);
 
 		/// <summary>
 		/// Starts tags detection
@@ -578,7 +613,7 @@ namespace Plugin.NFC
 		{
 			NfcSession = new NFCNdefReaderSession(this, DispatchQueue.CurrentQueue, true)
 			{
-				AlertMessage = UIMessages.NFCDialogAlertMessage
+				AlertMessage = Configuration.Messages.NFCDialogAlertMessage
 			};
 			NfcSession?.BeginSession();
 		}
@@ -592,24 +627,24 @@ namespace Plugin.NFC
 		/// Starts tag publishing (writing or formatting)
 		/// </summary>
 		/// <param name="clearMessage">Format tag</param>
-		public void StartPublishing(bool clearMessage = false) => throw new NotSupportedException(UIMessages.NFCWritingNotSupported);
+		public void StartPublishing(bool clearMessage = false) => throw new NotSupportedException(Configuration.Messages.NFCWritingNotSupported);
 
 		/// <summary>
 		/// Stops tag publishing
 		/// </summary>
-		public void StopPublishing() => throw new NotSupportedException(UIMessages.NFCWritingNotSupported);
+		public void StopPublishing() => throw new NotSupportedException(Configuration.Messages.NFCWritingNotSupported);
 
 		/// <summary>
 		/// Publish or write a message on a tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		public void PublishMessage(ITagInfo tagInfo, bool makeReadOnly = false) => throw new NotSupportedException(UIMessages.NFCWritingNotSupported);
+		public void PublishMessage(ITagInfo tagInfo, bool makeReadOnly = false) => throw new NotSupportedException(Configuration.Messages.NFCWritingNotSupported);
 
 		/// <summary>
 		/// Format tag
 		/// </summary>
 		/// <param name="tagInfo">see <see cref="ITagInfo"/></param>
-		public void ClearMessage(ITagInfo tagInfo) => throw new NotSupportedException(UIMessages.NFCWritingNotSupported);
+		public void ClearMessage(ITagInfo tagInfo) => throw new NotSupportedException(Configuration.Messages.NFCWritingNotSupported);
 
 		/// <summary>
 		/// Event raised when NDEF messages are detected

@@ -134,6 +134,33 @@ In this case, we will receive tags supporting NDEF mapped to a specified MIME Ty
 
 For more examples, see sample application in the repository.
 
+### Customizing UI messages
+* Set a new `NfcConfiguration` object to `CrossNFC.Current` with `SetConfiguration(NfcConfiguration cfg)` method like below
+
+```Csharp
+// Custom NFC configuration (ex. UI messages in French)
+CrossNFC.Current.SetConfiguration(new NfcConfiguration
+{
+    Messages = new UserDefinedMessages
+    {
+        NFCWritingNotSupported = "L'écriture des TAGs NFC n'est pas supporté sur cet appareil",
+        NFCDialogAlertMessage = "Approchez votre appareil du tag NFC",
+        NFCErrorRead = "Erreur de lecture. Veuillez rééssayer",
+        NFCErrorEmptyTag = "Ce tag est vide",
+        NFCErrorReadOnlyTag = "Ce tag n'est pas accessible en écriture",
+        NFCErrorCapacityTag = "La capacité de ce TAG est trop basse",
+        NFCErrorMissingTag = "Aucun tag trouvé",
+        NFCErrorMissingTagInfo = "Aucune information à écrire sur le tag",
+        NFCErrorNotSupportedTag = "Ce tag n'est pas supporté",
+        NFCErrorNotCompliantTag = "Ce tag n'est pas compatible NDEF",
+        NFCErrorWrite = "Aucune information à écrire sur le tag",
+        NFCSuccessRead = "Lecture réussie",
+        NFCSuccessWrite = "Ecriture réussie",
+        NFCSuccessClear = "Effaçage réussi"
+    }
+});
+```
+
 ## Contributing
 Feel free to contribute. PRs are accepted and welcomed.
 

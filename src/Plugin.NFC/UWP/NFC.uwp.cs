@@ -53,12 +53,24 @@ namespace Plugin.NFC
 		public bool IsWritingTagSupported => true;
 
 		/// <summary>
+		/// NFC configuration
+		/// </summary>
+		public NfcConfiguration Configuration { get; private set; }
+
+		/// <summary>
 		/// Default constructor
 		/// </summary>
 		public NFCImplementation()
 		{
 			_defaultDevice = ProximityDevice.GetDefault();
+			Configuration = NfcConfiguration.GetDefaultConfiguration();
 		}
+
+		/// <summary>
+		/// Update NFC configuration
+		/// </summary>
+		/// <param name="configuration"><see cref="NfcConfiguration"/></param>
+		public void SetConfiguration(NfcConfiguration configuration) => Configuration.Update(configuration);
 
 		/// <summary>
 		/// Starts tags detection

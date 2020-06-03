@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:NFCSample"
              x:Name="thisPage"
+             Title="Plugin NFC Sample"
              BindingContext="{x:Reference thisPage}">
 
     <ContentPage.Resources>
@@ -25,56 +26,56 @@
             <Button Clicked="Button_Clicked_StartListening"
                     IsEnabled="{Binding NfcIsEnabled}"
                     Text="Read Tag" />
-			
+
             <Frame BorderColor="Gray" HasShadow="False">
                 <StackLayout>
-					
+
                     <StackLayout Padding="0"
                                  HorizontalOptions="CenterAndExpand"
                                  Orientation="Horizontal"
                                  Spacing="0">
-						
+
                         <CheckBox x:Name="ChkReadOnly"
                                   IsChecked="False"
                                   IsEnabled="{Binding NfcIsEnabled}"
                                   VerticalOptions="Center"
                                   Color="Red" />
-						
+
                         <Label FontAttributes="Bold"
                                Text="Make Tag Read-Only"
                                TextColor="Red"
                                VerticalOptions="Center" />
                     </StackLayout>
-					
+
                     <Button Clicked="Button_Clicked_StartWriting"
                             IsEnabled="{Binding NfcIsEnabled}"
                             Text="Write Tag (Text)" />
-					
+
                     <Button Clicked="Button_Clicked_StartWriting_Uri"
                             IsEnabled="{Binding NfcIsEnabled}"
                             Text="Write Tag (Uri)" />
-					
+
                     <Button Clicked="Button_Clicked_StartWriting_Custom"
                             IsEnabled="{Binding NfcIsEnabled}"
                             Text="Write Tag (Custom)" />
-					
+
                 </StackLayout>
             </Frame>
-			
+
             <Button Clicked="Button_Clicked_FormatTag"
                     IsEnabled="{Binding NfcIsEnabled}"
                     Text="Clear Tag" />
 
-			<Label Margin="0,6,0,0"
-				   Padding="12,6"
+            <Label Margin="0,6,0,0"
+                   Padding="12,6"
+                   BackgroundColor="Red"
+                   FontAttributes="Bold"
                    HorizontalOptions="CenterAndExpand"
                    IsVisible="{Binding NfcIsDisabled}"
                    Text="NFC IS DISABLED"
-				   FontAttributes="Bold"
-                   TextColor="White"
-				   BackgroundColor="Red"/>
+                   TextColor="White" />
 
-		</StackLayout>
+        </StackLayout>
     </ScrollView>
 
 </ContentPage>

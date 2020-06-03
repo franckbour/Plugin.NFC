@@ -3,6 +3,7 @@
 ### Next release
 - Update Plugin.NFC.csproj
 - Add [sourcelink](https://github.com/dotnet/sourcelink) support
+- GitHub #28 : [iOS] Change default UI messages
 
 ### 0.1.16
 - GitHub #29 : [ANDROID] App sample - Write functionality needs fixing (PR #30)

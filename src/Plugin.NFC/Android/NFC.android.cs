@@ -64,13 +64,26 @@ namespace Plugin.NFC
 		public bool IsWritingTagSupported => NFCUtils.IsWritingSupported();
 
 		/// <summary>
+		/// NFC configuration
+		/// </summary>
+		public NfcConfiguration Configuration { get; private set; }
+
+		/// <summary>
 		/// Default constructor
 		/// </summary>
 		public NFCImplementation()
 		{
 			_nfcAdapter = NfcAdapter.GetDefaultAdapter(CurrentContext);
 			IsEnabled = IsAvailable && _nfcAdapter.IsEnabled;
+
+			Configuration = NfcConfiguration.GetDefaultConfiguration();
 		}
+
+		/// <summary>
+		/// Update NFC configuration
+		/// </summary>
+		/// <param name="configuration"><see cref="NfcConfiguration"/></param>
+		public void SetConfiguration(NfcConfiguration configuration) => Configuration.Update(configuration);
 
 		/// <summary>
 		/// Starts tags detection
@@ -146,10 +159,10 @@ namespace Plugin.NFC
 			try
 			{
 				if (_currentTag == null)
-					throw new Exception(UIMessages.NFCErrorMissingTag);
+					throw new Exception(Configuration.Messages.NFCErrorMissingTag);
 
 				if (tagInfo == null)
-					throw new Exception(UIMessages.NFCErrorMissingTagInfo);
+					throw new Exception(Configuration.Messages.NFCErrorMissingTagInfo);
 
 				var ndef = Ndef.Get(_currentTag);
 				if (ndef != null)
@@ -157,10 +170,10 @@ namespace Plugin.NFC
 					try
 					{
 						if (!ndef.IsWritable)
-							throw new Exception(UIMessages.NFCErrorReadOnlyTag);
+							throw new Exception(Configuration.Messages.NFCErrorReadOnlyTag);
 
 						if (ndef.MaxSize < NFCUtils.GetSize(tagInfo.Records))
-							throw new Exception(UIMessages.NFCErrorCapacityTag);
+							throw new Exception(Configuration.Messages.NFCErrorCapacityTag);
 
 						ndef.Connect();
 						OnTagConnected?.Invoke(null, EventArgs.Empty);
@@ -198,7 +211,7 @@ namespace Plugin.NFC
 							OnMessagePublished?.Invoke(nTag);
 						}
 						else
-							throw new Exception(UIMessages.NFCErrorWrite);
+							throw new Exception(Configuration.Messages.NFCErrorWrite);
 					}
 					catch (Android.Nfc.TagLostException tlex)
 					{
@@ -226,7 +239,7 @@ namespace Plugin.NFC
 					}
 				}
 				else
-					throw new Exception(UIMessages.NFCErrorNotCompliantTag);
+					throw new Exception(Configuration.Messages.NFCErrorNotCompliantTag);
 			} 
 			catch (Exception ex)
 			{
@@ -398,6 +411,7 @@ namespace Plugin.NFC
 
 		/// <summary>
 		/// Make a tag read-only
+		/// WARNING: This operation is permanent
 		/// </summary>
 		/// <param name="ndef"><see cref="Ndef"/></param>
 		/// <returns>boolean</returns>
@@ -534,5 +548,6 @@ namespace Plugin.NFC
 		}
 
 		#endregion
+
 	}
 }

@@ -14,6 +14,7 @@ namespace NFCSample
 
 		NFCNdefTypeFormat _type;
 		bool _makeReadOnly = false;
+		bool _eventsAlreadySubscribed = false;
 
 		private bool _nfcIsEnabled;
 		public bool NfcIsEnabled {
@@ -46,6 +47,28 @@ namespace NFCSample
 				if (!NfcIsEnabled)
 					await ShowAlert("NFC is disabled");
 
+				//// Custom NFC configuration (ex. UI messages in French)
+				//CrossNFC.Current.SetConfiguration(new NfcConfiguration
+				//{
+				//	Messages = new UserDefinedMessages
+				//	{
+				//		NFCWritingNotSupported = "L'écriture des TAGs NFC n'est pas supporté sur cet appareil",
+				//		NFCDialogAlertMessage = "Approchez votre appareil du tag NFC",
+				//		NFCErrorRead = "Erreur de lecture. Veuillez rééssayer",
+				//		NFCErrorEmptyTag = "Ce tag est vide",
+				//		NFCErrorReadOnlyTag = "Ce tag n'est pas accessible en écriture",
+				//		NFCErrorCapacityTag = "La capacité de ce TAG est trop basse",
+				//		NFCErrorMissingTag = "Aucun tag trouvé",
+				//		NFCErrorMissingTagInfo = "Aucune information à écrire sur le tag",
+				//		NFCErrorNotSupportedTag = "Ce tag n'est pas supporté",
+				//		NFCErrorNotCompliantTag = "Ce tag n'est pas compatible NDEF",
+				//		NFCErrorWrite = "Aucune information à écrire sur le tag",
+				//		NFCSuccessRead = "Lecture réussie",
+				//		NFCSuccessWrite = "Ecriture réussie",
+				//		NFCSuccessClear = "Effaçage réussi"
+				//	}
+				//});
+
 				SubscribeEvents();
 
 				await StartListeningIfNotiOS();
@@ -64,6 +87,11 @@ namespace NFCSample
 		/// </summary>
 		void SubscribeEvents()
 		{
+			if (_eventsAlreadySubscribed)
+				return;
+
+			_eventsAlreadySubscribed = true;
+
 			CrossNFC.Current.OnMessageReceived += Current_OnMessageReceived;
 			CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
 			CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
@@ -151,7 +179,7 @@ namespace NFCSample
 				else
 					await ShowAlert("Writing tag operation successful");
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				await ShowAlert(ex.Message);
 			}
@@ -214,7 +242,7 @@ namespace NFCSample
 					CrossNFC.Current.PublishMessage(tagInfo, _makeReadOnly);
 				}
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				await ShowAlert(ex.Message);
 			}
@@ -280,7 +308,7 @@ namespace NFCSample
 				if (type.HasValue) _type = type.Value;
 				CrossNFC.Current.StartPublishing(!type.HasValue);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				await ShowAlert(ex.Message);
 			}

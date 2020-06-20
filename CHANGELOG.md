@@ -1,6 +1,6 @@
 ## Changelog
 
-### Next release
+### 0.1.17
 - Update Plugin.NFC.csproj
 - Add [sourcelink](https://github.com/dotnet/sourcelink) support
 - GitHub #28 : [iOS] Change default UI messages

@@ -20,43 +20,58 @@
     <PackageVersion>1.0.0.0</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
-    <LangVersion>default</LangVersion>
     <DefineConstants>$(DefineConstants);</DefineConstants>
     
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-
     <LangVersion>latest</LangVersion>
-    
-    <!--TODO: Fill these in-->
+		<DebugType>portable</DebugType>
+
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/franckbour/Plugin.NFC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/franckbour/Plugin.NFC</RepositoryUrl>
     <PackageReleaseNotes>https://github.com/franckbour/Plugin.NFC/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <PackageIconUrl>https://github.com/franckbour/Plugin.NFC/raw/master/art/nfc128.png</PackageIconUrl>
-    <PackageTags>xamarin, windows, ios, android, xamarin.forms, plugin, NFC</PackageTags>
+		<PackageIcon>icon.png</PackageIcon>
+    <PackageTags>xamarin, ios, android, xamarin.forms, plugin, NFC</PackageTags>
     
-    <Title>NFC Plugin for Xamarin and Windows</Title>
+    <Title>NFC Plugin for Xamarin</Title>
     <Summary>A Cross-Platform plugin to easily read and write NFC tags.</Summary>
     <Description>Cross-Platform NFC (Near Field Communication) plugin to easily read and write NFC tags in your application.</Description>
     
     <Owners>Franck Bour</Owners>
     <Authors>Franck Bour</Authors>
     <Copyright>Copyright 2020</Copyright>
+
+		<!--When built in 2019 will remove extra references on pack for iOS in System.Drawing.Common-->
+		<DisableExtraReferences>false</DisableExtraReferences>
+		
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
-    <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
+	
   <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <DebugType>pdbonly</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+		
+		<!-- sourcelink: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<!-- sourcelink: Embed source files that are not tracked by the source control manager in the PDB -->
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<!-- sourcelink: Include PDB in the built .nupkg -->
+		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+		
   </PropertyGroup>
 
+	<ItemGroup Condition=" '$(Configuration)'=='Release' ">
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+	</ItemGroup>
+	
   <ItemGroup>
+		<None Include="..\..\art\nfc128.png" PackagePath="icon.png" Pack="true" />
     <Compile Include="**\*.shared.cs" />
   </ItemGroup>
 
@@ -80,45 +95,5 @@
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
     <Compile Include="**\*.iOS.cs" />
   </ItemGroup>
-
-  <!--Additional item groups-->
-  <!--
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
-    <Compile Include="**\*.tvos.cs" />
-  </ItemGroup>
-
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.WatchOS')) ">
-    <Compile Include="**\*.watchos.cs" />
-  </ItemGroup>
-
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
-    <Compile Include="**\*.mac.cs" />
-  </ItemGroup>
-
-  
-   <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp')) ">
-    <Compile Include="**\*.netcore.cs" />
-  </ItemGroup>
-  
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Tizen')) ">
-    <Compile Include="**\*.tizen.cs" />
-    <PackageReference Include="Tizen.NET" Version="4.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net45')) ">
-    <Compile Include="**\*.dotnet.cs" />
-  </ItemGroup>
-  -->
-
-	<!--https://github.com/onovotny/MSBuildSdkExtras/issues/174-->
-	<!--
-	<Target Name="_RemoveNonExistingResgenFile" BeforeTargets="CoreCompile" Condition="'$(_SdkSetAndroidResgenFile)' == 'true' And '$(AndroidResgenFile)' != '' And !Exists('$(AndroidResgenFile)')">
-		<ItemGroup>
-			<Compile Remove="$(AndroidResgenFile)"/>
-		</ItemGroup>
-	</Target>
-	-->
 
 </Project>

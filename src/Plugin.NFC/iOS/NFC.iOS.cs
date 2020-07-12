@@ -22,6 +22,7 @@ namespace Plugin.NFC
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
+		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 
 		bool _isWriting;
 		bool _isFormatting;
@@ -79,12 +80,17 @@ namespace Plugin.NFC
 				AlertMessage = Configuration.Messages.NFCDialogAlertMessage
 			};
 			NfcSession?.BeginSession();
+			OnTagListeningStatusChanged?.Invoke(true);
 		}
 
 		/// <summary>
 		/// Stops tags detection
 		/// </summary>
-		public void StopListening() => NfcSession?.InvalidateSession();
+		public void StopListening()
+		{
+			NfcSession?.InvalidateSession();
+			OnTagListeningStatusChanged?.Invoke(false);
+		}
 
 		/// <summary>
 		/// Starts tag publishing (writing or formatting)
@@ -104,6 +110,7 @@ namespace Plugin.NFC
 				AlertMessage = Configuration.Messages.NFCDialogAlertMessage
 			};
 			NfcSession?.BeginSession();
+			OnTagListeningStatusChanged?.Invoke(true);
 		}
 
 		/// <summary>
@@ -114,6 +121,7 @@ namespace Plugin.NFC
 			_isWriting = _isFormatting = _customInvalidation = false;
 			_tag = null;
 			NfcSession?.InvalidateSession();
+			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		/// <summary>
@@ -348,6 +356,7 @@ namespace Plugin.NFC
 				session.InvalidateSession();
 			else
 				session.InvalidateSession(message);
+			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		/// <summary>
@@ -570,6 +579,7 @@ namespace Plugin.NFC
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
+		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 
 		NFCNdefReaderSession NfcSession { get; set; }
 
@@ -617,12 +627,17 @@ namespace Plugin.NFC
 				AlertMessage = Configuration.Messages.NFCDialogAlertMessage
 			};
 			NfcSession?.BeginSession();
+			OnTagListeningStatusChanged?.Invoke(true);
 		}
 
 		/// <summary>
 		/// Stops tags detection
 		/// </summary>
-		public void StopListening() => NfcSession?.InvalidateSession();
+		public void StopListening()
+		{
+			NfcSession?.InvalidateSession();
+			OnTagListeningStatusChanged?.Invoke(false);
+		}
 
 		/// <summary>
 		/// Starts tag publishing (writing or formatting)

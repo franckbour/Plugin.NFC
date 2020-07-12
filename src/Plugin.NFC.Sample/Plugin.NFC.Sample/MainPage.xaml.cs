@@ -23,7 +23,7 @@ namespace NFCSample
 		/// </summary>
 		public bool DeviceIsListening
 		{
-			get => _deviceIsListening && NfcIsEnabled;
+			get => _deviceIsListening;
 			set
 			{
 				_deviceIsListening = value;
@@ -115,6 +115,7 @@ namespace NFCSample
 			CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
 			CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
 			CrossNFC.Current.OnNfcStatusChanged += Current_OnNfcStatusChanged;
+			CrossNFC.Current.OnTagListeningStatusChanged += Current_OnTagListeningStatusChanged;
 
 			if (_isDeviceiOS)
 				CrossNFC.Current.OniOSReadingSessionCancelled += Current_OniOSReadingSessionCancelled;
@@ -129,10 +130,17 @@ namespace NFCSample
 			CrossNFC.Current.OnMessagePublished -= Current_OnMessagePublished;
 			CrossNFC.Current.OnTagDiscovered -= Current_OnTagDiscovered;
 			CrossNFC.Current.OnNfcStatusChanged -= Current_OnNfcStatusChanged;
+			CrossNFC.Current.OnTagListeningStatusChanged += Current_OnTagListeningStatusChanged;
 
 			if (_isDeviceiOS)
 				CrossNFC.Current.OniOSReadingSessionCancelled -= Current_OniOSReadingSessionCancelled;
 		}
+
+		/// <summary>
+		/// Event raised when Listener Status has changed
+		/// </summary>
+		/// <param name="isListening"></param>
+		void Current_OnTagListeningStatusChanged(bool isListening) => DeviceIsListening = isListening;
 
 		/// <summary>
 		/// Event raised when NFC Status has changed
@@ -174,7 +182,6 @@ namespace NFCSample
 				var first = tagInfo.Records[0];
 				await ShowAlert(GetMessage(first), title);
 			}
-			DeviceIsListening = false;
 		}
 
 		/// <summary>
@@ -266,7 +273,6 @@ namespace NFCSample
 			{
 				await ShowAlert(ex.Message);
 			}
-			DeviceIsListening = false;
 		}
 
 		/// <summary>
@@ -275,6 +281,13 @@ namespace NFCSample
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		async void Button_Clicked_StartListening(object sender, System.EventArgs e) => await BeginListening();
+
+		/// <summary>
+		/// Stop listening for NFC tags
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		async void Button_Clicked_StopListening(object sender, System.EventArgs e) => await StopListening();
 
 		/// <summary>
 		/// Start publish operation to write the tag (TEXT) when <see cref="Current_OnTagDiscovered(ITagInfo, bool)"/> event will be raised
@@ -388,10 +401,25 @@ namespace NFCSample
 		/// <returns>The task to be performed</returns>
 		async Task BeginListening()
 		{
-			DeviceIsListening = true;
 			try
 			{
 				CrossNFC.Current.StartListening();
+			}
+			catch (Exception ex)
+			{
+				await ShowAlert(ex.Message);
+			}
+		}
+
+		/// <summary>
+		/// Task to safely stop listening for NFC tags
+		/// </summary>
+		/// <returns>The task to be performed</returns>
+		async Task StopListening()
+		{
+			try
+			{
+				CrossNFC.Current.StopListening();
 			}
 			catch (Exception ex)
 			{

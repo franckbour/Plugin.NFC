@@ -41,6 +41,16 @@ protected override void OnCreate(Bundle savedInstanceState)
     LoadApplication(new App());
 }
 ```
+* Add the line `CrossNFC.OnResume()` in your `OnResume()`
+```csharp
+protected override void OnResume()
+{
+    base.OnResume();
+
+    // Plugin NFC: Restart NFC listening on resume (needed for Android 10+) 
+    CrossNFC.OnResume();
+}
+```
 
 * Add the line `CrossNFC.OnNewIntent(intent)` in your `OnNewIntent()`
 ```csharp
@@ -95,6 +105,8 @@ CrossNFC.Current.OnMessageReceived += Current_OnMessageReceived;
 CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
 // Event raised when a tag is discovered. Used for publishing.
 CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
+// Event raised when NFC listener status changed
+CrossNFC.Current.OnTagListeningStatusChanged += Current_OnTagListeningStatusChanged;
 
 // Android Only:
 // Event raised when NFC state has changed.

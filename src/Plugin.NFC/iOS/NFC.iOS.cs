@@ -174,7 +174,8 @@ namespace Plugin.NFC
 					var identifier = GetTagIdentifier(ndefTag);
 					var nTag = new TagInfo(identifier)
 					{
-						IsWritable = status == NFCNdefStatus.ReadWrite
+						IsWritable = status == NFCNdefStatus.ReadWrite,
+						Capacity = Convert.ToInt32(capacity)
 					};
 
 					if (_isWriting)

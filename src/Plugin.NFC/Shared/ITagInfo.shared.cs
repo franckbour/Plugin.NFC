@@ -31,6 +31,11 @@
 		bool IsSupported { get; }
 
 		/// <summary>
+		/// Capacity of tag in bytes
+		/// </summary>
+		int Capacity { get; set; }
+
+		/// <summary>
 		/// Array of <see cref="NFCNdefRecord"/> of tag
 		/// </summary>
 		NFCNdefRecord[] Records { get; set; }

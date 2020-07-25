@@ -188,21 +188,18 @@ namespace Plugin.NFC
 						// Read mode
 						ndefTag.ReadNdef((message, error) =>
 						{
-							if (error != null)
+							// iOS Error: NFCReaderError.NdefReaderSessionErrorZeroLengthMessage (NDEF tag does not contain any NDEF message)
+							// NFCReaderError.NdefReaderSessionErrorZeroLengthMessage constant should be equals to 403 instead of 304
+							// see https://developer.apple.com/documentation/corenfc/nfcreadererror/code/ndefreadersessionerrorzerolengthmessage
+							if (error != null && error.Code != 403)
 							{
 								Invalidate(session, Configuration.Messages.NFCErrorRead);
 								return;
 							}
 
-							if (message == null)
-							{
-								Invalidate(session, Configuration.Messages.NFCErrorEmptyTag);
-								return;
-							}
-
 							session.AlertMessage = Configuration.Messages.NFCSuccessRead;
 
-							nTag.Records = GetRecords(message.Records);
+							nTag.Records = GetRecords(message?.Records);
 							OnMessageReceived?.Invoke(nTag);
 							Invalidate(session);
 						});
@@ -320,6 +317,9 @@ namespace Plugin.NFC
 		/// <returns>Array of <see cref="NFCNdefRecord"/></returns>
 		NFCNdefRecord[] GetRecords(NFCNdefPayload[] records)
 		{
+			if (records == null)
+				return null;
+
 			var results = new NFCNdefRecord[records.Length];
 			for (var i = 0; i < records.Length; i++)
 			{

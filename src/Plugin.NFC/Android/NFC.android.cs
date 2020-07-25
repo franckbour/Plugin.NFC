@@ -331,7 +331,10 @@ namespace Plugin.NFC
 				return null;
 
 			var ndef = Ndef.Get(tag);
-			var nTag = new TagInfo(tag.GetId(), ndef != null);
+			var nTag = new TagInfo(tag.GetId(), ndef != null)
+			{
+				Capacity = ndef.MaxSize
+			};
 
 			if (ndef != null)
 			{

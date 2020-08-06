@@ -27,6 +27,10 @@
                     IsEnabled="{Binding NfcIsEnabled}"
                     Text="Read Tag" />
 
+            <Button Clicked="Button_Clicked_StopListening"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Stop Listener" />
+
             <Frame BorderColor="Gray" HasShadow="False">
                 <StackLayout>
 
@@ -68,8 +72,15 @@
 
             <Label Margin="0,6,0,0"
                    Padding="12,6"
+                   BackgroundColor="Blue"
+                   HorizontalOptions="CenterAndExpand"
+                   IsVisible="{Binding DeviceIsListening}"
+                   Text="Listening for NFC Tag..."
+                   TextColor="White" />
+
+            <Label Margin="0,6,0,0"
+                   Padding="12,6"
                    BackgroundColor="Red"
-                   FontAttributes="Bold"
                    HorizontalOptions="CenterAndExpand"
                    IsVisible="{Binding NfcIsDisabled}"
                    Text="NFC IS DISABLED"

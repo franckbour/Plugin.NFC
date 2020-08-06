@@ -1,5 +1,10 @@
 ## Changelog
 
+### Vnext
+- [Android] Fixing some issues with NFC listener on Android 10 (PR #49)
+- GitHub #40 : [iOS] NFC Tag not reading on iOS unless I have a message on the tag (PR #48)
+- GitHub #45 : [ANDROID, iOS] Expose the capacity of the ndef tag (PR #46)
+
 ### 0.1.17
 - Update Plugin.NFC.csproj
 - Add [sourcelink](https://github.com/dotnet/sourcelink) support

@@ -23,9 +23,11 @@ namespace Plugin.NFC
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
+		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 
 		readonly NfcAdapter _nfcAdapter;
 
+		bool _isListening;
 		bool _isWriting;
 		bool _isFormatting;
 		Tag _currentTag;
@@ -100,11 +102,14 @@ namespace Plugin.NFC
 			ndefFilter.AddDataType("*/*");
 
 			var tagFilter = new IntentFilter(NfcAdapter.ActionTagDiscovered);
-			tagFilter.AddCategory(Intent.CategoryDefault);	
+			tagFilter.AddCategory(Intent.CategoryDefault);
 
 			var filters = new IntentFilter[] { ndefFilter, tagFilter };
 
 			_nfcAdapter.EnableForegroundDispatch(CurrentActivity, pendingIntent, filters, null);
+
+			_isListening = true;
+			OnTagListeningStatusChanged?.Invoke(_isListening);
 		}
 
 		/// <summary>
@@ -115,6 +120,9 @@ namespace Plugin.NFC
 			DisablePublishing();
 			if (_nfcAdapter != null)
 				_nfcAdapter.DisableForegroundDispatch(CurrentActivity);
+
+			_isListening = false;
+			OnTagListeningStatusChanged?.Invoke(_isListening);
 		}
 
 		/// <summary>
@@ -276,6 +284,17 @@ namespace Plugin.NFC
 			}
 		}
 
+		/// <summary>
+		/// Handle Android OnResume
+		/// </summary>
+		internal void HandleOnResume()
+		{
+			// Android 10 fix:
+			// If listening mode is already enable, we restart listening when activity is resumed
+			if (_isListening)
+				StartListening();
+		}
+
 		#region Private
 
 		/// <summary>
@@ -331,13 +350,11 @@ namespace Plugin.NFC
 				return null;
 
 			var ndef = Ndef.Get(tag);
-			var nTag = new TagInfo(tag.GetId(), ndef != null)
-			{
-				Capacity = ndef.MaxSize
-			};
+			var nTag = new TagInfo(tag.GetId(), ndef != null);
 
 			if (ndef != null)
 			{
+				nTag.Capacity = ndef.MaxSize;
 				nTag.IsWritable = ndef.IsWritable;
 
 				if (ndefMessage == null)
@@ -448,6 +465,7 @@ namespace Plugin.NFC
 		NfcBroadcastReceiver _nfcBroadcastReceiver;
 
 		event OnNfcStatusChangedEventHandler _onNfcStatusChangedInternal;
+
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged
 		{
 			add

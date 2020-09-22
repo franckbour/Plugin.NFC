@@ -16,6 +16,7 @@ namespace Plugin.NFC
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
+		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 
 		readonly ProximityDevice _defaultDevice;
 		long _ndefSubscriptionId = -1;
@@ -80,6 +81,7 @@ namespace Plugin.NFC
 			_defaultDevice.DeviceArrived += OnDeviceArrived;
 			_defaultDevice.DeviceDeparted += OnDeviceDeparted;
 			_ndefSubscriptionId = _defaultDevice.SubscribeForMessage("NDEF", OnNdefMessageReceived);
+			OnTagListeningStatusChanged?.Invoke(true);
 		}
 
 		/// <summary>
@@ -95,6 +97,8 @@ namespace Plugin.NFC
 				_defaultDevice.StopSubscribingForMessage(_ndefSubscriptionId);
 				_ndefSubscriptionId = -1;
 			}
+
+			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		/// <summary>

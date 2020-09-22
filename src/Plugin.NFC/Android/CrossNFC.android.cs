@@ -39,6 +39,11 @@ namespace Plugin.NFC
 		public static void OnNewIntent(Intent intent) => ((NFCImplementation)Current).HandleNewIntent(intent);
 
 		/// <summary>
+		/// Overrides Activity.OnResume()
+		/// </summary>
+		public static void OnResume() => ((NFCImplementation)Current).HandleOnResume();
+
+		/// <summary>
 		/// Returns the current Android <see cref="Context"/>
 		/// </summary>
 		internal static Context AppContext => Application.Context;

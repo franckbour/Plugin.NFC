@@ -23,6 +23,12 @@ namespace NFCSample.Droid
 			LoadApplication(new App());
 		}
 
+		protected override void OnResume()
+		{
+			base.OnResume();
+			CrossNFC.OnResume();
+		}
+
 		protected override void OnNewIntent(Intent intent)
 		{
 			base.OnNewIntent(intent);

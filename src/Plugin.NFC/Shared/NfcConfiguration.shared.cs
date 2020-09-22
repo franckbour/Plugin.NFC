@@ -45,9 +45,9 @@
 		string _nfcErrorNotSupportedTag = "Tag is not supported";
 		string _nfcErrorNotCompliantTag = "Tag is not NDEF compliant";
 		string _nfcErrorWrite = "Nothing to write";
-		string _nfcSuccessRead = "Tag Read Success";
-		string _nfcSuccessWrite = "Tag Write Success";
-		string _nfcSuccessClear = "Tag Clear Success";
+		string _nfcSuccessRead = "Read Operation Successful";
+		string _nfcSuccessWrite = "Write Operation Successful";
+		string _nfcSuccessClear = "Clear Operation Successful";
 
 		/// <summary>
 		/// Writing feature not supported

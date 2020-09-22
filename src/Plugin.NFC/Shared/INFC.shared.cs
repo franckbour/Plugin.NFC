@@ -7,6 +7,7 @@ namespace Plugin.NFC
 	public delegate void NdefMessagePublishedEventHandler(ITagInfo tagInfo);
 	public delegate void TagDiscoveredEventHandler(ITagInfo tagInfo, bool format);
 	public delegate void OnNfcStatusChangedEventHandler(bool isEnabled);
+	public delegate void TagListeningStatusChangedEventHandler(bool isListening);
 	#endregion
 
 	/// <summary>
@@ -108,5 +109,10 @@ namespace Plugin.NFC
 		/// Event raised when NFC status changes
 		/// </summary>
 		event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
+
+		/// <summary>
+		/// Event raised when NFC listener status changes
+		/// </summary>
+		event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 	}
 }

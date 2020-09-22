@@ -18,6 +18,11 @@
 		public bool IsWritable { get; set; }
 
 		/// <summary>
+		/// Capacity of tag in bytes
+		/// </summary>
+		public int Capacity { get; set; }
+
+		/// <summary>
 		/// Array of <see cref="NFCNdefRecord"/> of tag
 		/// </summary>
 		public NFCNdefRecord[] Records { get; set; }
@@ -52,9 +57,6 @@
 			IsSupported = isNdef;
 		}
 
-		public override string ToString()
-		{
-			return $"TagInfo: identifier: {Identifier}, SerialNumber:{SerialNumber}, IsSupported:{IsSupported}, IsEmpty:{IsEmpty}, IsWritable:{IsWritable}";
-		}
+		public override string ToString() => $"TagInfo: identifier: {Identifier}, SerialNumber:{SerialNumber}, Capacity:{Capacity} bytes, IsSupported:{IsSupported}, IsEmpty:{IsEmpty}, IsWritable:{IsWritable}";
 	}
 }

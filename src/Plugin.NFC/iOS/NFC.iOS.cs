@@ -22,6 +22,7 @@ namespace Plugin.NFC
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
+		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 
 		bool _isWriting;
 		bool _isFormatting;
@@ -79,12 +80,17 @@ namespace Plugin.NFC
 				AlertMessage = Configuration.Messages.NFCDialogAlertMessage
 			};
 			NfcSession?.BeginSession();
+			OnTagListeningStatusChanged?.Invoke(true);
 		}
 
 		/// <summary>
 		/// Stops tags detection
 		/// </summary>
-		public void StopListening() => NfcSession?.InvalidateSession();
+		public void StopListening()
+		{
+			NfcSession?.InvalidateSession();
+			OnTagListeningStatusChanged?.Invoke(false);
+		}
 
 		/// <summary>
 		/// Starts tag publishing (writing or formatting)
@@ -104,6 +110,7 @@ namespace Plugin.NFC
 				AlertMessage = Configuration.Messages.NFCDialogAlertMessage
 			};
 			NfcSession?.BeginSession();
+			OnTagListeningStatusChanged?.Invoke(true);
 		}
 
 		/// <summary>
@@ -114,6 +121,7 @@ namespace Plugin.NFC
 			_isWriting = _isFormatting = _customInvalidation = false;
 			_tag = null;
 			NfcSession?.InvalidateSession();
+			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		/// <summary>
@@ -174,7 +182,8 @@ namespace Plugin.NFC
 					var identifier = GetTagIdentifier(ndefTag);
 					var nTag = new TagInfo(identifier)
 					{
-						IsWritable = status == NFCNdefStatus.ReadWrite
+						IsWritable = status == NFCNdefStatus.ReadWrite,
+						Capacity = Convert.ToInt32(capacity)
 					};
 
 					if (_isWriting)
@@ -187,21 +196,18 @@ namespace Plugin.NFC
 						// Read mode
 						ndefTag.ReadNdef((message, error) =>
 						{
-							if (error != null)
+							// iOS Error: NFCReaderError.NdefReaderSessionErrorZeroLengthMessage (NDEF tag does not contain any NDEF message)
+							// NFCReaderError.NdefReaderSessionErrorZeroLengthMessage constant should be equals to 403 instead of 304
+							// see https://developer.apple.com/documentation/corenfc/nfcreadererror/code/ndefreadersessionerrorzerolengthmessage
+							if (error != null && error.Code != 403)
 							{
 								Invalidate(session, Configuration.Messages.NFCErrorRead);
 								return;
 							}
 
-							if (message == null)
-							{
-								Invalidate(session, Configuration.Messages.NFCErrorEmptyTag);
-								return;
-							}
-
 							session.AlertMessage = Configuration.Messages.NFCSuccessRead;
 
-							nTag.Records = GetRecords(message.Records);
+							nTag.Records = GetRecords(message?.Records);
 							OnMessageReceived?.Invoke(nTag);
 							Invalidate(session);
 						});
@@ -319,6 +325,9 @@ namespace Plugin.NFC
 		/// <returns>Array of <see cref="NFCNdefRecord"/></returns>
 		NFCNdefRecord[] GetRecords(NFCNdefPayload[] records)
 		{
+			if (records == null)
+				return null;
+
 			var results = new NFCNdefRecord[records.Length];
 			for (var i = 0; i < records.Length; i++)
 			{
@@ -347,6 +356,7 @@ namespace Plugin.NFC
 				session.InvalidateSession();
 			else
 				session.InvalidateSession(message);
+			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		/// <summary>
@@ -569,6 +579,7 @@ namespace Plugin.NFC
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
+		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 
 		NFCNdefReaderSession NfcSession { get; set; }
 
@@ -616,12 +627,17 @@ namespace Plugin.NFC
 				AlertMessage = Configuration.Messages.NFCDialogAlertMessage
 			};
 			NfcSession?.BeginSession();
+			OnTagListeningStatusChanged?.Invoke(true);
 		}
 
 		/// <summary>
 		/// Stops tags detection
 		/// </summary>
-		public void StopListening() => NfcSession?.InvalidateSession();
+		public void StopListening()
+		{
+			NfcSession?.InvalidateSession();
+			OnTagListeningStatusChanged?.Invoke(false);
+		}
 
 		/// <summary>
 		/// Starts tag publishing (writing or formatting)

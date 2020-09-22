@@ -173,6 +173,13 @@ CrossNFC.Current.SetConfiguration(new NfcConfiguration
 });
 ```
 
+## Tutorials
+Thanks to Saamer Mansoor ([@saamer](https://github.com/saamerm)) who wrote this excellent article on [Medium](https://medium.com/@prototypemakers/start-building-with-nfc-rfid-tags-on-ios-android-using-xamarin-today-2268cf86d3b4) about Plugin.NFC and how to use it, check it out!
+
+He also made this video:
+
+[![NFC apps on iOS & Android using Xamarin Forms or Native](http://img.youtube.com/vi/STfzU18v7gE/0.jpg)](https://www.youtube.com/watch?v=STfzU18v7gE "Click to play on YouTube.com")
+
 ## Contributing
 Feel free to contribute. PRs are accepted and welcomed.
 

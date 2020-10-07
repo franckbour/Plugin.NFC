@@ -231,8 +231,10 @@ namespace NFCSample
 				switch(_type)
 				{
 					case NFCNdefTypeFormat.WellKnown:
-						record = new NFCNdefRecord
+						//ManniAT - use locale enabled record (different than global setting)
+						record = new NFCNdefRecordWithLocale
 						{
+							LanguageCode="de-AT",
 							TypeFormat = NFCNdefTypeFormat.WellKnown,
 							MimeType = MIME_TYPE,
 							Payload = NFCUtils.EncodeToByteArray("Plugin.NFC is awesome!")

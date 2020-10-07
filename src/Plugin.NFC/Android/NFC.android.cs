@@ -32,6 +32,20 @@ namespace Plugin.NFC
 		bool _isFormatting;
 		Tag _currentTag;
 
+		#region GlobalLocale
+		private static string _GlobalStaticLocale;
+		/// <summary>
+		/// One (not so elegant way to implement locale) - maybe useful for applications writing a lot of tags using a constant locale
+		/// Set it via Plugin.NFC.NFCImplementation.GlobalStaticLocale = "en" or Plugin.NFC.NFCImplementation.GlobalStaticLocale="de-AT"
+		/// Used in <see cref="GetAndroidNdefRecord(NFCNdefRecord)"/>
+		/// </summary>
+		/// <remarks>Added by ManniAT as possible solution</remarks>
+		public static string GlobalStaticLocale
+		{
+			get { return _GlobalStaticLocale; }
+			set { if(_GlobalStaticLocale != value) { _GlobalStaticLocale = value; } }
+		}
+		#endregion
 		/// <summary>
 		/// Current Android <see cref="Context"/>
 		/// </summary>
@@ -384,7 +398,14 @@ namespace Plugin.NFC
 			switch (record.TypeFormat)
 			{
 				case NFCNdefTypeFormat.WellKnown:
-					ndefRecord = NdefRecord.CreateTextRecord(Locale.Default.ToLanguageTag(), Encoding.UTF8.GetString(record.Payload));
+					//if enhanced version is used check for locale (could be checked with if(record is NFCNdefRecordWithLocale) {.....} also
+					string strLocale = (record as NFCNdefRecordWithLocale)?.LanguageCode;
+
+					if(string.IsNullOrWhiteSpace(strLocale)){    //not passed in record
+																//use global if set - else obtain from OS
+						strLocale = string.IsNullOrWhiteSpace(_GlobalStaticLocale) ? Locale.Default.ToLanguageTag() : _GlobalStaticLocale;
+					}
+					ndefRecord = NdefRecord.CreateTextRecord(strLocale, Encoding.UTF8.GetString(record.Payload));
 					break;
 				case NFCNdefTypeFormat.Mime:        
 					ndefRecord = NdefRecord.CreateMime(record.MimeType, record.Payload);            

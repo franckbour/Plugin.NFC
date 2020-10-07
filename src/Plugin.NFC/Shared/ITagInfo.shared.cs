@@ -80,6 +80,20 @@
 		/// String formatted payload
 		/// </summary>
 		public string Message => NFCUtils.GetMessage(TypeFormat, Payload, Uri);
+
+	}
+
+	/// <summary>
+	/// instead of adding a property to the original class I placed it in an extra class (be as compatible as possible)
+	/// </summary>
+	/// <remarks>Added by ManniAT as possible solution</remarks>
+	public class NFCNdefRecordWithLocale : NFCNdefRecord
+	{
+		/// <summary>
+		/// Enhancement to pass language codes (locale) like "en" "de-At" for publication
+		/// </summary>
+		/// <remarks>Added by ManniAT as possible solution</remarks>
+		public string LanguageCode { get; set; }
 	}
 
 	/// <summary>

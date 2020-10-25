@@ -423,7 +423,11 @@ namespace Plugin.NFC
 			switch (record.TypeFormat)
 			{
 				case NFCNdefTypeFormat.WellKnown:
-					payload = NFCNdefPayload.CreateWellKnownTypePayload(Encoding.UTF8.GetString(record.Payload), NSLocale.CurrentLocale);
+					var lang = record.LanguageCode;
+					if (string.IsNullOrWhiteSpace(lang)) lang = Configuration.DefaultLanguageCode;
+					var langData = Encoding.ASCII.GetBytes(lang.Substring(0,2));
+					var payloadData = new byte[] { 0x02 }.Concat(langData).Concat(record.Payload).ToArray();
+					payload = new NFCNdefPayload(NFCTypeNameFormat.NFCWellKnown, NSData.FromString("T"), new NSData(), NSData.FromString(Encoding.UTF8.GetString(payloadData), NSStringEncoding.UTF8));
 					break;
 				case NFCNdefTypeFormat.Mime:
 					payload = new NFCNdefPayload(NFCTypeNameFormat.Media, record.MimeType, new NSData(), NSData.FromArray(record.Payload));

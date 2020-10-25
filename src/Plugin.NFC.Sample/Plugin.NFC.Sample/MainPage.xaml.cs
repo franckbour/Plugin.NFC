@@ -69,6 +69,7 @@ namespace NFCSample
 				//// Custom NFC configuration (ex. UI messages in French)
 				//CrossNFC.Current.SetConfiguration(new NfcConfiguration
 				//{
+				//	DefaultLanguageCode = "fr",
 				//	Messages = new UserDefinedMessages
 				//	{
 				//		NFCWritingNotSupported = "L'écriture des TAGs NFC n'est pas supporté sur cet appareil",
@@ -85,7 +86,7 @@ namespace NFCSample
 				//		NFCSuccessRead = "Lecture réussie",
 				//		NFCSuccessWrite = "Ecriture réussie",
 				//		NFCSuccessClear = "Effaçage réussi"
-				//	}
+				//	},
 				//});
 
 				SubscribeEvents();
@@ -231,13 +232,12 @@ namespace NFCSample
 				switch(_type)
 				{
 					case NFCNdefTypeFormat.WellKnown:
-						//ManniAT - use locale enabled record (different than global setting)
-						record = new NFCNdefRecordWithLocale
+						record = new NFCNdefRecord
 						{
-							LanguageCode="de-AT",
 							TypeFormat = NFCNdefTypeFormat.WellKnown,
 							MimeType = MIME_TYPE,
-							Payload = NFCUtils.EncodeToByteArray("Plugin.NFC is awesome!")
+							Payload = NFCUtils.EncodeToByteArray("Plugin.NFC is awesome!"),
+							LanguageCode = "de-AT"
 						};
 						break;
 					case NFCNdefTypeFormat.Uri:
@@ -361,7 +361,7 @@ namespace NFCSample
 			message += Environment.NewLine;
 			message += $"RawMessage: {Encoding.UTF8.GetString(record.Payload)}";
 			message += Environment.NewLine;
-			message += $"Type: {record.TypeFormat.ToString()}";
+			message += $"Type: {record.TypeFormat}";
 
 			if (!string.IsNullOrWhiteSpace(record.MimeType))
 			{

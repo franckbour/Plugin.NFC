@@ -3,6 +3,7 @@ using Android.App;
 using Android.Content;
 using Android.Nfc;
 using Android.Nfc.Tech;
+using Android.OS;
 using Java.Util;
 using System;
 using System.Collections.Generic;
@@ -398,14 +399,9 @@ namespace Plugin.NFC
 			switch (record.TypeFormat)
 			{
 				case NFCNdefTypeFormat.WellKnown:
-					//if enhanced version is used check for locale (could be checked with if(record is NFCNdefRecordWithLocale) {.....} also
-					string strLocale = (record as NFCNdefRecordWithLocale)?.LanguageCode;
-
-					if(string.IsNullOrWhiteSpace(strLocale)){    //not passed in record
-																//use global if set - else obtain from OS
-						strLocale = string.IsNullOrWhiteSpace(_GlobalStaticLocale) ? Locale.Default.ToLanguageTag() : _GlobalStaticLocale;
-					}
-					ndefRecord = NdefRecord.CreateTextRecord(strLocale, Encoding.UTF8.GetString(record.Payload));
+					var languageCode = record.LanguageCode;
+					if (string.IsNullOrWhiteSpace(languageCode)) languageCode = Configuration.DefaultLanguageCode;
+					ndefRecord = NdefRecord.CreateTextRecord(languageCode.Substring(0,2), Encoding.UTF8.GetString(record.Payload));
 					break;
 				case NFCNdefTypeFormat.Mime:        
 					ndefRecord = NdefRecord.CreateMime(record.MimeType, record.Payload);            

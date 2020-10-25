@@ -19,8 +19,6 @@ namespace NFCSample.Droid
 			base.OnCreate(savedInstanceState);
 			CrossNFC.Init(this);
 			global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-			//ManniAT: set locale globally
-			NFCImplementation.GlobalStaticLocale = "en";
 
 			LoadApplication(new App());
 		}

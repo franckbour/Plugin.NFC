@@ -374,6 +374,8 @@ namespace Plugin.NFC
 				ndef = tag.GetNFCMiFareTag();
 			else if (tag.GetNFCIso7816Tag() != null)
 				ndef = tag.GetNFCIso7816Tag();
+			else if (tag.GetNFCIso15693Tag() != null)
+				ndef = tag.GetNFCIso15693Tag();
 			else if (tag.GetNFCFeliCaTag() != null)
 				ndef = tag.GetNFCFeliCaTag();
 			else

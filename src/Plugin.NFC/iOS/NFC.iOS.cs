@@ -173,18 +173,23 @@ namespace Plugin.NFC
 						return;
 					}
 
-					if (status == NFCNdefStatus.NotSupported)
-					{
-						Invalidate(session, Configuration.Messages.NFCErrorNotSupportedTag);
-						return;
-					}
+					var isNdefSupported = status != NFCNdefStatus.NotSupported;
 
 					var identifier = GetTagIdentifier(ndefTag);
-					var nTag = new TagInfo(identifier)
+					var nTag = new TagInfo(identifier, isNdefSupported)
 					{
 						IsWritable = status == NFCNdefStatus.ReadWrite,
 						Capacity = Convert.ToInt32(capacity)
 					};
+
+					if (!isNdefSupported)
+					{
+						session.AlertMessage = Configuration.Messages.NFCErrorNotSupportedTag;
+
+						OnMessageReceived?.Invoke(nTag);
+						Invalidate(session);
+						return;
+					}
 
 					if (_isWriting)
 					{

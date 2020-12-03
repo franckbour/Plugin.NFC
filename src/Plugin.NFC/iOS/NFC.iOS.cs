@@ -402,7 +402,7 @@ namespace Plugin.NFC
 			}
 			else if (tag is INFCIso15693Tag iso15693Tag)
 			{
-				identifier = iso15693Tag.Identifier.ToByteArray();
+				identifier = iso15693Tag.Identifier.ToByteArray().Reverse().ToArray();
 			}
 			else if (tag is INFCIso7816Tag iso7816Tag)
 			{

@@ -127,7 +127,15 @@ public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompa
     ...
 }
 ```
-In this case, we will receive tags supporting NDEF mapped to a specified MIME Type "`application/com.companyname.yourapp`".
+To launch/open an app with a tag, `TypeFormat` of the record must be set to `NFCNdefTypeFormat.Mime` and `MimeType` should be setted to the same value of `IntentFilter.DataMimeType` (e.g. application/com.companyname.yourapp):
+```csharp
+var record = new NFCNdefRecord {
+    TypeFormat = NFCNdefTypeFormat.Mime,
+    MimeType = "application/com.companyname.yourapp",
+    Payload = NFCUtils.EncodeToByteArray(_writePayload)
+};
+``` 
+
 
 ### Read a tag
 * Start listening with `CrossNFC.Current.StartListening()`.
@@ -174,7 +182,7 @@ CrossNFC.Current.SetConfiguration(new NfcConfiguration
 ```
 
 ## Tutorials
-Thanks to Saamer Mansoor ([@saamer](https://github.com/saamerm)) who wrote this excellent article on [Medium](https://medium.com/@prototypemakers/start-building-with-nfc-rfid-tags-on-ios-android-using-xamarin-today-2268cf86d3b4) about Plugin.NFC and how to use it, check it out!
+Thanks to Saamer Mansoor ([@saamerm](https://github.com/saamerm)) who wrote this excellent article on [Medium](https://medium.com/@prototypemakers/start-building-with-nfc-rfid-tags-on-ios-android-using-xamarin-today-2268cf86d3b4) about Plugin.NFC and how to use it, check it out!
 
 He also made this video:
 

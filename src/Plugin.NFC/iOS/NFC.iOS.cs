@@ -173,18 +173,23 @@ namespace Plugin.NFC
 						return;
 					}
 
-					if (status == NFCNdefStatus.NotSupported)
-					{
-						Invalidate(session, Configuration.Messages.NFCErrorNotSupportedTag);
-						return;
-					}
+					var isNdefSupported = status != NFCNdefStatus.NotSupported;
 
 					var identifier = GetTagIdentifier(ndefTag);
-					var nTag = new TagInfo(identifier)
+					var nTag = new TagInfo(identifier, isNdefSupported)
 					{
 						IsWritable = status == NFCNdefStatus.ReadWrite,
 						Capacity = Convert.ToInt32(capacity)
 					};
+
+					if (!isNdefSupported)
+					{
+						session.AlertMessage = Configuration.Messages.NFCErrorNotSupportedTag;
+
+						OnMessageReceived?.Invoke(nTag);
+						Invalidate(session);
+						return;
+					}
 
 					if (_isWriting)
 					{
@@ -374,6 +379,8 @@ namespace Plugin.NFC
 				ndef = tag.GetNFCMiFareTag();
 			else if (tag.GetNFCIso7816Tag() != null)
 				ndef = tag.GetNFCIso7816Tag();
+			else if (tag.GetNFCIso15693Tag() != null)
+				ndef = tag.GetNFCIso15693Tag();
 			else if (tag.GetNFCFeliCaTag() != null)
 				ndef = tag.GetNFCFeliCaTag();
 			else
@@ -400,7 +407,7 @@ namespace Plugin.NFC
 			}
 			else if (tag is INFCIso15693Tag iso15693Tag)
 			{
-				identifier = iso15693Tag.Identifier.ToByteArray();
+				identifier = iso15693Tag.Identifier.ToByteArray().Reverse().ToArray();
 			}
 			else if (tag is INFCIso7816Tag iso7816Tag)
 			{

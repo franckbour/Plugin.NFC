@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.0.19
+- GitHub #41,62,64 : [iOS] Add support for ISO 15693 tags (PR #61)
+- GitHub #52 : [ANDROID, iOS] Language Code Support (PR #47)
+
 ### 0.1.18
 - [Android] Fixing some issues with NFC listener on Android 10 (PR #49)
 - GitHub #40 : [iOS] NFC Tag not reading on iOS unless I have a message on the tag (PR #48)

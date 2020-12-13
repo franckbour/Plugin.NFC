@@ -69,6 +69,7 @@ namespace NFCSample
 				//// Custom NFC configuration (ex. UI messages in French)
 				//CrossNFC.Current.SetConfiguration(new NfcConfiguration
 				//{
+				//	DefaultLanguageCode = "fr",
 				//	Messages = new UserDefinedMessages
 				//	{
 				//		NFCWritingNotSupported = "L'écriture des TAGs NFC n'est pas supporté sur cet appareil",
@@ -235,7 +236,8 @@ namespace NFCSample
 						{
 							TypeFormat = NFCNdefTypeFormat.WellKnown,
 							MimeType = MIME_TYPE,
-							Payload = NFCUtils.EncodeToByteArray("Plugin.NFC is awesome!")
+							Payload = NFCUtils.EncodeToByteArray("Plugin.NFC is awesome!"),
+							LanguageCode = "en"
 						};
 						break;
 					case NFCNdefTypeFormat.Uri:
@@ -359,7 +361,7 @@ namespace NFCSample
 			message += Environment.NewLine;
 			message += $"RawMessage: {Encoding.UTF8.GetString(record.Payload)}";
 			message += Environment.NewLine;
-			message += $"Type: {record.TypeFormat.ToString()}";
+			message += $"Type: {record.TypeFormat}";
 
 			if (!string.IsNullOrWhiteSpace(record.MimeType))
 			{

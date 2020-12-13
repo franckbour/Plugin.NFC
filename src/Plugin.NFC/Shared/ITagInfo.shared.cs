@@ -80,6 +80,11 @@
 		/// String formatted payload
 		/// </summary>
 		public string Message => NFCUtils.GetMessage(TypeFormat, Payload, Uri);
+
+		/// <summary>
+		/// Two letters ISO 639-1 Language Code (ex: en, fr, de...)
+		/// </summary>
+		public string LanguageCode { get; set; }
 	}
 
 	/// <summary>

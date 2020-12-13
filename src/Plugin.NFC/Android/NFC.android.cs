@@ -3,7 +3,6 @@ using Android.App;
 using Android.Content;
 using Android.Nfc;
 using Android.Nfc.Tech;
-using Java.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -384,7 +383,9 @@ namespace Plugin.NFC
 			switch (record.TypeFormat)
 			{
 				case NFCNdefTypeFormat.WellKnown:
-					ndefRecord = NdefRecord.CreateTextRecord(Locale.Default.ToLanguageTag(), Encoding.UTF8.GetString(record.Payload));
+					var languageCode = record.LanguageCode;
+					if (string.IsNullOrWhiteSpace(languageCode)) languageCode = Configuration.DefaultLanguageCode;
+					ndefRecord = NdefRecord.CreateTextRecord(languageCode.Substring(0, 2), Encoding.UTF8.GetString(record.Payload));
 					break;
 				case NFCNdefTypeFormat.Mime:        
 					ndefRecord = NdefRecord.CreateMime(record.MimeType, record.Payload);            

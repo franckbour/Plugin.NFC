@@ -173,18 +173,23 @@ namespace Plugin.NFC
 						return;
 					}
 
-					if (status == NFCNdefStatus.NotSupported)
-					{
-						Invalidate(session, Configuration.Messages.NFCErrorNotSupportedTag);
-						return;
-					}
+					var isNdefSupported = status != NFCNdefStatus.NotSupported;
 
 					var identifier = GetTagIdentifier(ndefTag);
-					var nTag = new TagInfo(identifier)
+					var nTag = new TagInfo(identifier, isNdefSupported)
 					{
 						IsWritable = status == NFCNdefStatus.ReadWrite,
 						Capacity = Convert.ToInt32(capacity)
 					};
+
+					if (!isNdefSupported)
+					{
+						session.AlertMessage = Configuration.Messages.NFCErrorNotSupportedTag;
+
+						OnMessageReceived?.Invoke(nTag);
+						Invalidate(session);
+						return;
+					}
 
 					if (_isWriting)
 					{
@@ -360,10 +365,10 @@ namespace Plugin.NFC
 		}
 
 		/// <summary>
-		/// 
+		/// Get Ndef tag
 		/// </summary>
-		/// <param name="tag"></param>
-		/// <returns></returns>
+		/// <param name="tag"><see cref="INFCTag"/></param>
+		/// <returns><see cref="INFCNdefTag"/></returns>
 		INFCNdefTag GetNdefTag(INFCTag tag)
 		{
 			if (tag == null || !tag.Available)
@@ -374,6 +379,8 @@ namespace Plugin.NFC
 				ndef = tag.GetNFCMiFareTag();
 			else if (tag.GetNFCIso7816Tag() != null)
 				ndef = tag.GetNFCIso7816Tag();
+			else if (tag.GetNFCIso15693Tag() != null)
+				ndef = tag.GetNFCIso15693Tag();
 			else if (tag.GetNFCFeliCaTag() != null)
 				ndef = tag.GetNFCFeliCaTag();
 			else
@@ -400,7 +407,7 @@ namespace Plugin.NFC
 			}
 			else if (tag is INFCIso15693Tag iso15693Tag)
 			{
-				identifier = iso15693Tag.Identifier.ToByteArray();
+				identifier = iso15693Tag.Identifier.ToByteArray().Reverse().ToArray();
 			}
 			else if (tag is INFCIso7816Tag iso7816Tag)
 			{
@@ -423,7 +430,11 @@ namespace Plugin.NFC
 			switch (record.TypeFormat)
 			{
 				case NFCNdefTypeFormat.WellKnown:
-					payload = NFCNdefPayload.CreateWellKnownTypePayload(Encoding.UTF8.GetString(record.Payload), NSLocale.CurrentLocale);
+					var lang = record.LanguageCode;
+					if (string.IsNullOrWhiteSpace(lang)) lang = Configuration.DefaultLanguageCode;
+					var langData = Encoding.ASCII.GetBytes(lang.Substring(0, 2));
+					var payloadData = new byte[] { 0x02 }.Concat(langData).Concat(record.Payload).ToArray();
+					payload = new NFCNdefPayload(NFCTypeNameFormat.NFCWellKnown, NSData.FromString("T"), new NSData(), NSData.FromString(Encoding.UTF8.GetString(payloadData), NSStringEncoding.UTF8));
 					break;
 				case NFCNdefTypeFormat.Mime:
 					payload = new NFCNdefPayload(NFCTypeNameFormat.Media, record.MimeType, new NSData(), NSData.FromArray(record.Payload));

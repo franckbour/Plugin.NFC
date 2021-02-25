@@ -110,8 +110,6 @@ If you need to read NDEF data off of a Mifare 1k Classic card, then you need to 
 
 Unfortunately, even with iOS 13, it seems there is no way to read the serial number / CSN off of a Mifare Classic 1k card.
 
-Other types of NFC tags should work. 
-
 ## API Usage
 
 Before to use the plugin, please check if NFC feature is supported by the platform using `CrossNFC.IsSupported`.

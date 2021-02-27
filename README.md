@@ -90,7 +90,7 @@ An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 <string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
 ```
 
-#### iOS Conciderations
+#### iOS Considerations
 
 If you are having issues reading Mifare 1k Classic cards - the chances are the issue is not with this library, but with Apple's API.
 

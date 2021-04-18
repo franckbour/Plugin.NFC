@@ -14,6 +14,26 @@ namespace Plugin.NFC
         /// </summary>
         public static bool IsSupported => implementation.Value == null ? false : true;
 
+		/// <summary>
+        /// Legacy Mode (Supporting Mifare Classic on iOS)
+        /// </summary>
+		static bool _legacy = false;
+
+		public static bool Legacy 
+		{
+			get
+			{
+				return _legacy;
+			}
+
+			set 
+			{
+				_legacy = value;
+
+				implementation = new Lazy<INFC>(() => CreateNFC(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
+			}
+		}
+		
         /// <summary>
         /// Current plugin implementation to use
         /// </summary>
@@ -35,7 +55,7 @@ namespace Plugin.NFC
 #if NETSTANDARD1_0 || NETSTANDARD2_0
             return null;
 #elif XAMARIN_IOS
-			if (NFCUtils.IsWritingSupported())
+			if (NFCUtils.IsWritingSupported() && !Legacy)
 				return new NFCImplementation();
 			return new NFCImplementation_Before_iOS13();
 #else

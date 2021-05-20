@@ -89,7 +89,14 @@ An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 <key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
 <string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
 ```
-
+* Add these lines in your Info.plist if you want to interact with Mifare EV3 compatible tags
+```xml
+<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+	<array>
+		<string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
+		<string>D2760000850100</string>
+	</array>
+```
 ## API Usage
 
 Before to use the plugin, please check if NFC feature is supported by the platform using `CrossNFC.IsSupported`.

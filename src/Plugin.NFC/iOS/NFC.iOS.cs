@@ -15,6 +15,8 @@ namespace Plugin.NFC
 	/// </summary>
 	public class NFCImplementation : NFCTagReaderSessionDelegate, INFC
 	{
+		public const string SessionTimeoutMessage = "session timeout";
+
 		public event EventHandler OnTagConnected;
 		public event EventHandler OnTagDisconnected;
 		public event NdefMessageReceivedEventHandler OnMessageReceived;
@@ -27,7 +29,7 @@ namespace Plugin.NFC
 		bool _isWriting;
 		bool _isFormatting;
 		bool _customInvalidation = false;
-		
+
 		INFCTag _tag;
 
 		NFCTagReaderSession NfcSession { get; set; }
@@ -55,7 +57,7 @@ namespace Plugin.NFC
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public NFCImplementation() 
+		public NFCImplementation()
 		{
 			Configuration = NfcConfiguration.GetDefaultConfiguration();
 		}
@@ -231,8 +233,8 @@ namespace Plugin.NFC
 			var readerError = (NFCReaderError)(long)error.Code;
 			if (readerError != NFCReaderError.ReaderSessionInvalidationErrorFirstNDEFTagRead && readerError != NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
 			{
-				var alertController = UIAlertController.Create("Session Invalidated", error.LocalizedDescription, UIAlertControllerStyle.Alert);
-				alertController.AddAction(UIAlertAction.Create("Ok", UIAlertActionStyle.Default, null));
+				var alertController = UIAlertController.Create(Configuration.Messages.NFCSessionInvalidated, error.LocalizedDescription.ToLower().Equals(SessionTimeoutMessage) ? Configuration.Messages.NFCSessionTimeout : error.LocalizedDescription, UIAlertControllerStyle.Alert);
+				alertController.AddAction(UIAlertAction.Create(Configuration.Messages.NFCSessionInvalidatedButton, UIAlertActionStyle.Default, null));
 				DispatchQueue.MainQueue.DispatchAsync(() =>
 				{
 					GetCurrentController().PresentViewController(alertController, true, null);
@@ -541,7 +543,7 @@ namespace Plugin.NFC
 						tagInfo.Records = GetRecords(message.Records);
 						OnMessagePublished?.Invoke(tagInfo);
 						Invalidate(NfcSession);
-					});					
+					});
 				}
 				else
 					Invalidate(session, Configuration.Messages.NFCErrorWrite);
@@ -583,6 +585,8 @@ namespace Plugin.NFC
 	/// </summary>
 	public class NFCImplementation_Before_iOS13 : NFCNdefReaderSessionDelegate, INFC
 	{
+		public const string SessionTimeoutMessage = "session timeout";
+
 		public event EventHandler OnTagConnected;
 		public event EventHandler OnTagDisconnected;
 		public event NdefMessageReceivedEventHandler OnMessageReceived;
@@ -617,7 +621,7 @@ namespace Plugin.NFC
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public NFCImplementation_Before_iOS13() 
+		public NFCImplementation_Before_iOS13()
 		{
 			Configuration = NfcConfiguration.GetDefaultConfiguration();
 		}
@@ -706,8 +710,8 @@ namespace Plugin.NFC
 			var readerError = (NFCReaderError)(long)error.Code;
 			if (readerError != NFCReaderError.ReaderSessionInvalidationErrorFirstNDEFTagRead && readerError != NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
 			{
-				var alertController = UIAlertController.Create("Session Invalidated", error.LocalizedDescription, UIAlertControllerStyle.Alert);
-				alertController.AddAction(UIAlertAction.Create("Ok", UIAlertActionStyle.Default, null));
+				var alertController = UIAlertController.Create(Configuration.Messages.NFCSessionInvalidated, error.LocalizedDescription.ToLower().Equals(SessionTimeoutMessage) ? Configuration.Messages.NFCSessionTimeout : error.LocalizedDescription, UIAlertControllerStyle.Alert);
+				alertController.AddAction(UIAlertAction.Create(Configuration.Messages.NFCSessionInvalidatedButton, UIAlertActionStyle.Default, null));
 				DispatchQueue.MainQueue.DispatchAsync(() =>
 				{
 					GetCurrentController().PresentViewController(alertController, true, null);

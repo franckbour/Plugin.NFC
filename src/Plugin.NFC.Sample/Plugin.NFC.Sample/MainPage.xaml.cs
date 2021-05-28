@@ -72,6 +72,8 @@ namespace NFCSample
 				//	DefaultLanguageCode = "fr",
 				//	Messages = new UserDefinedMessages
 				//	{
+				//		NFCSessionInvalidated = "Session invalidée",
+				//		NFCSessionInvalidatedButton = "OK",
 				//		NFCWritingNotSupported = "L'écriture des TAGs NFC n'est pas supporté sur cet appareil",
 				//		NFCDialogAlertMessage = "Approchez votre appareil du tag NFC",
 				//		NFCErrorRead = "Erreur de lecture. Veuillez rééssayer",

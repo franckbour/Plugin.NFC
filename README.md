@@ -90,6 +90,15 @@ An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 <string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
 ```
 
+* Add these lines in your Info.plist if you want to interact with Mifare Desfire EV3 compatible tags
+```xml
+<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+<array>
+    <string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
+    <string>D2760000850100</string>
+</array>
+```
+
 #### iOS Considerations
 
 If you are having issues reading Mifare 1k Classic cards - the chances are the issue is not with this library, but with Apple's API.
@@ -183,6 +192,8 @@ CrossNFC.Current.SetConfiguration(new NfcConfiguration
 {
     Messages = new UserDefinedMessages
     {
+   	NFCSessionInvalidated = "Session invalidée";
+	NFCSessionInvalidatedButton = "OK";
         NFCWritingNotSupported = "L'écriture des TAGs NFC n'est pas supporté sur cet appareil",
         NFCDialogAlertMessage = "Approchez votre appareil du tag NFC",
         NFCErrorRead = "Erreur de lecture. Veuillez rééssayer",

@@ -40,6 +40,8 @@
 	/// </summary>
 	public class UserDefinedMessages
 	{
+		string _nfcSessionInvalidated = "Session Invalidated";
+		string _nfcSessionInvalidatedButton = "OK";
 		string _nfcWritingNotSupported = "Writing NFC Tag is not supported on this device";
 		string _nfcDialogAlertMessage = "Please hold your phone near a NFC tag";
 		string _nfcErrorRead = "Read error. Please try again";
@@ -54,6 +56,46 @@
 		string _nfcSuccessRead = "Read Operation Successful";
 		string _nfcSuccessWrite = "Write Operation Successful";
 		string _nfcSuccessClear = "Clear Operation Successful";
+		string _nfcSessionTimeout = "session timeout";
+
+		/// <summary>
+		/// Session timeout
+		/// </summary>
+		public string NFCSessionTimeout
+		{
+			get => _nfcSessionTimeout;
+			set
+			{
+				if (!string.IsNullOrWhiteSpace(value))
+					_nfcSessionTimeout = value;
+			}
+		}
+
+		/// <summary>
+		/// Session invalidated
+		/// </summary>
+		public string NFCSessionInvalidatedButton
+		{
+			get => _nfcSessionInvalidatedButton;
+			set
+			{
+				if (!string.IsNullOrWhiteSpace(value))
+					_nfcSessionInvalidatedButton = value;
+			}
+		}
+
+		/// <summary>
+		/// Session invalidated
+		/// </summary>
+		public string NFCSessionInvalidated
+		{
+			get => _nfcSessionInvalidated;
+			set
+			{
+				if (!string.IsNullOrWhiteSpace(value))
+					_nfcSessionInvalidated = value;
+			}
+		}
 
 		/// <summary>
 		/// Writing feature not supported

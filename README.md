@@ -87,10 +87,16 @@ An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 * Add these lines in your Info.plist if you want to interact with ISO 7816 compatible tags
 ```xml
 <key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
-	<array>
-		<string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
-		<string>D2760000850100</string>
-	</array>
+<string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
+```
+
+* Add these lines in your Info.plist if you want to interact with Mifare Desfire EV3 compatible tags
+```xml
+<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+<array>
+    <string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
+    <string>D2760000850100</string>
+</array>
 ```
 
 #### iOS Considerations

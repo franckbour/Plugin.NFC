@@ -87,16 +87,32 @@ An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 * Add these lines in your Info.plist if you want to interact with ISO 7816 compatible tags
 ```xml
 <key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
-<string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
-```
-* Add these lines in your Info.plist if you want to interact with Mifare EV3 compatible tags
-```xml
-<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
 	<array>
 		<string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
 		<string>D2760000850100</string>
 	</array>
 ```
+
+#### iOS Considerations
+
+If you are having issues reading Mifare 1k Classic cards - the chances are the issue is not with this library, but with Apple's API.
+
+On iOS 11, apple released the ability to READ NFC NDEF data only using the NfcNdefReaderSession API (https://developer.apple.com/documentation/corenfc/nfcndefreadersession)
+
+A Mifare 1k Classic card will scan if there is a valid NDEF record on it. A blank card will not scan.
+
+In iOS 11, it was not possible to obtain the CSN (serial number/identity) from NFC tags/card.
+
+With iOS 13, along came the ability to write NDEF data AND read serial numbers. However, rather then adapting the NfcNdefReaderSession API, Apple created a NEW API called NfcTagReaderSession (https://developer.apple.com/documentation/corenfc/nfctagreadersession) and left the old NfcNdefReaderSession API untouched.
+
+The new NfcTagReaderSession API in iOS 13 no longer supports Mifare Classic 1k cards period. No idea why - but if you look at Apple's Dev Forums multiple people have spotted the same thing.
+
+So even if you have a Mifare Classic 1k card which reads fine with the old iOS 11 NfcNdefReaderSession API, that same card will not even scan with iOS 13's NfcTagReaderSession API.
+
+If you need to read NDEF data off of a Mifare 1k Classic card, then you need to use version 0.1.11 of this library as it was written with the NfcNdefReaderSession API. Any subsequent versions moved over to the NfcTagReaderSession API
+
+Unfortunately, even with iOS 13, it seems there is no way to read the serial number / CSN off of a Mifare Classic 1k card.
+
 ## API Usage
 
 Before to use the plugin, please check if NFC feature is supported by the platform using `CrossNFC.IsSupported`.

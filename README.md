@@ -13,8 +13,8 @@ CI Feed : https://www.myget.org/F/plugin-nfc/api/v3/index.json
 ## Supported Platforms
 Platform|Version|Tested on
 :---|:---|:---
-Android|4.4+|Google Nexus 5, Huawei Mate 10 Pro
-iOS|11+|iPhone 7
+Android|4.4+|Google Nexus 5, Huawei Mate 10 Pro, Google Pixel 4a
+iOS|11+|iPhone 7, iPhone 8
 
 > Windows is currently not supported. Pull Requests are welcomed! 
 
@@ -115,7 +115,9 @@ The new NfcTagReaderSession API in iOS 13 no longer supports Mifare Classic 1k c
 
 So even if you have a Mifare Classic 1k card which reads fine with the old iOS 11 NfcNdefReaderSession API, that same card will not even scan with iOS 13's NfcTagReaderSession API.
 
-If you need to read NDEF data off of a Mifare 1k Classic card, then you need to use version 0.1.11 of this library as it was written with the NfcNdefReaderSession API. Any subsequent versions moved over to the NfcTagReaderSession API
+If you need to read NDEF data off of a Mifare 1k Classic card, then you can:
+-  use version 0.1.11 of this library as it was written with the NfcNdefReaderSession API.
+-  use `CrossNFC.Legacy` from 0.1.20+ which allow you to switch between NfcTagReaderSession and NfcNdefReaderSession on-the-fly.
 
 Unfortunately, even with iOS 13, it seems there is no way to read the serial number / CSN off of a Mifare Classic 1k card.
 
@@ -192,8 +194,8 @@ CrossNFC.Current.SetConfiguration(new NfcConfiguration
 {
     Messages = new UserDefinedMessages
     {
-   	NFCSessionInvalidated = "Session invalidée";
-	NFCSessionInvalidatedButton = "OK";
+        NFCSessionInvalidated = "Session invalidée",
+        NFCSessionInvalidatedButton = "OK",
         NFCWritingNotSupported = "L'écriture des TAGs NFC n'est pas supporté sur cet appareil",
         NFCDialogAlertMessage = "Approchez votre appareil du tag NFC",
         NFCErrorRead = "Erreur de lecture. Veuillez rééssayer",

@@ -229,17 +229,10 @@ namespace Plugin.NFC
 		public override void DidInvalidate(NFCTagReaderSession session, NSError error)
 		{
 			var readerError = (NFCReaderError)(long)error.Code;
-			if (readerError != NFCReaderError.ReaderSessionInvalidationErrorFirstNDEFTagRead && readerError != NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
+			if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled && !_customInvalidation)
 			{
-				var alertController = UIAlertController.Create("Session Invalidated", error.LocalizedDescription, UIAlertControllerStyle.Alert);
-				alertController.AddAction(UIAlertAction.Create("Ok", UIAlertActionStyle.Default, null));
-				DispatchQueue.MainQueue.DispatchAsync(() =>
-				{
-					GetCurrentController().PresentViewController(alertController, true, null);
-				});
-			}
-			else if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled && !_customInvalidation)
 				OniOSReadingSessionCancelled?.Invoke(null, EventArgs.Empty);
+			}
 		}
 
 		/// <summary>
@@ -585,6 +578,7 @@ namespace Plugin.NFC
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
+		public event EventHandler OnSessionInvalidated;
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 
@@ -700,17 +694,10 @@ namespace Plugin.NFC
 		public override void DidInvalidate(NFCNdefReaderSession session, NSError error)
 		{
 			var readerError = (NFCReaderError)(long)error.Code;
-			if (readerError != NFCReaderError.ReaderSessionInvalidationErrorFirstNDEFTagRead && readerError != NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
+			if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
 			{
-				var alertController = UIAlertController.Create("Session Invalidated", error.LocalizedDescription, UIAlertControllerStyle.Alert);
-				alertController.AddAction(UIAlertAction.Create("Ok", UIAlertActionStyle.Default, null));
-				DispatchQueue.MainQueue.DispatchAsync(() =>
-				{
-					GetCurrentController().PresentViewController(alertController, true, null);
-				});
-			}
-			else if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
 				OniOSReadingSessionCancelled?.Invoke(null, EventArgs.Empty);
+			}
 		}
 
 		#region Private

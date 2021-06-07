@@ -578,7 +578,6 @@ namespace Plugin.NFC
 		public event NdefMessagePublishedEventHandler OnMessagePublished;
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
-		public event EventHandler OnSessionInvalidated;
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 

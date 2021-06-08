@@ -33,8 +33,9 @@ namespace NFCSample
 		private bool _deviceIsListening;
 
 		private bool _nfcIsEnabled;
-		public bool NfcIsEnabled {
-			get => _nfcIsEnabled; 
+		public bool NfcIsEnabled
+		{
+			get => _nfcIsEnabled;
 			set
 			{
 				_nfcIsEnabled = value;
@@ -118,7 +119,10 @@ namespace NFCSample
 			CrossNFC.Current.OnTagListeningStatusChanged += Current_OnTagListeningStatusChanged;
 
 			if (_isDeviceiOS)
+			{
 				CrossNFC.Current.OniOSReadingSessionCancelled += Current_OniOSReadingSessionCancelled;
+				CrossNFC.Current.OniOSDidInvalidate += Current_OniOSDidInvalidate;
+			}
 		}
 
 		/// <summary>
@@ -133,7 +137,10 @@ namespace NFCSample
 			CrossNFC.Current.OnTagListeningStatusChanged += Current_OnTagListeningStatusChanged;
 
 			if (_isDeviceiOS)
+			{
 				CrossNFC.Current.OniOSReadingSessionCancelled -= Current_OniOSReadingSessionCancelled;
+				CrossNFC.Current.OniOSDidInvalidate -= Current_OniOSDidInvalidate;
+			}
 		}
 
 		/// <summary>
@@ -192,6 +199,13 @@ namespace NFCSample
 		void Current_OniOSReadingSessionCancelled(object sender, EventArgs e) => Debug("User has cancelled NFC Session");
 
 		/// <summary>
+		/// Event raised when NFC session invalidated on iOS 
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void Current_OniOSDidInvalidate(object sender, EventArgs e) => Debug("NFC Session invalidated.");
+
+		/// <summary>
 		/// Event raised when data has been published on the tag
 		/// </summary>
 		/// <param name="tagInfo">Published <see cref="ITagInfo"/></param>
@@ -228,7 +242,7 @@ namespace NFCSample
 			try
 			{
 				NFCNdefRecord record = null;
-				switch(_type)
+				switch (_type)
 				{
 					case NFCNdefTypeFormat.WellKnown:
 						record = new NFCNdefRecord

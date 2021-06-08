@@ -24,6 +24,7 @@ namespace Plugin.NFC
 		public event TagDiscoveredEventHandler OnTagDiscovered;
 		public event EventHandler OniOSReadingSessionCancelled;
 		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
+		public event EventHandler OniOSDidInvalidate;
 
 		readonly NfcAdapter _nfcAdapter;
 

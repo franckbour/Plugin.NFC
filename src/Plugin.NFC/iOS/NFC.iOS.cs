@@ -1,4 +1,4 @@
-﻿using CoreFoundation;
+using CoreFoundation;
 using CoreNFC;
 using Foundation;
 using System;
@@ -174,18 +174,23 @@ namespace Plugin.NFC
 						return;
 					}
 
-					if (status == NFCNdefStatus.NotSupported)
-					{
-						Invalidate(session, Configuration.Messages.NFCErrorNotSupportedTag);
-						return;
-					}
+					var isNdefSupported = status != NFCNdefStatus.NotSupported;
 
 					var identifier = GetTagIdentifier(ndefTag);
-					var nTag = new TagInfo(identifier)
+					var nTag = new TagInfo(identifier, isNdefSupported)
 					{
 						IsWritable = status == NFCNdefStatus.ReadWrite,
 						Capacity = Convert.ToInt32(capacity)
 					};
+
+					if (!isNdefSupported)
+					{
+						// if ndef is not supported do not read or write
+						// let the user decide if ndef support is needed
+						OnMessageReceived?.Invoke(nTag);
+						Invalidate(session);
+						return;
+					}
 
 					if (_isWriting)
 					{
@@ -225,17 +230,10 @@ namespace Plugin.NFC
 		public override void DidInvalidate(NFCTagReaderSession session, NSError error)
 		{
 			var readerError = (NFCReaderError)(long)error.Code;
-			if (readerError != NFCReaderError.ReaderSessionInvalidationErrorFirstNDEFTagRead && readerError != NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
+			if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled && !_customInvalidation)
 			{
-				var alertController = UIAlertController.Create("Session Invalidated", error.LocalizedDescription, UIAlertControllerStyle.Alert);
-				alertController.AddAction(UIAlertAction.Create("Ok", UIAlertActionStyle.Default, null));
-				DispatchQueue.MainQueue.DispatchAsync(() =>
-				{
-					GetCurrentController().PresentViewController(alertController, true, null);
-				});
-			}
-			else if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled && !_customInvalidation)
 				OniOSReadingSessionCancelled?.Invoke(null, EventArgs.Empty);
+			}
 
 			OniOSDidInvalidate?.Invoke(null, EventArgs.Empty);
 		}
@@ -377,6 +375,8 @@ namespace Plugin.NFC
 				ndef = tag.GetNFCMiFareTag();
 			else if (tag.GetNFCIso7816Tag() != null)
 				ndef = tag.GetNFCIso7816Tag();
+			else if (tag.GetNFCIso15693Tag() != null)
+				ndef = tag.GetNFCIso15693Tag();
 			else if (tag.GetNFCFeliCaTag() != null)
 				ndef = tag.GetNFCFeliCaTag();
 			else
@@ -697,17 +697,10 @@ namespace Plugin.NFC
 		public override void DidInvalidate(NFCNdefReaderSession session, NSError error)
 		{
 			var readerError = (NFCReaderError)(long)error.Code;
-			if (readerError != NFCReaderError.ReaderSessionInvalidationErrorFirstNDEFTagRead && readerError != NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
+			if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
 			{
-				var alertController = UIAlertController.Create("Session Invalidated", error.LocalizedDescription, UIAlertControllerStyle.Alert);
-				alertController.AddAction(UIAlertAction.Create("Ok", UIAlertActionStyle.Default, null));
-				DispatchQueue.MainQueue.DispatchAsync(() =>
-				{
-					GetCurrentController().PresentViewController(alertController, true, null);
-				});
-			}
-			else if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
 				OniOSReadingSessionCancelled?.Invoke(null, EventArgs.Empty);
+			}
 
 			OniOSDidInvalidate?.Invoke(null, EventArgs.Empty);
 		}

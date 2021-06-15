@@ -1,4 +1,4 @@
-﻿using CoreFoundation;
+using CoreFoundation;
 using CoreNFC;
 using Foundation;
 using System;
@@ -23,11 +23,12 @@ namespace Plugin.NFC
 		public event EventHandler OniOSReadingSessionCancelled;
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
+		public event EventHandler OniOSDidInvalidate;
 
 		bool _isWriting;
 		bool _isFormatting;
 		bool _customInvalidation = false;
-		
+
 		INFCTag _tag;
 
 		NFCTagReaderSession NfcSession { get; set; }
@@ -55,7 +56,7 @@ namespace Plugin.NFC
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public NFCImplementation() 
+		public NFCImplementation()
 		{
 			Configuration = NfcConfiguration.GetDefaultConfiguration();
 		}
@@ -233,6 +234,8 @@ namespace Plugin.NFC
 			{
 				OniOSReadingSessionCancelled?.Invoke(null, EventArgs.Empty);
 			}
+
+			OniOSDidInvalidate?.Invoke(null, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -530,7 +533,7 @@ namespace Plugin.NFC
 						tagInfo.Records = GetRecords(message.Records);
 						OnMessagePublished?.Invoke(tagInfo);
 						Invalidate(NfcSession);
-					});					
+					});
 				}
 				else
 					Invalidate(session, Configuration.Messages.NFCErrorWrite);
@@ -580,6 +583,7 @@ namespace Plugin.NFC
 		public event EventHandler OniOSReadingSessionCancelled;
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
+		public event EventHandler OniOSDidInvalidate;
 
 		NFCNdefReaderSession NfcSession { get; set; }
 
@@ -606,7 +610,7 @@ namespace Plugin.NFC
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public NFCImplementation_Before_iOS13() 
+		public NFCImplementation_Before_iOS13()
 		{
 			Configuration = NfcConfiguration.GetDefaultConfiguration();
 		}
@@ -697,6 +701,8 @@ namespace Plugin.NFC
 			{
 				OniOSReadingSessionCancelled?.Invoke(null, EventArgs.Empty);
 			}
+
+			OniOSDidInvalidate?.Invoke(null, EventArgs.Empty);
 		}
 
 		#region Private

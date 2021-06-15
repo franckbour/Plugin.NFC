@@ -114,5 +114,10 @@ namespace Plugin.NFC
 		/// Event raised when NFC listener status changes
 		/// </summary>
 		event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
+
+		/// <summary>
+		/// Event raised when iOS NFC reading session is invalidated
+		/// </summary>
+		event EventHandler OniOSDidInvalidate;
 	}
 }

@@ -57,7 +57,7 @@ namespace Plugin.NFC
 		/// <summary>
 		/// Checks if NFC Feature is enabled
 		/// </summary>
-		public bool IsEnabled { get; private set; }
+		public bool IsEnabled => IsAvailable && _nfcAdapter.IsEnabled;
 
 		/// <summary>
 		/// Checks if writing mode is supported
@@ -75,8 +75,6 @@ namespace Plugin.NFC
 		public NFCImplementation()
 		{
 			_nfcAdapter = NfcAdapter.GetDefaultAdapter(CurrentContext);
-			IsEnabled = IsAvailable && _nfcAdapter.IsEnabled;
-
 			Configuration = NfcConfiguration.GetDefaultConfiguration();
 		}
 
@@ -247,7 +245,7 @@ namespace Plugin.NFC
 				}
 				else
 					throw new Exception(Configuration.Messages.NFCErrorNotCompliantTag);
-			} 
+			}
 			catch (Exception ex)
 			{
 				StopPublishingAndThrowError(ex.Message);
@@ -387,8 +385,8 @@ namespace Plugin.NFC
 					if (string.IsNullOrWhiteSpace(languageCode)) languageCode = Configuration.DefaultLanguageCode;
 					ndefRecord = NdefRecord.CreateTextRecord(languageCode.Substring(0, 2), Encoding.UTF8.GetString(record.Payload));
 					break;
-				case NFCNdefTypeFormat.Mime:        
-					ndefRecord = NdefRecord.CreateMime(record.MimeType, record.Payload);            
+				case NFCNdefTypeFormat.Mime:
+					ndefRecord = NdefRecord.CreateMime(record.MimeType, record.Payload);
 					break;
 				case NFCNdefTypeFormat.Uri:
 					ndefRecord = NdefRecord.CreateUri(Encoding.UTF8.GetString(record.Payload));
@@ -443,7 +441,7 @@ namespace Plugin.NFC
 
 			var result = false;
 			var newConnection = false;
-			
+
 			if (!ndef.IsConnected)
 			{
 				newConnection = true;
@@ -523,23 +521,18 @@ namespace Plugin.NFC
 		/// Called when NFC status has changed
 		/// </summary>
 		/// <param name="value">NFC Availability</param>
-		void OnNfcStatusChange(bool value)
-		{
-			var enabled = IsAvailable && value;
-			IsEnabled = enabled;
-			_onNfcStatusChangedInternal?.Invoke(enabled);
-		}
-		
+		void OnNfcStatusChange() => _onNfcStatusChangedInternal?.Invoke(IsEnabled);
+
 		/// <summary>
 		/// Broadcast Receiver to check NFC feature availability
 		/// </summary>
 		[BroadcastReceiver(Enabled = true, Exported = false, Label = "NFC Status Broadcast Receiver")]
 		class NfcBroadcastReceiver : BroadcastReceiver
 		{
-			Action<bool> _onChanged;
+			Action _onChanged;
 
 			public NfcBroadcastReceiver() { }
-			public NfcBroadcastReceiver(Action<bool> onChanged)
+			public NfcBroadcastReceiver(Action onChanged)
 			{
 				_onChanged = onChanged;
 			}
@@ -548,23 +541,13 @@ namespace Plugin.NFC
 			{
 				if (intent.Action == NfcAdapter.ActionAdapterStateChanged)
 				{
-					bool? isEnabled = null;
-					var state = intent.GetIntExtra(NfcAdapter.ExtraAdapterState, NfcAdapter.StateOff);
-					switch (state)
+					var state = intent.GetIntExtra(NfcAdapter.ExtraAdapterState, default);
+					if (state == NfcAdapter.StateOff || state == NfcAdapter.StateOn)
 					{
-						case NfcAdapter.StateOff:
-							isEnabled = false;
-							break;
-						case NfcAdapter.StateOn:
-							isEnabled = true;
-							break;
+						// await 1500ms to ensure that the status updates
+						await Task.Delay(1500);
+						_onChanged?.Invoke();
 					}
-
-					// await 1500ms to ensure that the status updates
-					await Task.Delay(1500);
-
-					if (isEnabled.HasValue)
-						_onChanged?.Invoke(isEnabled.Value);
 				}
 			}
 		}

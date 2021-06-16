@@ -1,6 +1,11 @@
 ## Changelog
 
-### 0.0.19
+### 0.1.20
+- [iOS] Support for Mifare Desfire EV3 tags (PR #75)
+- GitHub #44 : [iOS] Issues Reading Mifare Classic 1k on iOS (PR #73)
+- GitHub #58 : [ANDROID] CrossNFC.Current.IsEnabled status not changing (PR #76)
+
+### 0.1.19
 - GitHub #41,62,64 : [iOS] Add support for ISO 15693 tags (PR #61)
 - GitHub #52 : [ANDROID, iOS] Language Code Support (PR #47)
 

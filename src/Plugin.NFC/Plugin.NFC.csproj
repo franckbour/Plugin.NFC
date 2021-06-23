@@ -16,7 +16,7 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
     <Version>1.0.0.0</Version>
-    <PackageVersion>1.0.0.0</PackageVersion>
+    <PackageVersion>0.1.19.1</PackageVersion>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <DefineConstants>$(DefineConstants);</DefineConstants>
@@ -27,10 +27,10 @@
 		<DebugType>portable</DebugType>
 
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/franckbour/Plugin.NFC</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/franckbour/Plugin.NFC</RepositoryUrl>
-    <PackageReleaseNotes>https://github.com/franckbour/Plugin.NFC/blob/master/CHANGELOG.md</PackageReleaseNotes>
-    <PackageIconUrl>https://github.com/franckbour/Plugin.NFC/raw/master/art/nfc128.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/convivo-gmbh/Plugin.NFC</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/convivo-gmbh/Plugin.NFC</RepositoryUrl>
+    <PackageReleaseNotes>https://github.com/convivo-gmbh/Plugin.NFC/blob/master/CHANGELOG.md</PackageReleaseNotes>
+    <PackageIconUrl>https://github.com/convivo-gmbh/Plugin.NFC/raw/master/art/nfc128.png</PackageIconUrl>
 		<PackageIcon>icon.png</PackageIcon>
     <PackageTags>xamarin, ios, android, xamarin.forms, plugin, NFC</PackageTags>
     
@@ -38,8 +38,8 @@
     <Summary>A Cross-Platform plugin to easily read and write NFC tags.</Summary>
     <Description>Cross-Platform NFC (Near Field Communication) plugin to easily read and write NFC tags in your application.</Description>
     
-    <Owners>Franck Bour</Owners>
-    <Authors>Franck Bour</Authors>
+    <Owners>convivo-gmbh</Owners>
+    <Authors>Convivo</Authors>
     <Copyright>Copyright 2020</Copyright>
 
 		<!--When built in 2019 will remove extra references on pack for iOS in System.Drawing.Common-->

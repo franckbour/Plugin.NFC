@@ -262,7 +262,7 @@ namespace Plugin.NFC
 				return;
 			}
 
-			if (tagInfo == null)
+			if (tagInfo == null || tagInfo.Records.Any(record => record.Payload == null))
 			{
 				Invalidate(NfcSession, Configuration.Messages.NFCErrorMissingTagInfo);
 				return;

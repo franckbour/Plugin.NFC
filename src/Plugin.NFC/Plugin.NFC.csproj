@@ -95,4 +95,12 @@
     <Compile Include="**\*.iOS.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Shared\IDebugInfo.shared.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Shared\DebugInfo.shared.cs">
+      <SubType></SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

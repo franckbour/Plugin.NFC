@@ -24,6 +24,7 @@ namespace Plugin.NFC
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 		public event EventHandler OniOSDidInvalidate;
+		public event ErrorEventHandler OnError;
 
 		bool _isWriting;
 		bool _isFormatting;
@@ -154,6 +155,11 @@ namespace Plugin.NFC
 				if (error != null)
 				{
 					connectionError = error.LocalizedDescription;
+
+					OnError?.Invoke(
+					   new DebugInfo("Can't connect to tag!", error.DebugDescription, _tag.Type.ToString(), tags.Length, error.Code.ToString(), ((NFCReaderError)(long)error.Code).ToString())
+					   );
+
 					Invalidate(session, connectionError);
 					return;
 				}
@@ -162,7 +168,12 @@ namespace Plugin.NFC
 
 				if (ndefTag == null)
 				{
+					OnError?.Invoke(
+						new DebugInfo("Can't get ndef tag!", Configuration.Messages.NFCErrorNotCompliantTag, _tag.Type.ToString(), tags.Length)
+						);
+
 					Invalidate(session, Configuration.Messages.NFCErrorNotCompliantTag);
+
 					return;
 				}
 
@@ -170,7 +181,12 @@ namespace Plugin.NFC
 				{
 					if (error != null)
 					{
+						OnError?.Invoke(
+							new DebugInfo("Can't query ndef status!", error.DebugDescription, _tag.Type.ToString(), tags.Length, error.Code.ToString(), ((NFCReaderError)(long)error.Code).ToString())
+							);
+
 						Invalidate(session, error.LocalizedDescription);
+
 						return;
 					}
 
@@ -188,7 +204,13 @@ namespace Plugin.NFC
 						// if ndef is not supported do not read or write
 						// let the user decide if ndef support is needed
 						OnMessageReceived?.Invoke(nTag);
+
+						OnError?.Invoke(
+							new DebugInfo("Ndef is not supported!", string.Empty, _tag.Type.ToString(), tags.Length, string.Empty, string.Empty, nTag)
+							);
+
 						Invalidate(session);
+
 						return;
 					}
 
@@ -207,7 +229,12 @@ namespace Plugin.NFC
 							// see https://developer.apple.com/documentation/corenfc/nfcreadererror/code/ndefreadersessionerrorzerolengthmessage
 							if (error != null && error.Code != 403)
 							{
+								OnError?.Invoke(
+									new DebugInfo("Error while reading tag!", error.DebugDescription, _tag.Type.ToString(), tags.Length, error.Code.ToString(), ((NFCReaderError)(long)error.Code).ToString())
+									);
+
 								Invalidate(session, Configuration.Messages.NFCErrorRead);
+
 								return;
 							}
 
@@ -233,6 +260,13 @@ namespace Plugin.NFC
 			if (readerError == NFCReaderError.ReaderSessionInvalidationErrorUserCanceled && !_customInvalidation)
 			{
 				OniOSReadingSessionCancelled?.Invoke(null, EventArgs.Empty);
+			}
+
+			if (readerError != NFCReaderError.ReaderSessionInvalidationErrorFirstNDEFTagRead && readerError != NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
+			{
+				OnError?.Invoke(
+					new DebugInfo("Error during detection!", error.DebugDescription, _tag.Type.ToString(), 0, error.Code.ToString(), ((NFCReaderError)(long)error.Code).ToString())
+					);
 			}
 
 			OniOSDidInvalidate?.Invoke(null, EventArgs.Empty);
@@ -357,6 +391,7 @@ namespace Plugin.NFC
 				session.InvalidateSession();
 			else
 				session.InvalidateSession(message);
+
 			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
@@ -584,6 +619,7 @@ namespace Plugin.NFC
 		public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 		public event EventHandler OniOSDidInvalidate;
+		public event ErrorEventHandler OnError;
 
 		NFCNdefReaderSession NfcSession { get; set; }
 

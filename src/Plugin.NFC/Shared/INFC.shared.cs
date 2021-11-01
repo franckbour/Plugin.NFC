@@ -8,6 +8,7 @@ namespace Plugin.NFC
 	public delegate void TagDiscoveredEventHandler(ITagInfo tagInfo, bool format);
 	public delegate void OnNfcStatusChangedEventHandler(bool isEnabled);
 	public delegate void TagListeningStatusChangedEventHandler(bool isListening);
+	public delegate void ErrorEventHandler(IDebugInfo debugInfo);
 	#endregion
 
 	/// <summary>
@@ -119,5 +120,10 @@ namespace Plugin.NFC
 		/// Event raised when iOS NFC reading session is invalidated
 		/// </summary>
 		event EventHandler OniOSDidInvalidate;
+
+		/// <summary>
+		/// Event raised when errors on detection, connection or reading occured.
+		/// </summary>
+		event ErrorEventHandler OnError;
 	}
 }

@@ -25,6 +25,7 @@ namespace Plugin.NFC
 		public event EventHandler OniOSReadingSessionCancelled;
 		public event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
 		public event EventHandler OniOSDidInvalidate;
+		public event ErrorEventHandler OnError;
 
 		readonly NfcAdapter _nfcAdapter;
 
@@ -249,7 +250,7 @@ namespace Plugin.NFC
 				}
 				else
 					throw new Exception(Configuration.Messages.NFCErrorNotCompliantTag);
-			} 
+			}
 			catch (Exception ex)
 			{
 				StopPublishingAndThrowError(ex.Message);
@@ -387,8 +388,8 @@ namespace Plugin.NFC
 				case NFCNdefTypeFormat.WellKnown:
 					ndefRecord = NdefRecord.CreateTextRecord(Locale.Default.ToLanguageTag(), Encoding.UTF8.GetString(record.Payload));
 					break;
-				case NFCNdefTypeFormat.Mime:        
-					ndefRecord = NdefRecord.CreateMime(record.MimeType, record.Payload);            
+				case NFCNdefTypeFormat.Mime:
+					ndefRecord = NdefRecord.CreateMime(record.MimeType, record.Payload);
 					break;
 				case NFCNdefTypeFormat.Uri:
 					ndefRecord = NdefRecord.CreateUri(Encoding.UTF8.GetString(record.Payload));
@@ -443,7 +444,7 @@ namespace Plugin.NFC
 
 			var result = false;
 			var newConnection = false;
-			
+
 			if (!ndef.IsConnected)
 			{
 				newConnection = true;
@@ -529,7 +530,7 @@ namespace Plugin.NFC
 			IsEnabled = enabled;
 			_onNfcStatusChangedInternal?.Invoke(enabled);
 		}
-		
+
 		/// <summary>
 		/// Broadcast Receiver to check NFC feature availability
 		/// </summary>

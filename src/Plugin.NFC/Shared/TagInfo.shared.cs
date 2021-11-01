@@ -10,7 +10,7 @@
 		/// <summary>
 		/// Tag Serial Number
 		/// </summary>
-		public string SerialNumber { get;  }
+		public string SerialNumber { get; }
 
 		/// <summary>
 		/// Writable tag
@@ -30,7 +30,7 @@
 		/// <summary>
 		/// Empty tag
 		/// </summary>
-		public bool IsEmpty => Records == null || Records.Length == 0 || Records[0] == null ||Records[0].TypeFormat == NFCNdefTypeFormat.Empty;
+		public bool IsEmpty => Records == null || Records.Length == 0 || Records[0] == null || Records[0].TypeFormat == NFCNdefTypeFormat.Empty;
 
 		/// <summary>
 		/// 

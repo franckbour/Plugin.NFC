@@ -93,7 +93,14 @@ namespace Plugin.NFC
 				return;
 
 			var intent = new Intent(CurrentActivity, CurrentActivity.GetType()).AddFlags(ActivityFlags.SingleTop);
-			var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, 0);
+
+			// We don't use MonoAndroid12.0 as targetframework for easier backward compatibility:
+			// MonoAndroid12.0 needs JDK 11.
+			PendingIntentFlags pendingIntentFlags = 0;
+			if ((int)Android.OS.Build.VERSION.SdkInt >= 31) //Android.OS.BuildVersionCodes.S
+				pendingIntentFlags = (PendingIntentFlags)33554432; //PendingIntentFlags.Mutable
+
+			var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, pendingIntentFlags);
 
 			var ndefFilter = new IntentFilter(NfcAdapter.ActionNdefDiscovered);
 			ndefFilter.AddDataType("*/*");

@@ -7,12 +7,12 @@ namespace Plugin.NFC
     /// </summary>
     public static partial class CrossNFC
     {
-        static Lazy<INFC> implementation = new Lazy<INFC>(() => CreateNFC(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
+        static Lazy<INFC> _implementation = new Lazy<INFC>(() => CreateNFC(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// Gets if the plugin is supported on the current platform.
         /// </summary>
-        public static bool IsSupported => implementation.Value == null ? false : true;
+        public static bool IsSupported => _implementation.Value != null;
 
 		/// <summary>
         /// Legacy Mode (Supporting Mifare Classic on iOS)
@@ -30,7 +30,7 @@ namespace Plugin.NFC
 			{
 				_legacy = value;
 
-				implementation = new Lazy<INFC>(() => CreateNFC(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
+				_implementation = new Lazy<INFC>(() => CreateNFC(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
 			}
 		}
 		
@@ -41,7 +41,7 @@ namespace Plugin.NFC
         {
             get
             {
-                INFC ret = implementation.Value;
+                INFC ret = _implementation.Value;
                 if (ret == null)
                 {
                     throw NotImplementedInReferenceAssembly();

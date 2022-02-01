@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.1.21
+- GitHub #90 : [ANDROID] Sdk 31 "FLAG_IMMUTABLE" issue (PR #91)
+- GitHub #84 : [iOS] Fix Unhandled null reference exception (PR #86)
+- GitHub #82 : Fix typo in sample (PR #85)
+
 ### 0.1.20
 - [iOS] Support for Mifare Desfire EV3 tags (PR #75)
 - GitHub #44 : [iOS] Issues Reading Mifare Classic 1k on iOS (PR #73)

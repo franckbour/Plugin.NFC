@@ -29,6 +29,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/franckbour/Plugin.NFC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/franckbour/Plugin.NFC</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>https://github.com/franckbour/Plugin.NFC/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <PackageIconUrl>https://github.com/franckbour/Plugin.NFC/raw/master/art/nfc128.png</PackageIconUrl>
 		<PackageIcon>icon.png</PackageIcon>
@@ -40,9 +41,9 @@
     
     <Owners>Franck Bour</Owners>
     <Authors>Franck Bour</Authors>
-    <Copyright>Copyright 2020</Copyright>
+    <Copyright>Copyright 2022</Copyright>
 
-		<!--When built in 2019 will remove extra references on pack for iOS in System.Drawing.Common-->
+		<!-- When built in 2019 will remove extra references on pack for iOS in System.Drawing.Common -->
 		<DisableExtraReferences>false</DisableExtraReferences>
 		
   </PropertyGroup>
@@ -63,6 +64,11 @@
 		<!-- sourcelink: Include PDB in the built .nupkg -->
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 		
+  </PropertyGroup>
+	
+	<!-- Deterministic Builds (Azure Pipelines) -->
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
 	<ItemGroup Condition=" '$(Configuration)'=='Release' ">

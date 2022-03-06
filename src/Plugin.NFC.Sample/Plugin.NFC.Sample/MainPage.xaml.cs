@@ -195,7 +195,7 @@ namespace NFCSample
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		void Current_OniOSReadingSessionCancelled(object sender, EventArgs e) => Debug("User has cancelled NFC Session");
+		void Current_OniOSReadingSessionCancelled(object sender, EventArgs e) => Debug("iOS NFC Session has been cancelled");
 
 		/// <summary>
 		/// Event raised when data has been published on the tag

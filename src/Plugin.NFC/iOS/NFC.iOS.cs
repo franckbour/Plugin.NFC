@@ -235,6 +235,7 @@ namespace Plugin.NFC
 			{
 				var alertController = UIAlertController.Create(Configuration.Messages.NFCSessionInvalidated, error.LocalizedDescription.ToLower().Equals(SessionTimeoutMessage) ? Configuration.Messages.NFCSessionTimeout : error.LocalizedDescription, UIAlertControllerStyle.Alert);
 				alertController.AddAction(UIAlertAction.Create(Configuration.Messages.NFCSessionInvalidatedButton, UIAlertActionStyle.Default, null));
+				OniOSReadingSessionCancelled?.Invoke(null, EventArgs.Empty);
 				DispatchQueue.MainQueue.DispatchAsync(() =>
 				{
 					GetCurrentController().PresentViewController(alertController, true, null);

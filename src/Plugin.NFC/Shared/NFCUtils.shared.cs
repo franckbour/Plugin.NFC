@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Text;
-#if XAMARIN_IOS
+#if __IOS__
 using UIKit;
 #endif
 
@@ -100,7 +100,7 @@ namespace Plugin.NFC
 		/// <returns>boolean</returns>
 		public static bool IsWritingSupported()
 		{
-#if XAMARIN_IOS
+#if __IOS__
 			var splitted = UIDevice.CurrentDevice.SystemVersion?.Split('.');
 			if (splitted != null && splitted.Length > 0 && int.TryParse(splitted[0], out var majorVersion))
 				return majorVersion >= 13;

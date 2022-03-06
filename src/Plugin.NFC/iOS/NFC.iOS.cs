@@ -91,7 +91,6 @@ namespace Plugin.NFC
 		public void StopListening()
 		{
 			NfcSession?.InvalidateSession();
-			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		/// <summary>
@@ -123,7 +122,6 @@ namespace Plugin.NFC
 			_isWriting = _isFormatting = _customInvalidation = false;
 			_tag = null;
 			NfcSession?.InvalidateSession();
-			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		/// <summary>
@@ -230,6 +228,8 @@ namespace Plugin.NFC
 		/// <param name="error">iOS <see cref="NSError"/></param>
 		public override void DidInvalidate(NFCTagReaderSession session, NSError error)
 		{
+			OnTagListeningStatusChanged?.Invoke(false);
+
 			var readerError = (NFCReaderError)(long)error.Code;
 			if (readerError != NFCReaderError.ReaderSessionInvalidationErrorFirstNDEFTagRead && readerError != NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
 			{
@@ -262,7 +262,7 @@ namespace Plugin.NFC
 				return;
 			}
 
-			if (tagInfo == null || tagInfo.Records.Any(record => record.Payload == null))
+			if (tagInfo == null || (!clearMessage && tagInfo.Records.Any(record => record.Payload == null)))
 			{
 				Invalidate(NfcSession, Configuration.Messages.NFCErrorMissingTagInfo);
 				return;
@@ -337,7 +337,6 @@ namespace Plugin.NFC
 				session.InvalidateSession();
 			else
 				session.InvalidateSession(message);
-			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		/// <summary>
@@ -503,10 +502,15 @@ namespace Plugin.NFC
 		/// </summary>
 		public void StartListening()
 		{
+			_customInvalidation = false;
+			_isWriting = false;
+			_isFormatting = false;
+
 			NfcSession = new NFCNdefReaderSession(this, DispatchQueue.CurrentQueue, true)
 			{
 				AlertMessage = Configuration.Messages.NFCDialogAlertMessage
 			};
+
 			NfcSession?.BeginSession();
 			OnTagListeningStatusChanged?.Invoke(true);
 		}
@@ -517,7 +521,6 @@ namespace Plugin.NFC
 		public void StopListening()
 		{
 			NfcSession?.InvalidateSession();
-			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		/// <summary>
@@ -551,7 +554,6 @@ namespace Plugin.NFC
 			_isWriting = _isFormatting = _customInvalidation = false;
 			_tag = null;
 			NfcSession?.InvalidateSession();
-			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		/// <summary>
@@ -676,6 +678,8 @@ namespace Plugin.NFC
 		/// <param name="error">iOS <see cref="NSError"/></param>
 		public override void DidInvalidate(NFCNdefReaderSession session, NSError error)
 		{
+			OnTagListeningStatusChanged?.Invoke(false);
+
 			var readerError = (NFCReaderError)(long)error.Code;
 			if (readerError != NFCReaderError.ReaderSessionInvalidationErrorFirstNDEFTagRead && readerError != NFCReaderError.ReaderSessionInvalidationErrorUserCanceled)
 			{
@@ -706,14 +710,13 @@ namespace Plugin.NFC
 				return;
 			}
 
-
 			if (tag == null)
 			{
 				Invalidate(NfcSession, Configuration.Messages.NFCErrorMissingTag);
 				return;
 			}
 
-			if (tagInfo == null || tagInfo.Records.Any(record => record.Payload == null))
+			if (tagInfo == null || (!clearMessage && tagInfo.Records.Any(record => record.Payload == null)))
 			{
 				Invalidate(NfcSession, Configuration.Messages.NFCErrorMissingTagInfo);
 				return;
@@ -885,7 +888,6 @@ namespace Plugin.NFC
 				session.InvalidateSession();
 			else
 				session.InvalidateSession(message);
-			OnTagListeningStatusChanged?.Invoke(false);
 		}
 
 		#endregion
@@ -1222,6 +1224,9 @@ namespace Plugin.NFC
 		}
 	}
 
+	/// <summary>
+	/// NFC Tag Extensions Class
+	/// </summary>
 	internal static class NfcNdefTagExtensions
 	{
 		/// <summary>

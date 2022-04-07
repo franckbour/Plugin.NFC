@@ -94,21 +94,12 @@ namespace Plugin.NFC
 
 			var intent = new Intent(CurrentActivity, CurrentActivity.GetType()).AddFlags(ActivityFlags.SingleTop);
 
-			// We don't use MonoAndroid12.0 as targetframework for easier backward compatibility:
-			// MonoAndroid12.0 needs JDK 11.
-			PendingIntentFlags pendingIntentFlags = 0;
-			if ((int)Android.OS.Build.VERSION.SdkInt >= 31) //Android.OS.BuildVersionCodes.S
-				pendingIntentFlags = (PendingIntentFlags)33554432; //PendingIntentFlags.Mutable
+			var tagDetected = new IntentFilter(NfcAdapter.ActionTagDiscovered);
+			var ndefDetected = new IntentFilter(NfcAdapter.ActionNdefDiscovered);
+			var techDetected = new IntentFilter(NfcAdapter.ActionTechDiscovered);
+			var filters = new[] { ndefDetected, tagDetected, techDetected };
 
-			var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, pendingIntentFlags);
-
-			var ndefFilter = new IntentFilter(NfcAdapter.ActionNdefDiscovered);
-			ndefFilter.AddDataType("*/*");
-
-			var tagFilter = new IntentFilter(NfcAdapter.ActionTagDiscovered);
-			tagFilter.AddCategory(Intent.CategoryDefault);
-
-			var filters = new IntentFilter[] { ndefFilter, tagFilter };
+			var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, 0);
 
 			_nfcAdapter.EnableForegroundDispatch(CurrentActivity, pendingIntent, filters, null);
 

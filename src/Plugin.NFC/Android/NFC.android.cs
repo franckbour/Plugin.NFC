@@ -260,6 +260,68 @@ namespace Plugin.NFC
 		}
 
 		/// <summary>
+		/// Format non NDEF Tags - The tag must be NDEF Formatable
+		/// </summary>
+		public void FormatNonNDEFTag() 
+		{
+			try
+			{
+				if (_currentTag == null)
+					throw new Exception(Configuration.Messages.NFCErrorMissingTag);
+
+
+				var ndef = Ndef.Get(_currentTag);
+				var format = NdefFormatable.Get(_currentTag);
+				if (format != null)
+				{
+					try
+					{
+						if (!ndef.IsWritable)
+							throw new Exception(Configuration.Messages.NFCWritingNotSupported);
+
+						format.Connect();
+						OnTagConnected?.Invoke(null, EventArgs.Empty);
+
+						format.Format(GetEmptyNdefMessage());
+
+						var nTag = GetTagInfo(_currentTag, ndef.NdefMessage);
+						OnMessagePublished?.Invoke(nTag);
+					}
+					catch (Android.Nfc.TagLostException tlex)
+					{
+						throw new Exception("Tag Lost Error: " + tlex.Message);
+					}
+					catch (Java.IO.IOException ioex)
+					{
+						throw new Exception("Tag IO Error: " + ioex.Message);
+					}
+					catch (Android.Nfc.FormatException fe)
+					{
+						throw new Exception("Tag Format Error: " + fe.Message);
+					}
+					catch (Exception ex)
+					{
+						throw new Exception("Tag Error:" + ex.Message);
+					}
+					finally
+					{
+						if (format.IsConnected)
+							format.Close();
+
+						_currentTag = null;
+						OnTagDisconnected?.Invoke(null, EventArgs.Empty);
+					}
+				}
+				else
+					throw new Exception(Configuration.Messages.NFCErrorNotCompliantTag);
+			}
+			catch (Exception ex)
+			{
+				StopPublishingAndThrowError(ex.Message);
+			}
+		}
+
+		/// <summary>
 		/// Handle Android OnNewIntent
 		/// </summary>
 		/// <param name="intent">Android <see cref="Intent"/></param>

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 #if XAMARIN_IOS
 using UIKit;
@@ -93,6 +94,13 @@ namespace Plugin.NFC
         {
             return bytes == null ? string.Empty : string.Join(separator ?? string.Empty, bytes.Select(b => b.ToString("X2")));
         }
+
+		public static string LittleEndian(string num)
+		{
+			var number = Convert.ToInt32(num, 16);
+			var bytes = BitConverter.GetBytes(number);
+			return bytes.Aggregate("", (current, b) => current + b.ToString("X2"));
+		}
 
 		/// <summary>
 		/// Checks if writing tags is supported

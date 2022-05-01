@@ -54,6 +54,9 @@ namespace NFCSample
 		{
 			base.OnAppearing();
 
+			// In order to support Mifare Classic 1K tags (read/write), you must set legacy mode to true.
+			CrossNFC.Legacy = false;
+
 			if (CrossNFC.IsSupported)
 			{
 				if (!CrossNFC.Current.IsAvailable)
@@ -192,7 +195,7 @@ namespace NFCSample
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		void Current_OniOSReadingSessionCancelled(object sender, EventArgs e) => Debug("User has cancelled NFC Session");
+		void Current_OniOSReadingSessionCancelled(object sender, EventArgs e) => Debug("iOS NFC Session has been cancelled");
 
 		/// <summary>
 		/// Event raised when data has been published on the tag
@@ -331,6 +334,7 @@ namespace NFCSample
 			await StartListeningIfNotiOS();
 			try
 			{
+				_type = NFCNdefTypeFormat.Empty;
 				if (ChkReadOnly.IsChecked)
 				{
 					if (!await DisplayAlert("Warning", "Make a Tag read-only operation is permanent and can't be undone. Are you sure you wish to continue?", "Yes", "No"))

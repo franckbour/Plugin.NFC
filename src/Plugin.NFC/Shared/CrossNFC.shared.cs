@@ -54,7 +54,8 @@ namespace Plugin.NFC
         {
 #if NETSTANDARD1_0 || NETSTANDARD2_0
             return null;
-#elif XAMARIN_IOS
+#elif __IOS__
+			ObjCRuntime.Class.ThrowOnInitFailure = false;
 			if (NFCUtils.IsWritingSupported() && !Legacy)
 				return new NFCImplementation();
 			return new NFCImplementation_Before_iOS13();

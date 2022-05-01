@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.1.22
+- GitHub #95 : [iOS] Add write support for Mifare Classic 1K tags (Legacy mode) (PR #96)
+- GitHub #89 : [iOS] Fix native class hasn't been loaded (CoreNFC.NFCNdefReaderSession)
+- GitHub #88 : [iOS] Raise OniOSReadingSessionCancelled when session times out (PR #93)
+
 ### 0.1.21
 - GitHub #90 : [ANDROID] Sdk 31 "FLAG_IMMUTABLE" issue (PR #91)
 - GitHub #84 : [iOS] Fix Unhandled null reference exception (PR #86)

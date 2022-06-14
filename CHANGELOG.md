@@ -1,5 +1,8 @@
 ## Changelog
 
+### 0.1.23
+- GitHub #107 : [iOS] Fix Null Reference Exception on iOS 15.4 (PR #110)
+
 ### 0.1.22
 - GitHub #95 : [iOS] Add write support for Mifare Classic 1K tags (Legacy mode) (PR #96)
 - GitHub #89 : [iOS] Fix native class hasn't been loaded (CoreNFC.NFCNdefReaderSession)

@@ -1056,13 +1056,13 @@ namespace Plugin.NFC
 				case NFCTypeNameFormat.NFCWellKnown:
 					if (payload.Type.ToString() == "U")
 					{
-						var uri = payload.Payload.ParseWktUri();
+						var uri = payload.Payload?.ParseWktUri();
 						return uri;
 					}
 					break;
 				case NFCTypeNameFormat.AbsoluteUri:
 				case NFCTypeNameFormat.Media:
-					var content = Encoding.UTF8.GetString(payload.Payload.ToByteArray());
+					var content = Encoding.UTF8.GetString(payload.Payload?.ToByteArray());
 					if (Uri.TryCreate(content, UriKind.RelativeOrAbsolute, out var result))
 						return result;
 
@@ -1177,7 +1177,7 @@ namespace Plugin.NFC
 					TypeFormat = (NFCNdefTypeFormat)record.TypeNameFormat,
 					Uri = records[i].ToUri()?.ToString(),
 					MimeType = records[i].ToMimeType(),
-					Payload = record.Payload.ToByteArray()
+					Payload = record.Payload?.ToByteArray()
 				};
 				results.SetValue(ndefRecord, i);
 			}

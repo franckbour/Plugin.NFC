@@ -94,21 +94,12 @@ namespace Plugin.NFC
 
 			var intent = new Intent(CurrentActivity, CurrentActivity.GetType()).AddFlags(ActivityFlags.SingleTop);
 
-			// We don't use MonoAndroid12.0 as targetframework for easier backward compatibility:
-			// MonoAndroid12.0 needs JDK 11.
-			PendingIntentFlags pendingIntentFlags = 0;
-			if ((int)Android.OS.Build.VERSION.SdkInt >= 31) //Android.OS.BuildVersionCodes.S
-				pendingIntentFlags = (PendingIntentFlags)33554432; //PendingIntentFlags.Mutable
+			var tagDetected = new IntentFilter(NfcAdapter.ActionTagDiscovered);
+			var ndefDetected = new IntentFilter(NfcAdapter.ActionNdefDiscovered);
+			var techDetected = new IntentFilter(NfcAdapter.ActionTechDiscovered);
+			var filters = new[] { ndefDetected, tagDetected, techDetected };
 
-			var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, pendingIntentFlags);
-
-			var ndefFilter = new IntentFilter(NfcAdapter.ActionNdefDiscovered);
-			ndefFilter.AddDataType("*/*");
-
-			var tagFilter = new IntentFilter(NfcAdapter.ActionTagDiscovered);
-			tagFilter.AddCategory(Intent.CategoryDefault);
-
-			var filters = new IntentFilter[] { ndefFilter, tagFilter };
+			var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, 0);
 
 			_nfcAdapter.EnableForegroundDispatch(CurrentActivity, pendingIntent, filters, null);
 
@@ -245,6 +236,68 @@ namespace Plugin.NFC
 					{
 						if (ndef.IsConnected)
 							ndef.Close();
+
+						_currentTag = null;
+						OnTagDisconnected?.Invoke(null, EventArgs.Empty);
+					}
+				}
+				else
+					throw new Exception(Configuration.Messages.NFCErrorNotCompliantTag);
+			}
+			catch (Exception ex)
+			{
+				StopPublishingAndThrowError(ex.Message);
+			}
+		}
+
+		/// <summary>
+		/// Format non NDEF Tags - The tag must be NDEF Formatable
+		/// </summary>
+		public void FormatNonNDEFTag() 
+		{
+			try
+			{
+				if (_currentTag == null)
+					throw new Exception(Configuration.Messages.NFCErrorMissingTag);
+
+
+				var ndef = Ndef.Get(_currentTag);
+				var format = NdefFormatable.Get(_currentTag);
+				if (format != null)
+				{
+					try
+					{
+						if (!ndef.IsWritable)
+							throw new Exception(Configuration.Messages.NFCWritingNotSupported);
+
+						format.Connect();
+						OnTagConnected?.Invoke(null, EventArgs.Empty);
+
+						format.Format(GetEmptyNdefMessage());
+
+						var nTag = GetTagInfo(_currentTag, ndef.NdefMessage);
+						OnMessagePublished?.Invoke(nTag);
+					}
+					catch (Android.Nfc.TagLostException tlex)
+					{
+						throw new Exception("Tag Lost Error: " + tlex.Message);
+					}
+					catch (Java.IO.IOException ioex)
+					{
+						throw new Exception("Tag IO Error: " + ioex.Message);
+					}
+					catch (Android.Nfc.FormatException fe)
+					{
+						throw new Exception("Tag Format Error: " + fe.Message);
+					}
+					catch (Exception ex)
+					{
+						throw new Exception("Tag Error:" + ex.Message);
+					}
+					finally
+					{
+						if (format.IsConnected)
+							format.Close();
 
 						_currentTag = null;
 						OnTagDisconnected?.Invoke(null, EventArgs.Empty);

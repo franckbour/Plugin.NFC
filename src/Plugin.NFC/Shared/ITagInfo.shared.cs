@@ -11,6 +11,11 @@
 		byte[] Identifier { get; }
 
 		/// <summary>
+		/// Tag Identifier as string
+		/// </summary>
+		string TagId { get; }
+
+		/// <summary>
 		/// Tag Serial Number
 		/// </summary>
 		string SerialNumber { get; }

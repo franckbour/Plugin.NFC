@@ -52,17 +52,17 @@ namespace Plugin.NFC
 
         static INFC CreateNFC()
         {
-#if NETSTANDARD1_0 || NETSTANDARD2_0
-            return null;
+#if __ANDROID__
+    return new NFCImplementation();
+//#elif NET5_0_OR_GREATER
+//    return null;
 #elif __IOS__
 			ObjCRuntime.Class.ThrowOnInitFailure = false;
 			if (NFCUtils.IsWritingSupported() && !Legacy)
 				return new NFCImplementation();
 			return new NFCImplementation_Before_iOS13();
 #else
-#pragma warning disable IDE0022 // Use expression body for methods
-            return new NFCImplementation();
-#pragma warning restore IDE0022 // Use expression body for methods
+        return null;
 #endif
 		}
 

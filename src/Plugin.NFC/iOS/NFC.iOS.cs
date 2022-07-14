@@ -1,4 +1,5 @@
-﻿using CoreFoundation;
+﻿#if IOS15_0_OR_GREATER
+using CoreFoundation;
 using CoreNFC;
 using Foundation;
 using System;
@@ -1242,16 +1243,17 @@ namespace Plugin.NFC
 				return null;
 
 			INFCNdefTag ndef;
-			if (tag.GetNFCMiFareTag() != null)
-				ndef = tag.GetNFCMiFareTag();
-			else if (tag.GetNFCIso7816Tag() != null)
-				ndef = tag.GetNFCIso7816Tag();
-			else if (tag.GetNFCIso15693Tag() != null)
-				ndef = tag.GetNFCIso15693Tag();
-			else if (tag.GetNFCFeliCaTag() != null)
-				ndef = tag.GetNFCFeliCaTag();
-			else
-				ndef = null;
+
+            if (tag.Type == CoreNFC.NFCTagType.MiFare)
+                ndef = tag.AsNFCMiFareTag;
+            else if (tag.Type == CoreNFC.NFCTagType.Iso7816Compatible)
+                ndef = tag.AsNFCIso7816Tag;
+            else if (tag.Type == CoreNFC.NFCTagType.Iso15693)
+                ndef = tag.AsNFCIso15693Tag;
+            else if (tag.Type == CoreNFC.NFCTagType.FeliCa)
+                ndef = tag.AsNFCFeliCaTag;
+            else
+                ndef = null;
 
 			return ndef;
 		}
@@ -1284,3 +1286,4 @@ namespace Plugin.NFC
 		}
 	}
 }
+#endif

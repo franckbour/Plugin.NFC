@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if __UNIFIED__
+using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Networking.Proximity;
 
@@ -186,3 +187,4 @@ namespace Plugin.NFC
 		#endregion
 	}
 }
+#endif

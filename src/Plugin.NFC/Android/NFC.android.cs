@@ -1,5 +1,4 @@
-﻿#if ANDROID
-using Android;
+﻿using Android;
 using Android.App;
 using Android.Content;
 using Android.Nfc;
@@ -563,4 +562,3 @@ namespace Plugin.NFC
 
 	}
 }
-#endif

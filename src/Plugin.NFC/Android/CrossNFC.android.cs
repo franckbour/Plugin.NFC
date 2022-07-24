@@ -1,5 +1,4 @@
-﻿#if ANDROID
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.OS;
 using System;
@@ -89,4 +88,3 @@ namespace Plugin.NFC
 		void Application.IActivityLifecycleCallbacks.OnActivityStopped(Activity activity) { }
 	}
 }
-#endif

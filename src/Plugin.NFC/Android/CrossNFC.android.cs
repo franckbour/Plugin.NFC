@@ -19,6 +19,7 @@ namespace Plugin.NFC
 		/// <param name="application">Android <see cref="Application"/></param>
 		public static void Init(Application application)
 		{
+            if (lifecycleListener != null) return;
 			lifecycleListener = new ActivityLifecycleContextListener();
 			application.RegisterActivityLifecycleCallbacks(lifecycleListener);
 		}
@@ -30,7 +31,7 @@ namespace Plugin.NFC
 		public static void Init(Activity activity)
 		{
 			Init(activity.Application);
-			lifecycleListener.Activity = activity;
+            lifecycleListener.Activity = activity;
 		}
 
 		/// <summary>
@@ -56,18 +57,18 @@ namespace Plugin.NFC
 		/// <returns></returns>
 		internal static Activity GetCurrentActivity(bool throwError)
 		{
-			var activity = lifecycleListener?.Activity;
+            var activity = lifecycleListener?.Activity;
 			if (throwError && activity == null)
 				throw new NullReferenceException("The current Activity can not be detected. Ensure that you have called Init in your Activity or Application class.");
 			return activity;
 		}
 	}
 
-	/// <summary>
-	/// James Montemagno's ActivityLifecycleContextListener from CurrentActivityPlugin
-	/// <see cref="https://github.com/jamesmontemagno/CurrentActivityPlugin"/>
-	/// </summary>
-	class ActivityLifecycleContextListener : Java.Lang.Object, Application.IActivityLifecycleCallbacks
+    /// <summary>
+    /// James Montemagno's ActivityLifecycleContextListener from CurrentActivityPlugin
+    /// <see href="https://github.com/jamesmontemagno/CurrentActivityPlugin"/>
+    /// </summary>
+    class ActivityLifecycleContextListener : Java.Lang.Object, Application.IActivityLifecycleCallbacks
 	{
 		WeakReference<Activity> _currentActivity = new WeakReference<Activity>(null);
 

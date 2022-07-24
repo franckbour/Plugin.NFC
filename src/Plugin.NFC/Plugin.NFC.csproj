@@ -1,17 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.44">
 
   <PropertyGroup>
     <!--Work around so the conditions work below-->
-    <TargetFrameworks>net6.0;net6.0-android;net6.0-ios15.0;</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);uap10.0.16299</TargetFrameworks>
-    <!--Feel free to add as many targets as you need below
-    netstandard1.0;netstandard2.0;MonoAndroid81;Xamarin.iOS10;uap10.0.16299;Xamarin.TVOS10;Xamarin.WatchOS10;Xamarin.Mac20;Tizen40
-    For UWP update the version number with a version number you have installed.
-    -->
+    <TargetFrameworks>netstandard1.0;netstandard2.0;Xamarin.iOS10;MonoAndroid10.0;net6.0;net6.0-android;net6.0-ios</TargetFrameworks>
+
     <AssemblyName>Plugin.NFC</AssemblyName>
     <RootNamespace>Plugin.NFC</RootNamespace>
     <PackageId>Plugin.NFC</PackageId>
-    
+
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
@@ -20,87 +16,91 @@
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <DefineConstants>$(DefineConstants);</DefineConstants>
-    
+    <NoWarn>CS0067</NoWarn>
+
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <LangVersion>latest</LangVersion>
-		<DebugType>portable</DebugType>
+    <DebugType>portable</DebugType>
 
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/franckbour/Plugin.NFC</PackageProjectUrl>
     <RepositoryUrl>https://github.com/franckbour/Plugin.NFC</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>https://github.com/franckbour/Plugin.NFC/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <PackageIconUrl>https://github.com/franckbour/Plugin.NFC/raw/master/art/nfc128.png</PackageIconUrl>
-		<PackageIcon>icon.png</PackageIcon>
-    <PackageTags>xamarin, ios, android, xamarin.forms, plugin, NFC</PackageTags>
-    
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageTags>maui, xamarin, ios, android, xamarin.forms, plugin, NFC</PackageTags>
+
     <Title>NFC Plugin for Xamarin</Title>
     <Summary>A Cross-Platform plugin to easily read and write NFC tags.</Summary>
     <Description>Cross-Platform NFC (Near Field Communication) plugin to easily read and write NFC tags in your application.</Description>
-    
+
     <Owners>Franck Bour</Owners>
     <Authors>Franck Bour</Authors>
     <Copyright>Copyright 2022</Copyright>
 
-		<!-- When built in 2019 will remove extra references on pack for iOS in System.Drawing.Common -->
-		<DisableExtraReferences>false</DisableExtraReferences>
-		
+    <!-- When built in 2019 will remove extra references on pack for iOS in System.Drawing.Common -->
+    <DisableExtraReferences>false</DisableExtraReferences>
+
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
-	
-  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-		
-		<!-- sourcelink: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<!-- sourcelink: Embed source files that are not tracked by the source control manager in the PDB -->
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
-		<!-- sourcelink: Include PDB in the built .nupkg -->
-		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-		
+
+    <!-- sourcelink: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- sourcelink: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <!-- sourcelink: Include PDB in the built .nupkg -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+
   </PropertyGroup>
-	
-	<!-- Deterministic Builds (Azure Pipelines) -->
+
+  <PropertyGroup>
+    <_NET6 Condition=" $(TargetFramework.Contains('net6')) ">true</_NET6>
+    <_DROID Condition=" $(TargetFramework.ToLowerInvariant().Contains('droid')) ">true</_DROID>
+    <_IOS Condition=" $(TargetFramework.ToLowerInvariant().Contains('ios')) ">true</_IOS>
+    <_MOBILE Condition=" '$(_DROID)' == 'true' OR '$(_IOS)' == 'true' ">true</_MOBILE>
+
+    <DefineConstants Condition=" '$(_DROID)' == 'true' ">$(DefineConstants);__ANDROID__;__MOBILE__;</DefineConstants>
+    <DefineConstants Condition=" '$(_IOS)' == 'true' ">$(DefineConstants);__IOS__;__MOBILE__;</DefineConstants>
+    <DefineConstants Condition=" '$(_NET6)' == 'true' ">$(DefineConstants);__NET6__;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(_NET6)' == 'true' AND '$(_MOBILE)' == 'true' ">
+    <SupportedOSPlatformVersion Condition="'$(_IOS)' == 'true'">11.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="'$(_DROID)' == 'true'">21.0</SupportedOSPlatformVersion> 
+  </PropertyGroup>
+  
+  <!-- Deterministic Builds (Azure Pipelines) -->
   <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
-	<ItemGroup Condition=" '$(Configuration)'=='Release' ">
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-	</ItemGroup>
-	
+  <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
   <ItemGroup>
-		<None Include="..\..\art\nfc128.png" PackagePath="icon.png" Pack="true" />
+    <None Include="..\..\art\nfc128.png" PackagePath="icon.png" Pack="true" />
     <Compile Include="**\*.shared.cs" />
-    <Compile Include="Android\CrossNFC.android.cs" />
-    <Compile Include="Android\NFC.android.cs" />
-    <Compile Include="iOS\NFC.iOS.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) OR '$(TargetFramework)' == 'net6.0' ">
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap10.0')) ">
-    <Compile Include="**\*.uwp.cs" />
-    <!--
-    If you need to add sdk references:
-     <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
-      <Name>Windows Mobile Extensions for the UWP</Name>
-    </SDKReference>
-    -->
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+  <ItemGroup Condition=" '$(_DROID)' == 'true' ">
     <Compile Include="**\*.android.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+  <ItemGroup Condition=" '$(_IOS)' == 'true' ">
     <Compile Include="**\*.iOS.cs" />
   </ItemGroup>
 

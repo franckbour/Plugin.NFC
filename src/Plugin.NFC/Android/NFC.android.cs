@@ -528,7 +528,6 @@ namespace Plugin.NFC
 		/// <summary>
 		/// Called when NFC status has changed
 		/// </summary>
-		/// <param name="value">NFC Availability</param>
 		void OnNfcStatusChange() => _onNfcStatusChangedInternal?.Invoke(IsEnabled);
 
 		/// <summary>

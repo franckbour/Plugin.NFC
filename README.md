@@ -13,7 +13,7 @@ This plugin uses **NDEF** (_NFC Data Exchange Format_) for maximum compatibilty 
 ## Supported Platforms
 Platform|Version|Tested on
 :---|:---|:---
-Android|4.4+|Google Nexus 5, Huawei Mate 10 Pro, Google Pixel 4a
+Android|4.4+|Google Nexus 5, Huawei Mate 10 Pro, Google Pixel 4a, Google Pixel 6a
 iOS|11+|iPhone 7, iPhone 8
 
 > Windows, Mac and Linux are currently not supported. Pull Requests are welcomed! 

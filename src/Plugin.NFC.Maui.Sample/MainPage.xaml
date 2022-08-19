@@ -22,6 +22,7 @@
         <StackLayout VerticalOptions="CenterAndExpand" Spacing="10" Margin="50,0">
             <Label FontSize="Title"
                    HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
                    Text="Plugin NFC Maui Sample" />
 
             <Button Clicked="Button_Clicked_StartListening"
@@ -35,7 +36,7 @@
             <Frame BorderColor="Gray" HasShadow="False">
                 <StackLayout Spacing="5">
 
-                    <StackLayout Orientation="Horizontal">
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
                         <CheckBox x:Name="ChkReadOnly"
                                   IsChecked="False"
                                   IsEnabled="{Binding NfcIsEnabled}"

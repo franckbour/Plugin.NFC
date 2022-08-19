@@ -46,7 +46,7 @@ namespace Plugin.NFC.Maui.Sample
 
         public bool NfcIsDisabled => !NfcIsEnabled;
 
-        protected async override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
 
@@ -117,7 +117,7 @@ namespace Plugin.NFC.Maui.Sample
         void SubscribeEvents()
         {
             if (_eventsAlreadySubscribed)
-                return;
+                UnsubscribeEvents();
 
             _eventsAlreadySubscribed = true;
 

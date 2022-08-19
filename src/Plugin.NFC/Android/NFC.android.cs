@@ -97,10 +97,16 @@ namespace Plugin.NFC
 			// We don't use MonoAndroid12.0 as targetframework for easier backward compatibility:
 			// MonoAndroid12.0 needs JDK 11.
 			PendingIntentFlags pendingIntentFlags = 0;
-			if ((int)Android.OS.Build.VERSION.SdkInt >= 31) //Android.OS.BuildVersionCodes.S
-				pendingIntentFlags = (PendingIntentFlags)33554432; //PendingIntentFlags.Mutable
 
-			var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, pendingIntentFlags);
+#if NET6_0_OR_GREATER
+            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.S)
+                pendingIntentFlags = PendingIntentFlags.Mutable;
+#else
+            if ((int)Android.OS.Build.VERSION.SdkInt >= 31) //Android.OS.BuildVersionCodes.S
+				pendingIntentFlags = (PendingIntentFlags)33554432; //PendingIntentFlags.Mutable
+#endif
+
+            var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, pendingIntentFlags);
 
 			var ndefFilter = new IntentFilter(NfcAdapter.ActionNdefDiscovered);
 			ndefFilter.AddDataType("*/*");
@@ -299,7 +305,7 @@ namespace Plugin.NFC
 				StartListening();
 		}
 
-		#region Private
+        #region Private
 
 		/// <summary>
 		/// Stops publishing and throws error
@@ -464,9 +470,9 @@ namespace Plugin.NFC
 			return result;
 		}
 
-		#endregion
+        #endregion
 
-		#region NFC Status Event Listener
+        #region NFC Status Event Listener
 
 		NfcBroadcastReceiver _nfcBroadcastReceiver;
 
@@ -527,7 +533,6 @@ namespace Plugin.NFC
 		/// <summary>
 		/// Called when NFC status has changed
 		/// </summary>
-		/// <param name="value">NFC Availability</param>
 		void OnNfcStatusChange() => _onNfcStatusChangedInternal?.Invoke(IsEnabled);
 
 		/// <summary>
@@ -559,7 +564,7 @@ namespace Plugin.NFC
 			}
 		}
 
-		#endregion
+        #endregion
 
 	}
 }

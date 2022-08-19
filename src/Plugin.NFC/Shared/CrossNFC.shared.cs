@@ -14,26 +14,26 @@ namespace Plugin.NFC
         /// </summary>
         public static bool IsSupported => _implementation.Value != null;
 
-		/// <summary>
+        /// <summary>
         /// Legacy Mode (Supporting Mifare Classic on iOS)
         /// </summary>
-		static bool _legacy = false;
+        static bool _legacy = false;
 
-		public static bool Legacy 
-		{
-			get
-			{
-				return _legacy;
-			}
+        public static bool Legacy
+        {
+            get
+            {
+                return _legacy;
+            }
 
-			set 
-			{
-				_legacy = value;
+            set
+            {
+                _legacy = value;
 
-				_implementation = new Lazy<INFC>(() => CreateNFC(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
-			}
-		}
-		
+                _implementation = new Lazy<INFC>(() => CreateNFC(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
+            }
+        }
+
         /// <summary>
         /// Current plugin implementation to use
         /// </summary>
@@ -55,18 +55,18 @@ namespace Plugin.NFC
 #if NETSTANDARD || !__MOBILE__
             return null;
 #elif __IOS__
-			ObjCRuntime.Class.ThrowOnInitFailure = false;
-			if (NFCUtils.IsWritingSupported() && !Legacy)
-				return new NFCImplementation();
-			return new NFCImplementation_Before_iOS13();
+            ObjCRuntime.Class.ThrowOnInitFailure = false;
+            if (NFCUtils.IsWritingSupported() && !Legacy)
+                return new NFCImplementation();
+            return new NFCImplementation_Before_iOS13();
 #else
 #pragma warning disable IDE0022 // Use expression body for methods
             return new NFCImplementation();
 #pragma warning restore IDE0022 // Use expression body for methods
 #endif
-		}
+        }
 
-		internal static Exception NotImplementedInReferenceAssembly() =>
+        internal static Exception NotImplementedInReferenceAssembly() =>
             new NotImplementedException("This functionality is not implemented in the portable version of this assembly.  You should reference the NuGet package from your main application project in order to reference the platform-specific implementation.");
 
     }

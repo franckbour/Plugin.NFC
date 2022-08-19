@@ -175,7 +175,14 @@ namespace NFCSample
 			var serialNumber = NFCUtils.ByteArrayToHexString(identifier, ":");
 			var title = !string.IsNullOrWhiteSpace(serialNumber) ? $"Tag [{serialNumber}]" : "Tag Info";
 
-			if (!tagInfo.IsSupported)
+            if (tagInfo.IsFormatable)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("Unformatted Tag:");
+                sb.Append("Use \"Clear Tag\" to format it.");
+                await ShowAlert(sb.ToString(), title);
+            }
+            else if (!tagInfo.IsSupported)
 			{
 				await ShowAlert("Unsupported tag (app)", title);
 			}

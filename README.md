@@ -173,11 +173,12 @@ var record = new NFCNdefRecord {
 * Then `CrossNFC.Current.PublishMessage(ITagInfo)` when `OnTagDiscovered` event is raised. 
 * Do not forget to call `CrossNFC.Current.StopPublishing()` once the tag has been written.
 
-### Clear a tag
-* To clear a tag, call `CrossNFC.Current.StartPublishing(clearMessage: true)`
+### Erase/format a tag
+* To erase a tag, call `CrossNFC.Current.StartPublishing(clearMessage: true)`.
 * Then `CrossNFC.Current.PublishMessage(ITagInfo)` when `OnTagDiscovered` event is raised.
 * Do not forget to call `CrossNFC.Current.StopPublishing()` once the tag has been cleared.
 
+> **Android Only**: If the tag is `NdefFormatable`, the `CrossNFC.Current.StartPublishing(clearMessage: true)` method will format it.
 
 For more examples, see sample application in the repository.
 

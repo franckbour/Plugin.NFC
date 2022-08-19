@@ -32,7 +32,6 @@
 	<string>NFC tag to read NDEF messages into the application</string>
 	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
 	<array>
-		<string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
 		<string>D2760000850100</string>
 	</array>
 </dict>

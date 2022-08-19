@@ -1168,6 +1168,9 @@ namespace Plugin.NFC
 		/// <returns>Array of <see cref="NFCNdefRecord"/></returns>
 		internal static NFCNdefRecord[] GetRecords(NFCNdefPayload[] records)
 		{
+            if (records == null)
+                return new NFCNdefRecord[0];
+
 			var results = new NFCNdefRecord[records.Length];
 			for (var i = 0; i < records.Length; i++)
 			{

@@ -405,7 +405,10 @@ namespace Plugin.NFC.Maui.Sample
         async Task StartListeningIfNotiOS()
         {
             if (_isDeviceiOS)
+            {
+                SubscribeEvents();
                 return;
+            }
             await BeginListening();
         }
 

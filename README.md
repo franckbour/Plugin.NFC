@@ -1,22 +1,22 @@
 # ![NFC logo][logo] Plugin.NFC
-A Cross-Platform NFC (_Near Field Communication_) plugin to easily read and write NFC tags in your application.
+A Cross-Platform NFC (_Near Field Communication_) plugin to easily read and write NFC tags in your Xamarin Forms or .NET MAUI applications.
 
 This plugin uses **NDEF** (_NFC Data Exchange Format_) for maximum compatibilty between NFC devices, tag types, and operating systems.
 
 ## Status
 |Package|Build|NuGet|MyGet
 |:---|:---|:---|:---
-|Plugin.NFC | [![Build status](https://dev.azure.com/franckbour/franckbour/_apis/build/status/Plugin.NFC-CI)](https://dev.azure.com/franckbour/franckbour/_build/latest?definitionId=1) | ![Nuget](https://img.shields.io/nuget/v/Plugin.NFC.svg?label=Nuget) | ![MyGet](https://img.shields.io/myget/plugin-nfc/v/Plugin.NFC.svg?label=MyGet)
+|Plugin.NFC | [![Build status](https://dev.azure.com/franckbour/franckbour/_apis/build/status/Plugin.NFC-CI)](https://dev.azure.com/franckbour/franckbour/_build/latest?definitionId=1) | [![Nuget](https://img.shields.io/nuget/v/Plugin.NFC.svg?label=Nuget)](https://www.nuget.org/packages/Plugin.NFC) | ![MyGet](https://img.shields.io/myget/plugin-nfc/v/Plugin.NFC.svg?label=MyGet)
 
-CI Feed : https://www.myget.org/F/plugin-nfc/api/v3/index.json
+> CI Feed : https://www.myget.org/F/plugin-nfc/api/v3/index.json
 
 ## Supported Platforms
 Platform|Version|Tested on
 :---|:---|:---
-Android|4.4+|Google Nexus 5, Huawei Mate 10 Pro, Google Pixel 4a
+Android|4.4+|Google Nexus 5, Huawei Mate 10 Pro, Google Pixel 4a, Google Pixel 6a
 iOS|11+|iPhone 7, iPhone 8
 
-> Windows is currently not supported. Pull Requests are welcomed! 
+> Windows, Mac and Linux are currently not supported. Pull Requests are welcomed! 
 
 ## Setup
 ### Android Specific
@@ -30,15 +30,11 @@ iOS|11+|iPhone 7, iPhone 8
 ```csharp
 protected override void OnCreate(Bundle savedInstanceState)
 {
-    TabLayoutResource = Resource.Layout.Tabbar;
-    ToolbarResource = Resource.Layout.Toolbar;
-    base.OnCreate(savedInstanceState);
-    
-    // Plugin NFC: Initialization
+    // Plugin NFC: Initialization before base.OnCreate(...) (Important on .NET MAUI)
     CrossNFC.Init(this);
 
-    global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-    LoadApplication(new App());
+    base.OnCreate(savedInstanceState);
+    [...]
 }
 ```
 * Add the line `CrossNFC.OnResume()` in your `OnResume()`

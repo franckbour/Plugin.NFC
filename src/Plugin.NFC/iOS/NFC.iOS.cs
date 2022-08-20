@@ -10,10 +10,10 @@ using UIKit;
 
 namespace Plugin.NFC
 {
-	/// <summary>
-	/// iOS 13+ implementation of <see cref="INFC"/>
-	/// </summary>
-	public class NFCImplementation : NFCTagReaderSessionDelegate, INFC
+    /// <summary>
+    /// iOS 13+ implementation of <see cref="INFC"/>
+    /// </summary>
+    public class NFCImplementation : NFCTagReaderSessionDelegate, INFC
 	{
 		public const string SessionTimeoutMessage = "session timeout";
 
@@ -34,10 +34,10 @@ namespace Plugin.NFC
 
 		NFCTagReaderSession NfcSession { get; set; }
 
-		/// <summary>
-		/// Checks if NFC Feature is available
-		/// </summary>
-		public bool IsAvailable => NFCReaderSession.ReadingAvailable;
+        /// <summary>
+        /// Checks if NFC Feature is available
+        /// </summary>
+        public bool IsAvailable => NFCReaderSession.ReadingAvailable;
 
 		/// <summary>
 		/// Checks if NFC Feature is enabled
@@ -93,10 +93,10 @@ namespace Plugin.NFC
 			NfcSession?.InvalidateSession();
 		}
 
-		/// <summary>
-		/// Starts tag publishing (writing or formatting)
-		/// </summary>
-		/// <param name="clearMessage">Format tag</param>
+        /// <summary>
+        /// Starts tag publishing (writing or formatting)
+        /// </summary>
+        /// <param name="clearMessage">Format tag</param>
 		public void StartPublishing(bool clearMessage = false)
 		{
 			if (!IsAvailable)
@@ -765,13 +765,13 @@ namespace Plugin.NFC
 			}
 		}
 
-		#region Private
+        #region Private
 
-		/// <summary>
-		/// Returns the current iOS controller
-		/// </summary>
-		/// <returns>Object <see cref="UIViewController"/></returns>
-		UIViewController GetCurrentController()
+        /// <summary>
+        /// Returns the current iOS controller
+        /// </summary>
+        /// <returns>Object <see cref="UIViewController"/></returns>
+        UIViewController GetCurrentController()
 		{
 			var window = UIApplication.SharedApplication.KeyWindow;
 			var vc = window.RootViewController;
@@ -1168,6 +1168,9 @@ namespace Plugin.NFC
 		/// <returns>Array of <see cref="NFCNdefRecord"/></returns>
 		internal static NFCNdefRecord[] GetRecords(NFCNdefPayload[] records)
 		{
+            if (records == null)
+                return new NFCNdefRecord[0];
+
 			var results = new NFCNdefRecord[records.Length];
 			for (var i = 0; i < records.Length; i++)
 			{
@@ -1242,6 +1245,19 @@ namespace Plugin.NFC
 				return null;
 
 			INFCNdefTag ndef;
+
+#if NET6_0_OR_GREATER
+			if (tag.Type == CoreNFC.NFCTagType.MiFare)
+				ndef = tag.AsNFCMiFareTag;
+			else if (tag.Type == CoreNFC.NFCTagType.Iso7816Compatible)
+				ndef = tag.AsNFCIso7816Tag;
+			else if (tag.Type == CoreNFC.NFCTagType.Iso15693)
+				ndef = tag.AsNFCIso15693Tag;
+			else if (tag.Type == CoreNFC.NFCTagType.FeliCa)
+				ndef = tag.AsNFCFeliCaTag;
+			else
+				ndef = null;
+#else
 			if (tag.GetNFCMiFareTag() != null)
 				ndef = tag.GetNFCMiFareTag();
 			else if (tag.GetNFCIso7816Tag() != null)
@@ -1252,6 +1268,7 @@ namespace Plugin.NFC
 				ndef = tag.GetNFCFeliCaTag();
 			else
 				ndef = null;
+#endif
 
 			return ndef;
 		}

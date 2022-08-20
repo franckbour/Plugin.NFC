@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Plugin.NFC.Maui.Sample.MainPage"
+             x:Name="thisPage"
+             BindingContext="{x:Reference thisPage}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Button">
+                <Setter Property="BorderColor" Value="Gray" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="BackgroundColor" Value="WhiteSmoke" />
+                <Setter Property="TextTransform" Value="Uppercase" />
+                <Setter Property="TextColor" Value="Gray" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- ScrollView Issue on .NET Maui (iOS) GH#8557 (https://github.com/dotnet/maui/issues/8447) fixed in SR3 (?) -->
+    <ScrollView>
+        <StackLayout VerticalOptions="CenterAndExpand" Spacing="10" Margin="50,0">
+            <Label FontSize="Title"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   Text="Plugin NFC Maui Sample" />
+
+            <Button Clicked="Button_Clicked_StartListening"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Read Tag" />
+
+            <Button Clicked="Button_Clicked_StopListening"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Stop Listener" />
+
+            <Frame BorderColor="Gray" HasShadow="False">
+                <StackLayout Spacing="5">
+
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                        <CheckBox x:Name="ChkReadOnly"
+                                  IsChecked="False"
+                                  IsEnabled="{Binding NfcIsEnabled}"
+                                  VerticalOptions="Center"
+                                  Color="Red" />
+
+                        <Label FontAttributes="Bold"
+                               Text="Make Tag Read-Only"
+                               TextColor="Red"
+                               VerticalOptions="Center" />
+                    </StackLayout>
+
+                    <Button Clicked="Button_Clicked_StartWriting"
+                            IsEnabled="{Binding NfcIsEnabled}"
+                            Text="Write Tag (Text)" />
+
+                    <Button Clicked="Button_Clicked_StartWriting_Uri"
+                            IsEnabled="{Binding NfcIsEnabled}"
+                            Text="Write Tag (Uri)" />
+
+                    <Button Clicked="Button_Clicked_StartWriting_Custom"
+                            IsEnabled="{Binding NfcIsEnabled}"
+                            Text="Write Tag (Custom)" />
+
+                </StackLayout>
+            </Frame>
+
+            <Button Clicked="Button_Clicked_FormatTag"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Clear Tag" />
+
+            <Label Margin="0,6,0,0"
+                   Padding="12,6"
+                   BackgroundColor="Blue"
+                   HorizontalOptions="CenterAndExpand"
+                   IsVisible="{Binding DeviceIsListening}"
+                   Text="Listening for NFC Tag..."
+                   TextColor="White" />
+
+            <Label Margin="0,6,0,0"
+                   Padding="12,6"
+                   BackgroundColor="Red"
+                   HorizontalOptions="CenterAndExpand"
+                   IsVisible="{Binding NfcIsDisabled}"
+                   Text="NFC IS DISABLED"
+                   TextColor="White" />
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

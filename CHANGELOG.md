@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.1.24
+- GitHub #113 : [iOS] Fix Null reference Exception when tag contains no records
+- GitHub #97,119 : Add Maui Support (PR #116)
+
 ### 0.1.23
 - GitHub #107 : [iOS] Fix Null Reference Exception on iOS 15.4 (PR #110)
 

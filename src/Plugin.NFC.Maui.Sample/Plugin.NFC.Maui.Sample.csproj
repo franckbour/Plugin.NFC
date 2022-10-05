@@ -47,4 +47,7 @@
 	  <ProjectReference Include="..\Plugin.NFC\Plugin.NFC.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Platforms\Android\Resources\xml\" />
+	</ItemGroup>
 </Project>

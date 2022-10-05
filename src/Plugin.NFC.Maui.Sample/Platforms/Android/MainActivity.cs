@@ -8,6 +8,7 @@ namespace Plugin.NFC.Maui.Sample
 {
     [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
     [IntentFilter(new[] { NfcAdapter.ActionNdefDiscovered }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = MainPage.MIME_TYPE)]
+    [MetaData(NfcAdapter.ActionTechDiscovered, Resource = "@xml/nfc_tech_filters")]
     public class MainActivity : MauiAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)

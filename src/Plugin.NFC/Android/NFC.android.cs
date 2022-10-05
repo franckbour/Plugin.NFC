@@ -14,8 +14,8 @@ namespace Plugin.NFC
 	/// <summary>
 	/// Android implementation of <see cref="INFC"/>
 	/// </summary>
-	public class NFCImplementation : INFC
-	{
+	public class NFCImplementation : Java.Lang.Object, INFC, NfcAdapter.IReaderCallback
+    {
 		public event EventHandler OnTagConnected;
 		public event EventHandler OnTagDisconnected;
 		public event NdefMessageReceivedEventHandler OnMessageReceived;
@@ -92,33 +92,11 @@ namespace Plugin.NFC
 			if (_nfcAdapter == null)
 				return;
 
-			var intent = new Intent(CurrentActivity, CurrentActivity.GetType()).AddFlags(ActivityFlags.SingleTop);
+            var flags = NfcReaderFlags.NfcA | NfcReaderFlags.NfcB | NfcReaderFlags.NfcF
+				| NfcReaderFlags.NfcV | NfcReaderFlags.NfcBarcode | NfcReaderFlags.SkipNdefCheck;
+            _nfcAdapter.EnableReaderMode(CurrentActivity, this, flags, null);
 
-			// We don't use MonoAndroid12.0 as targetframework for easier backward compatibility:
-			// MonoAndroid12.0 needs JDK 11.
-			PendingIntentFlags pendingIntentFlags = 0;
-
-#if NET6_0_OR_GREATER
-            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.S)
-                pendingIntentFlags = PendingIntentFlags.Mutable;
-#else
-            if ((int)Android.OS.Build.VERSION.SdkInt >= 31) //Android.OS.BuildVersionCodes.S
-				pendingIntentFlags = (PendingIntentFlags)33554432; //PendingIntentFlags.Mutable
-#endif
-
-            var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, pendingIntentFlags);
-
-			var ndefFilter = new IntentFilter(NfcAdapter.ActionNdefDiscovered);
-			ndefFilter.AddDataType("*/*");
-
-			var tagFilter = new IntentFilter(NfcAdapter.ActionTagDiscovered);
-			tagFilter.AddCategory(Intent.CategoryDefault);
-
-			var filters = new IntentFilter[] { ndefFilter, tagFilter };
-
-			_nfcAdapter.EnableForegroundDispatch(CurrentActivity, pendingIntent, filters, null);
-
-			_isListening = true;
+            _isListening = true;
 			OnTagListeningStatusChanged?.Invoke(_isListening);
 		}
 
@@ -129,7 +107,7 @@ namespace Plugin.NFC
 		{
 			DisablePublishing();
 			if (_nfcAdapter != null)
-				_nfcAdapter.DisableForegroundDispatch(CurrentActivity);
+				_nfcAdapter.DisableReaderMode(CurrentActivity);
 
 			_isListening = false;
 			OnTagListeningStatusChanged?.Invoke(_isListening);
@@ -265,39 +243,31 @@ namespace Plugin.NFC
 			}
 		}
 
-		/// <summary>
-		/// Handle Android OnNewIntent
-		/// </summary>
-		/// <param name="intent">Android <see cref="Intent"/></param>
-		internal void HandleNewIntent(Intent intent)
-		{
-			if (intent == null)
-				return;
+        void NfcAdapter.IReaderCallback.OnTagDiscovered(Tag tag)
+        {
+            _currentTag = tag;
 
-			if (intent.Action == NfcAdapter.ActionTagDiscovered || intent.Action == NfcAdapter.ActionNdefDiscovered)
-			{
-				_currentTag = intent.GetParcelableExtra(NfcAdapter.ExtraTag) as Tag;
-				if (_currentTag != null)
-				{
-					var nTag = GetTagInfo(_currentTag);
-					if (_isWriting)
-					{
-						// Write mode
-						OnTagDiscovered?.Invoke(nTag, _isFormatting);
-					}
-					else
-					{
-						// Read mode
-						OnMessageReceived?.Invoke(nTag);
-					}
-				}
-			}
-		}
+            if (_currentTag != null)
+            {
+                var nTag = GetTagInfo(_currentTag);
 
-		/// <summary>
-		/// Handle Android OnResume
-		/// </summary>
-		internal void HandleOnResume()
+                if (_isWriting)
+                {
+                    // Write mode
+                    OnTagDiscovered?.Invoke(nTag, _isFormatting);
+                }
+                else
+                {
+                    // Read mode
+                    OnMessageReceived?.Invoke(nTag);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handle Android OnResume
+        /// </summary>
+        internal void HandleOnResume()
 		{
 			// Android 10 fix:
 			// If listening mode is already enable, we restart listening when activity is resumed

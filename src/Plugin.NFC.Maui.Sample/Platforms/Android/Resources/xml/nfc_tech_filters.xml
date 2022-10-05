@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <tech-list>
+        <tech>android.nfc.tech.NfcA</tech>
+        <!-- Support old tags -->
+        <tech>android.nfc.tech.MifareClassic</tech>
+    </tech-list>
+</resources>

@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Plugin.NFC.Maui.Sample.MainPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Name="thisPage"
+             BindingContext="{x:Reference thisPage}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style TargetType="Label">
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style TargetType="Grid">
+                <Setter Property="RowSpacing" Value="16" />
+                <Setter Property="ColumnSpacing" Value="8" />
+            </Style>
+
+            <Style TargetType="Border">
+                <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+                <Setter Property="Stroke" Value="Gray" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="Padding" Value="16" />
+            </Style>
+
+            <Style x:Key="LabelMessage" TargetType="Label">
+                <Setter Property="Padding" Value="12,6" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="White" />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+
+        <Grid Margin="30"
+              ColumnDefinitions="*"
+              RowDefinitions="auto,auto,auto,auto,auto"
+              VerticalOptions="Center">
+
+            <VerticalStackLayout Grid.Row="0" Spacing="8">
+
+                <Label BackgroundColor="Blue"
+                       IsVisible="{Binding DeviceIsListening}"
+                       Style="{StaticResource LabelMessage}"
+                       Text="Listening for NFC Tag..." />
+
+                <Label BackgroundColor="Red"
+                       IsVisible="{Binding NfcIsDisabled}"
+                       Style="{StaticResource LabelMessage}"
+                       Text="NFC IS DISABLED" />
+
+            </VerticalStackLayout>
+
+            <Button Grid.Row="1"
+                    Clicked="Button_Clicked_StartListening"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Read Tag" />
+
+            <Button Grid.Row="2"
+                    Clicked="Button_Clicked_StopListening"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Stop Listener" />
+
+            <Border Grid.Row="3">
+
+                <Grid RowDefinitions="*,*,*,*">
+
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="auto,*"
+                          HorizontalOptions="Center">
+
+                        <CheckBox x:Name="ChkReadOnly"
+                                  Grid.Column="0"
+                                  IsChecked="False"
+                                  IsEnabled="{Binding NfcIsEnabled}"
+                                  VerticalOptions="Center"
+                                  Color="Red" />
+
+                        <Label Grid.Column="1"
+                               FontAttributes="Bold"
+                               Text="Make Tag Read-Only"
+                               TextColor="Red"
+                               VerticalOptions="Center" />
+                    </Grid>
+
+                    <Button Grid.Row="1"
+                            Clicked="Button_Clicked_StartWriting"
+                            IsEnabled="{Binding NfcIsEnabled}"
+                            Text="Write Tag (Text)" />
+
+                    <Button Grid.Row="2"
+                            Clicked="Button_Clicked_StartWriting_Uri"
+                            IsEnabled="{Binding NfcIsEnabled}"
+                            Text="Write Tag (Uri)" />
+
+                    <Button Grid.Row="3"
+                            Clicked="Button_Clicked_StartWriting_Custom"
+                            IsEnabled="{Binding NfcIsEnabled}"
+                            Text="Write Tag (Custom)" />
+
+                </Grid>
+            </Border>
+
+            <Button Grid.Row="4"
+                    BackgroundColor="Red"
+                    Clicked="Button_Clicked_FormatTag"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Clear Tag" />
+
+        </Grid>
+
+    </ScrollView>
+
+</ContentPage>

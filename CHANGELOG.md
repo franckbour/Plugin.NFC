@@ -1,5 +1,9 @@
 ## Changelog
 
+### 1.0.0
+- Update .NET Maui support
+- Remove Xamarin support
+
 ### 0.1.26
 - GitHub #113 : [iOS] Fix Null reference Exception when tag contains no records
 - GitHub #97,119 : Add Maui Support (PR #116)

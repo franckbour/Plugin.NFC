@@ -1,5 +1,5 @@
 # ![NFC logo][logo] Plugin.NFC
-A Cross-Platform NFC (_Near Field Communication_) plugin to easily read and write NFC tags in your Xamarin Forms or .NET MAUI applications.
+A Cross-Platform NFC (_Near Field Communication_) plugin to easily read and write NFC tags in your **.NET MAUI** applications.
 
 This plugin uses **NDEF** (_NFC Data Exchange Format_) for maximum compatibilty between NFC devices, tag types, and operating systems.
 
@@ -11,65 +11,82 @@ This plugin uses **NDEF** (_NFC Data Exchange Format_) for maximum compatibilty 
 > CI Feed : https://www.myget.org/F/plugin-nfc/api/v3/index.json
 
 ## Supported Platforms
-Platform|Version|Tested on
-:---|:---|:---
-Android|4.4+|Google Nexus 5, Huawei Mate 10 Pro, Google Pixel 4a, Google Pixel 6a
-iOS|11+|iPhone 7, iPhone 8
+Platform|SDK Version|Tested on|Test Devices
+:---|:---|:---|:---
+Android|21+|Android 16|Google Pixel 6a, Google Pixel 9a
+iOS|14.2+|iOS 18.2|iPhone 8, iPhone 16
 
 > Windows, Mac and Linux are currently not supported. Pull Requests are welcomed! 
 
 ## Setup
-### Android Specific
+
+* Initialize the NFC plugin using `UseNfc(INfcOptions? options)` in your MauiProgram.cs:
+```csharp
+// Add the using to the top
+using Plugin.NFC.Hosting;
+
+public static MauiApp CreateMauiApp()
+{
+    var builder = MauiApp.CreateBuilder();
+
+    builder
+        .UseMauiApp<App>()
+        .UseNfc()
+        ...
+
+    return builder.Build();
+}
+```
+
+* Customize the NFC plugin
+```csharp
+UseNfc(options =>
+{
+    // enable legacy mode for iOS (in order to read Mifare Classic 1K tags for example)
+    options.LegacyMode = true;
+
+    // customize ui messages (ex. UI messages in French)
+    options.Configuration = new Configuration.NfcConfiguration
+    {
+        DefaultLanguageCode = "fr",
+        Messages = new Configuration.UserDefinedMessages
+        {
+            NFCSessionInvalidated = "Session invalidée",
+            NFCSessionInvalidatedButton = "OK",
+            NFCWritingNotSupported = "L'écriture des TAGs NFC n'est pas supportée sur cet appareil",
+            NFCDialogAlertMessage = "Approchez votre appareil du tag NFC",
+            NFCErrorRead = "Erreur de lecture. Veuillez réessayer",
+            NFCErrorEmptyTag = "Ce tag est vide",
+            NFCErrorReadOnlyTag = "Ce tag n'est pas accessible en écriture",
+            NFCErrorCapacityTag = "La capacité de ce TAG est trop basse",
+            NFCErrorMissingTag = "Aucun tag trouvé",
+            NFCErrorMissingTagInfo = "Aucune information à écrire sur le tag",
+            NFCErrorNotSupportedTag = "Ce tag n'est pas supporté",
+            NFCErrorNotCompliantTag = "Ce tag n'est pas compatible NDEF",
+            NFCErrorWrite = "Aucune information à écrire sur le tag",
+            NFCSuccessRead = "Lecture réussie",
+            NFCSuccessWrite = "Ecriture réussie",
+            NFCSuccessClear = "Effaçage réussi"
+        }
+    };
+})
+```
+
+## Platform specifics (configuration)
+
+### Android
 * Add NFC Permission `android.permission.NFC` and NFC feature `android.hardware.nfc` in your `AndroidManifest.xml`
 ```xml
 <uses-permission android:name="android.permission.NFC" />
 <uses-feature android:name="android.hardware.nfc" android:required="false" />
 ```
 
-* Add the line `CrossNFC.Init(this)` in your `OnCreate()`
-```csharp
-protected override void OnCreate(Bundle savedInstanceState)
-{
-    // Plugin NFC: Initialization before base.OnCreate(...) (Important on .NET MAUI)
-    CrossNFC.Init(this);
-
-    base.OnCreate(savedInstanceState);
-    [...]
-}
-```
-* Add the line `CrossNFC.OnResume()` in your `OnResume()`
-```csharp
-protected override void OnResume()
-{
-    base.OnResume();
-
-    // Plugin NFC: Restart NFC listening on resume (needed for Android 10+) 
-    CrossNFC.OnResume();
-}
-```
-
-* Add the line `CrossNFC.OnNewIntent(intent)` in your `OnNewIntent()`
-```csharp
-protected override void OnNewIntent(Intent intent)
-{
-    base.OnNewIntent(intent);
-
-    // Plugin NFC: Tag Discovery Interception
-    CrossNFC.OnNewIntent(intent);
-}
-```
-
-### iOS Specific
-
-> iOS 13+ is required for writing tags.
-
-An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
+### iOS
 
 * Add `Near Field Communication Tag Reading` capabilty in your `Entitlements.plist`
 ```xml
 <key>com.apple.developer.nfc.readersession.formats</key>
 <array>
-    <string>NDEF</string>
     <string>TAG</string>
 </array>
 ```
@@ -80,40 +97,26 @@ An iPhone 7+ and iOS 11+ are required in order to use NFC with iOS devices.
 <string>NFC tag to read NDEF messages into the application</string>
 ```
 
-* Add these lines in your Info.plist if you want to interact with ISO 7816 compatible tags
-```xml
-<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
-<string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
-```
-
-* Add these lines in your Info.plist if you want to interact with Mifare Desfire EV3 compatible tags
+* Add these lines in your Info.plist if you want to interact with ISO 7816 compatible tags and NDEF/Mifare Desfire EV3 compatible tags
 ```xml
 <key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
 <array>
     <string>com.apple.developer.nfc.readersession.iso7816.select-identifiers</string>
     <string>D2760000850100</string>
+    <string>D2760000850101</string>
+    <!--  Add other AID here if needed  -->
 </array>
 ```
 
-#### iOS Considerations
+> For more information, list of Application Identifiers (AID) can be found on [EFTlab](https://www.eftlab.com/knowledge-base/complete-list-of-application-identifiers-aid).
 
-If you are having issues reading Mifare Classic 1K cards - the chances are the issue is not with this library, but with Apple's API.
-
-On iOS 11, apple released the ability to READ NFC NDEF data only using the NfcNdefReaderSession API (https://developer.apple.com/documentation/corenfc/nfcndefreadersession)
-
-A Mifare Classic 1K card will scan if there is a valid NDEF record on it. A blank card will not scan.
-
-In iOS 11, it was not possible to obtain the CSN (serial number/identity) from NFC tags/card.
-
-With iOS 13, along came the ability to write NDEF data AND read serial numbers. However, rather then adapting the NfcNdefReaderSession API, Apple created a NEW API called NfcTagReaderSession (https://developer.apple.com/documentation/corenfc/nfctagreadersession) and left the old NfcNdefReaderSession API untouched.
+#### iOS Considerations: Mifare Classik 1k and Legacy mode
 
 The new NfcTagReaderSession API in iOS 13 no longer supports Mifare Classic 1K cards period. No idea why - but if you look at Apple's Dev Forums multiple people have spotted the same thing.
 
 So even if you have a Mifare Classic 1K card which reads fine with the old iOS 11 NfcNdefReaderSession API, that same card will not even scan with iOS 13's NfcTagReaderSession API.
 
-If you need to read NDEF data off of a Mifare Classic 1K card, then you can:
--  use version 0.1.11 of this library as it was written with the NfcNdefReaderSession API.
--  use `CrossNFC.Legacy` from 0.1.20+ which allow you to switch between NfcTagReaderSession and NfcNdefReaderSession on-the-fly.
+If you need to read NDEF data off of a Mifare Classic 1K card, then you set `UseNfc(options => options.LegacyMode = true)` in your `MauiProgram.cs`.
 
 Unfortunately, even with iOS 13, it seems there is no way to read the serial number / CSN off of a Mifare Classic 1K card.
 
@@ -121,35 +124,42 @@ Unfortunately, even with iOS 13, it seems there is no way to read the serial num
 
 Before to use the plugin, please check if NFC feature is supported by the platform using `CrossNFC.IsSupported`.
 
-To get the current platform implementation of the plugin, please call `CrossNFC.Current`:
-* Check `CrossNFC.Current.IsAvailable` to verify if NFC is available.
-* Check `CrossNFC.Current.IsEnabled` to verify if NFC is enabled. 
-* Register events:
+### Event list to subscribe
 ```csharp
+// Event raised when a tag is connected
+public event EventHandler? OnTagConnected;
+
+// Event raised when a tag is disconnected
+public event EventHandler? OnTagDisconnected;
+
 // Event raised when a ndef message is received.
-CrossNFC.Current.OnMessageReceived += Current_OnMessageReceived;
+public event NdefMessageReceivedEventHandler? OnMessageReceived;
+
 // Event raised when a ndef message has been published.
-CrossNFC.Current.OnMessagePublished += Current_OnMessagePublished;
+public event NdefMessagePublishedEventHandler? OnMessagePublished;
+
 // Event raised when a tag is discovered. Used for publishing.
-CrossNFC.Current.OnTagDiscovered += Current_OnTagDiscovered;
+public event TagDiscoveredEventHandler? OnTagDiscovered;
+
 // Event raised when NFC listener status changed
-CrossNFC.Current.OnTagListeningStatusChanged += Current_OnTagListeningStatusChanged;
+public event TagListeningStatusChangedEventHandler? OnTagListeningStatusChanged;
 
 // Android Only:
 // Event raised when NFC state has changed.
-CrossNFC.Current.OnNfcStatusChanged += Current_OnNfcStatusChanged;
+public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
 
 // iOS Only: 
 // Event raised when a user cancelled NFC session.
-CrossNFC.Current.OniOSReadingSessionCancelled += Current_OniOSReadingSessionCancelled;
+public event EventHandler OniOSReadingSessionCancelled;
 ```
 
 ### Launch app when a compatible tag is detected on Android
 
 In Android, you can use `IntentFilter` attribute on your `MainActivity` to initialize tag listening.
 ```csharp
-[IntentFilter(new[] { NfcAdapter.ActionNdefDiscovered }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = "application/com.companyname.yourapp")]
-public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity 
+[Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+[IntentFilter(new[] { NfcAdapter.ActionNdefDiscovered }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = MainPage.MIME_TYPE)]
+public class MainActivity : ... 
 {
     ...
 }
@@ -163,56 +173,29 @@ var record = new NFCNdefRecord {
 };
 ``` 
 
-
 ### Read a tag
-* Start listening with `CrossNFC.Current.StartListening()`.
+* Start listening with `StartListening()`.
 * When a NDEF message is received, the event `OnMessageReceived` is raised.
 
 ### Write a tag
-* To write a tag, call `CrossNFC.Current.StartPublishing()`
-* Then `CrossNFC.Current.PublishMessage(ITagInfo)` when `OnTagDiscovered` event is raised. 
-* Do not forget to call `CrossNFC.Current.StopPublishing()` once the tag has been written.
+* To write a tag, call `StartPublishing()`
+* Then `PublishMessage(ITagInfo)` when `OnTagDiscovered` event is raised. 
+* Do not forget to call `StopPublishing()` once the tag has been written.
 
 ### Erase/format a tag
-* To erase a tag, call `CrossNFC.Current.StartPublishing(clearMessage: true)`.
-* Then `CrossNFC.Current.PublishMessage(ITagInfo)` when `OnTagDiscovered` event is raised.
-* Do not forget to call `CrossNFC.Current.StopPublishing()` once the tag has been cleared.
+* To erase a tag, call `StartPublishing(clearMessage: true)`.
+* Then `PublishMessage(ITagInfo)` when `OnTagDiscovered` event is raised.
+* Do not forget to call `StopPublishing()` once the tag has been cleared.
 
-> **Android Only**: If the tag is `NdefFormatable`, the `CrossNFC.Current.StartPublishing(clearMessage: true)` method will format it.
+If the tag is `NdefFormatable`, the `StartPublishing(clearMessage: true)` method will format it.
 
-For more examples, see sample application in the repository.
-
-### Customizing UI messages
-* Set a new `NfcConfiguration` object to `CrossNFC.Current` with `SetConfiguration(NfcConfiguration cfg)` method like below
-
-```Csharp
-// Custom NFC configuration (ex. UI messages in French)
-CrossNFC.Current.SetConfiguration(new NfcConfiguration
-{
-    Messages = new UserDefinedMessages
-    {
-        NFCSessionInvalidated = "Session invalidée",
-        NFCSessionInvalidatedButton = "OK",
-        NFCWritingNotSupported = "L'écriture des TAGs NFC n'est pas supporté sur cet appareil",
-        NFCDialogAlertMessage = "Approchez votre appareil du tag NFC",
-        NFCErrorRead = "Erreur de lecture. Veuillez rééssayer",
-        NFCErrorEmptyTag = "Ce tag est vide",
-        NFCErrorReadOnlyTag = "Ce tag n'est pas accessible en écriture",
-        NFCErrorCapacityTag = "La capacité de ce TAG est trop basse",
-        NFCErrorMissingTag = "Aucun tag trouvé",
-        NFCErrorMissingTagInfo = "Aucune information à écrire sur le tag",
-        NFCErrorNotSupportedTag = "Ce tag n'est pas supporté",
-        NFCErrorNotCompliantTag = "Ce tag n'est pas compatible NDEF",
-        NFCErrorWrite = "Aucune information à écrire sur le tag",
-        NFCSuccessRead = "Lecture réussie",
-        NFCSuccessWrite = "Ecriture réussie",
-        NFCSuccessClear = "Effaçage réussi"
-    }
-});
-```
+> **For more examples, see sample applications in the repository.**
 
 ## Tutorials
-Thanks to Saamer Mansoor ([@saamerm](https://github.com/saamerm)) who wrote this excellent article on [Medium](https://medium.com/@prototypemakers/start-building-with-nfc-rfid-tags-on-ios-android-using-xamarin-today-2268cf86d3b4) about Plugin.NFC and how to use it, check it out!
+
+> Warning: this tutorial is based on an older version of this plugin.
+
+Thanks to Saamer Mansoor ([@saamerm](https://github.com/saamerm)) who wrote this excellent article on [Medium](https://medium.com/@prototypemakers/start-building-with-nfc-rfid-tags-on-ios-android-using-xamarin-today-2268cf86d3b4) about Plugin.NFC and how to use it on Xamarin, check it out!
 
 He also made this video:
 

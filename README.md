@@ -6,7 +6,7 @@ This plugin uses **NDEF** (_NFC Data Exchange Format_) for maximum compatibilty 
 ## Status
 |Package|NuGet|MyGet
 |:---|:---|:---
-|Plugin.NFC | [![Nuget](https://img.shields.io/nuget/v/Plugin.NFC.svg?label=Nuget)](https://www.nuget.org/packages/Plugin.NFC) | ![MyGet](https://img.shields.io/myget/plugin-nfc/v/Plugin.NFC.svg?label=MyGet)
+|Plugin.NFC | [![Nuget](https://img.shields.io/nuget/v/Plugin.NFC.svg?label=Nuget)](https://www.nuget.org/packages/Plugin.NFC) | ![MyGet](https://img.shields.io/myget/plugin-nfc/vpre/Plugin.NFC.svg?label=MyGet)
 
 > CI Feed : https://www.myget.org/F/plugin-nfc/api/v3/index.json
 

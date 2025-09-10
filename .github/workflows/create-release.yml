@@ -1,0 +1,76 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+    - "[0-9]+.[0-9]+.[0-9]+"
+
+env:
+    DOTNET_VERSION: '8.0.x'
+
+jobs:
+  create-release:
+    runs-on: windows-latest
+
+    permissions:
+      contents: write  # Nécessaire pour créer la release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{env.DOTNET_VERSION}}
+
+      - name: Install .NET Maui Workload
+        run: dotnet workload restore src/Plugin.NFC/Plugin.NFC.csproj
+
+      # --- GitVersion ---
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4.1.0
+        with:
+          versionSpec: '6.3.x'
+        
+      - name: Determine version
+        id: version_step
+        uses: gittools/actions/gitversion/execute@v4.1.0
+        with:
+          configFilePath: '.github/GitVersion.yml'
+
+      # --- Build & Pack ---
+      - name: Restore dependencies
+        run: dotnet restore src/Plugin.NFC/Plugin.NFC.csproj
+
+      - name: Build
+        run: dotnet build src/Plugin.NFC/Plugin.NFC.csproj -c Release /p:Version=${{ steps.version_step.outputs.SemVer }} --no-restore
+
+      - name: Pack NuGet
+        run: dotnet pack src/Plugin.NFC/Plugin.NFC.csproj -c Release /p:PackageVersion=${{ steps.version_step.outputs.SemVer }} --no-build -o ./artifacts
+
+      # --- Generate changelog ---
+      - name: Generate changelog
+        uses: johnyherangi/create-release-notes@main
+        id: create-release-notes
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # --- GitHub Release ---
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version_step.outputs.SemVer }}
+          name: ${{ steps.version_step.outputs.SemVer }}
+          draft: true
+          generate_release_notes: true
+          body: |
+            ## 🚀 What's changed
+            ${{ steps.create-release-notes.outputs.release-notes  }}
+          files: |
+           ./artifacts/*.nupkg
+           ./artifacts/*.snupkg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

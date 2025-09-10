@@ -1,0 +1,39 @@
+name: Deploy Nuget
+
+on:
+  release:
+    types: [published]
+
+env:
+  mygetApiKey: ${{ secrets.MYGET_API_KEY }}
+  nugetApiKey: ${{ secrets.NUGET_API_KEY }}
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+
+    env:
+      DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION: true
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+    steps:
+      - name: Download packages
+        id: download-packages
+        uses: robinraju/release-downloader@v1.12
+        with:
+          repository: ${{ github.repository }}
+          tag: ${{ github.event.release.tag_name }}
+          fileName: "*"
+          out-file-path: "Artifacts/"
+          tarBall: false
+          zipBall: false
+
+      # --- Push to MyGet ---
+      - name: Push to MyGet
+        run: dotnet nuget push "Artifacts/*.nupkg" --api-key ${{ env.mygetApiKey }} --source https://www.myget.org/F/plugin-nfc/api/v3/index.json --skip-duplicate
+
+      # --- Push to NuGet.org (only stable) ---
+      - name: Push to NuGet.org
+        run: dotnet nuget push "Artifacts/*.nupkg" --api-key ${{ env.nugetApiKey }} --source https://api.nuget.org/v3/index.json --skip-duplicate

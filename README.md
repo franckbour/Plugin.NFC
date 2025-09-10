@@ -4,9 +4,9 @@ A Cross-Platform NFC (_Near Field Communication_) plugin to easily read and writ
 This plugin uses **NDEF** (_NFC Data Exchange Format_) for maximum compatibilty between NFC devices, tag types, and operating systems.
 
 ## Status
-|Package|Build|NuGet|MyGet
-|:---|:---|:---|:---
-|Plugin.NFC | [![Build status](https://dev.azure.com/franckbour/franckbour/_apis/build/status/Plugin.NFC-CI)](https://dev.azure.com/franckbour/franckbour/_build/latest?definitionId=1) | [![Nuget](https://img.shields.io/nuget/v/Plugin.NFC.svg?label=Nuget)](https://www.nuget.org/packages/Plugin.NFC) | ![MyGet](https://img.shields.io/myget/plugin-nfc/v/Plugin.NFC.svg?label=MyGet)
+|Package|NuGet|MyGet
+|:---|:---|:---
+|Plugin.NFC | [![Nuget](https://img.shields.io/nuget/v/Plugin.NFC.svg?label=Nuget)](https://www.nuget.org/packages/Plugin.NFC) | ![MyGet](https://img.shields.io/myget/plugin-nfc/v/Plugin.NFC.svg?label=MyGet)
 
 > CI Feed : https://www.myget.org/F/plugin-nfc/api/v3/index.json
 

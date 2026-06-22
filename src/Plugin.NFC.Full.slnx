@@ -1,0 +1,31 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Ad-Hoc" />
+    <BuildType Name="AppStore" />
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM" />
+    <Platform Name="iPhone" />
+    <Platform Name="iPhoneSimulator" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Samples/">
+    <Project Path="../samples/Plugin.NFC.Maui.Sample/Plugin.NFC.Maui.Sample.csproj">
+      <BuildType Solution="Ad-Hoc|*" Project="Debug" />
+      <BuildType Solution="AppStore|*" Project="Debug" />
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="../.editorconfig" />
+    <File Path="../.gitignore" />
+    <File Path="../CHANGELOG.md" />
+    <File Path="../README.md" />
+  </Folder>
+  <Project Path="Plugin.NFC/Plugin.NFC.csproj">
+    <BuildType Solution="Ad-Hoc|*" Project="Debug" />
+    <BuildType Solution="AppStore|*" Project="Debug" />
+  </Project>
+</Solution>

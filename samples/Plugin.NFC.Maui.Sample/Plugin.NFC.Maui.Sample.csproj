@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
+		<TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>Plugin.NFC.Maui.Sample</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -20,13 +20,13 @@
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 		<CodesignKey>iPhone Developer</CodesignKey>
 		<ProvisioningType>automatic</ProvisioningType>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
+	<PropertyGroup Condition="'$(TargetFramework)'=='net10.0-ios'">
 	  <ProvisioningType>manual</ProvisioningType>
 	  <CodesignKey>Apple Development: Created via API (73NQM8JBVD)</CodesignKey>
 	  <CodesignProvision>VS: com.companyname.plugin.nfc.maui.sample Development</CodesignProvision>

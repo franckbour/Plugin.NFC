@@ -14,7 +14,7 @@ This plugin uses **NDEF** (_NFC Data Exchange Format_) for maximum compatibilty 
 Platform|SDK Version|Tested on|Test Devices
 :---|:---|:---|:---
 Android|21+|Android 16|Google Pixel 6a, Google Pixel 9a
-iOS|14.2+|iOS 18.2|iPhone 8, iPhone 16
+iOS|15.0+|iOS 18.2|iPhone 8, iPhone 16
 
 > Windows, Mac and Linux are currently not supported. Pull Requests are welcomed! 
 

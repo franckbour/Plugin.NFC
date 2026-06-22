@@ -12,7 +12,7 @@ namespace Plugin.NFC;
 /// <summary>
 /// Android implementation of <see cref="INFC"/>
 /// </summary>
-internal sealed class NFCImplementation_Android : INFC
+internal sealed class NFCImplementation_Android : Java.Lang.Object, INFC, NfcAdapter.IReaderCallback
 {
     /// <summary>
     /// Default constructor
@@ -156,39 +156,12 @@ internal sealed class NFCImplementation_Android : INFC
         if (_nfcAdapter is null)
             return;
 
-        var intent = new Intent(CurrentActivity, CurrentActivity.GetType()).AddFlags(ActivityFlags.SingleTop);
+        var flags = NfcReaderFlags.NfcA
+                  | NfcReaderFlags.NfcB
+                  | NfcReaderFlags.NfcF
+                  | NfcReaderFlags.NfcV;
 
-        // We don't use MonoAndroid12.0 as targetframework for easier backward compatibility:
-        // MonoAndroid12.0 needs JDK 11.
-        PendingIntentFlags pendingIntentFlags = 0;
-
-        if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.S)
-            pendingIntentFlags = PendingIntentFlags.Mutable;
-
-        var pendingIntent = PendingIntent.GetActivity(CurrentActivity, 0, intent, pendingIntentFlags);
-
-        var ndefFilter = new IntentFilter(NfcAdapter.ActionNdefDiscovered);
-        ndefFilter.AddDataType("*/*");
-
-        var tagFilter = new IntentFilter(NfcAdapter.ActionTagDiscovered);
-        tagFilter.AddCategory(Intent.CategoryDefault);
-
-        //var techFilter = new IntentFilter(NfcAdapter.ActionTechDiscovered);
-        //var techList = new string[][]
-        //{
-        //    new string[] { "android.nfc.tech.NfcA" },
-        //    new string[] { "android.nfc.tech.NfcB" },
-        //    new string[] { "android.nfc.tech.NfcF" },
-        //    new string[] { "android.nfc.tech.NfcV" },
-        //    new string[] { "android.nfc.tech.Ndef" },
-        //    new string[] { "android.nfc.tech.NdefFormatable" },
-        //    new string[] { "android.nfc.tech.MifareClassic" },
-        //    new string[] { "android.nfc.tech.MifareUltralight" }
-        //};
-
-        var filters = new IntentFilter[] { ndefFilter, tagFilter };
-
-        _nfcAdapter.EnableForegroundDispatch(CurrentActivity, pendingIntent, filters, null);
+        _nfcAdapter.EnableReaderMode(CurrentActivity, this, flags, null);
 
         _isListening = true;
         OnTagListeningStatusChanged?.Invoke(_isListening);
@@ -200,7 +173,7 @@ internal sealed class NFCImplementation_Android : INFC
     public void StopListening()
     {
         DisablePublishing();
-        _nfcAdapter?.DisableForegroundDispatch(CurrentActivity);
+        _nfcAdapter?.DisableReaderMode(CurrentActivity);
 
         _isListening = false;
         OnTagListeningStatusChanged?.Invoke(_isListening);
@@ -238,45 +211,29 @@ internal sealed class NFCImplementation_Android : INFC
     public void ClearMessage(ITagInfo tagInfo) => WriteOrClearMessage(tagInfo, true);
 
     /// <summary>
-    /// Handle Android OnNewIntent
+    /// Handle Tag discovering
     /// </summary>
-    /// <param name="intent">Android <see cref="Intent"/></param>
-    internal void HandleNewIntent(Intent? intent)
+    /// <param name="tag"></param>
+    void NfcAdapter.IReaderCallback.OnTagDiscovered(Tag? tag)
     {
-        if (intent is null)
-            return;
+        _currentTag = tag;
 
-        if (intent.Action == NfcAdapter.ActionTagDiscovered || intent.Action == NfcAdapter.ActionNdefDiscovered)
+        if (_currentTag is not null)
         {
-            Java.Lang.Object? parcelable;
+            var nTag = GetTagInfo(_currentTag);
 
-            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.Tiramisu)
+            if (nTag is null)
+                return;
+
+            if (_isWriting)
             {
-                parcelable = intent.GetParcelableExtra(NfcAdapter.ExtraTag, Java.Lang.Class.ForName("android.nfc.Tag"));
+                // Write mode
+                MainThread.BeginInvokeOnMainThread(() => OnTagDiscovered?.Invoke(nTag, _isFormatting));
             }
             else
             {
-                parcelable = intent.GetParcelableExtra(NfcAdapter.ExtraTag);
-            }
-
-            if (parcelable is Tag tag)
-            {
-                _currentTag = tag;
-
-                var nTag = GetTagInfo(_currentTag);
-                if (nTag is not null)
-                {
-                    if (_isWriting)
-                    {
-                        // Write mode
-                        OnTagDiscovered?.Invoke(nTag, _isFormatting);
-                    }
-                    else
-                    {
-                        // Read mode
-                        OnMessageReceived?.Invoke(nTag);
-                    }
-                }
+                // Read mode
+                MainThread.BeginInvokeOnMainThread(() => OnMessageReceived?.Invoke(nTag));
             }
         }
     }
@@ -324,7 +281,7 @@ internal sealed class NFCImplementation_Android : INFC
                 try
                 {
                     ndefFormatable.Connect();
-                    OnTagConnected?.Invoke(null, EventArgs.Empty);
+                    MainThread.BeginInvokeOnMainThread(() => OnTagConnected?.Invoke(null, EventArgs.Empty));
                     isTagConnected = true;
 
                     ndefFormatable.Format(GetEmptyNdefMessage());
@@ -356,7 +313,7 @@ internal sealed class NFCImplementation_Android : INFC
                 if (ndef is null)
                 {
                     _currentTag = null;
-                    OnTagDisconnected?.Invoke(null, EventArgs.Empty);
+                    MainThread.BeginInvokeOnMainThread(() => OnTagDisconnected?.Invoke(null, EventArgs.Empty));
 
                     throw new Exception("Tag has been successfully formated but an error occured when trying open it again");
                 }
@@ -373,7 +330,7 @@ internal sealed class NFCImplementation_Android : INFC
                 ndef.Connect();
 
                 if (!isTagConnected)
-                    OnTagConnected?.Invoke(null, EventArgs.Empty);
+                    MainThread.BeginInvokeOnMainThread(() => OnTagConnected?.Invoke(null, EventArgs.Empty));
 
                 NdefMessage? message = null;
                 if (clearMessage)
@@ -407,7 +364,7 @@ internal sealed class NFCImplementation_Android : INFC
                     var nTag = GetTagInfo(_currentTag, ndef.NdefMessage)
                         ?? throw new Exception("Missing TagInfo");
 
-                    OnMessagePublished?.Invoke(nTag);
+                    MainThread.BeginInvokeOnMainThread(() => OnMessagePublished?.Invoke(nTag));
                 }
                 else
                     throw new Exception(Configuration.Messages.NFCErrorWrite);
@@ -434,7 +391,7 @@ internal sealed class NFCImplementation_Android : INFC
                     ndef.Close();
 
                 _currentTag = null;
-                OnTagDisconnected?.Invoke(null, EventArgs.Empty);
+                MainThread.BeginInvokeOnMainThread(() => OnTagDisconnected?.Invoke(null, EventArgs.Empty));
             }
         }
         catch (Exception ex)

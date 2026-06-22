@@ -350,7 +350,7 @@ public partial class MainPage : ContentPage
             _type = NFCNdefTypeFormat.Empty;
             if (ChkReadOnly.IsChecked)
             {
-                if (!await DisplayAlert("Warning", "Make a Tag read-only operation is permanent and can't be undone. Are you sure you wish to continue?", "Yes", "No"))
+                if (!await DisplayAlertAsync("Warning", "Make a Tag read-only operation is permanent and can't be undone. Are you sure you wish to continue?", "Yes", "No"))
                 {
                     ChkReadOnly.IsChecked = false;
                     return;
@@ -375,7 +375,7 @@ public partial class MainPage : ContentPage
     /// <param name="message">Message to be displayed</param>
     /// <param name="title">Alert title</param>
     /// <returns>The task to be performed</returns>
-    private Task ShowAlert(string message, string? title = null) => DisplayAlert(string.IsNullOrWhiteSpace(title) ? ALERT_TITLE : title, message, "OK");
+    private Task ShowAlert(string message, string? title = null) => DisplayAlertAsync(string.IsNullOrWhiteSpace(title) ? ALERT_TITLE : title, message, "OK");
 
     /// <summary>
     /// Task to start listening for NFC tags if the user's device platform is not iOS

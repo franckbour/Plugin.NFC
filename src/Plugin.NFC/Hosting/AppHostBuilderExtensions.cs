@@ -17,7 +17,6 @@ public static class AppHostBuilderExtensions
             {
                 lifecycles.AddAndroid(androidLifecycleBuilder =>
                 {
-                    androidLifecycleBuilder.OnNewIntent((_, intent) => CrossNFC.OnNewIntent(intent));
                     androidLifecycleBuilder.OnResume(_ => CrossNFC.OnResume());
                 });
             });

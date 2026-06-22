@@ -18,7 +18,7 @@ public partial class MainPage : ContentPage
 
     private NFCNdefTypeFormat _type;
     private bool _makeReadOnly = false;
-    private bool _eventsAlreadySubscribed = false;
+    private static bool _eventsAlreadySubscribed = false;
 
     private bool _isDeviceiOS;
     private bool _deviceIsListening;
@@ -116,10 +116,7 @@ public partial class MainPage : ContentPage
     /// </summary>
     private void SubscribeEvents()
     {
-        if (_eventsAlreadySubscribed)
-            UnsubscribeEvents();
-
-        _eventsAlreadySubscribed = true;
+        UnsubscribeEvents();
 
         _nfc.OnMessageReceived += Current_OnMessageReceived;
         _nfc.OnMessagePublished += Current_OnMessagePublished;
@@ -129,6 +126,8 @@ public partial class MainPage : ContentPage
 
         if (IsDeviceiOS)
             _nfc.OniOSReadingSessionCancelled += Current_OniOSReadingSessionCancelled;
+
+        _eventsAlreadySubscribed = true;
     }
 
     /// <summary>
@@ -136,14 +135,10 @@ public partial class MainPage : ContentPage
     /// </summary>
     private void UnsubscribeEvents()
     {
-        _nfc.OnMessageReceived -= Current_OnMessageReceived;
-        _nfc.OnMessagePublished -= Current_OnMessagePublished;
-        _nfc.OnTagDiscovered -= Current_OnTagDiscovered;
-        _nfc.OnNfcStatusChanged -= Current_OnNfcStatusChanged;
-        _nfc.OnTagListeningStatusChanged -= Current_OnTagListeningStatusChanged;
+        if (!_eventsAlreadySubscribed)
+            return;
 
-        if (IsDeviceiOS)
-            _nfc.OniOSReadingSessionCancelled -= Current_OniOSReadingSessionCancelled;
+        _nfc.ClearAllEventSubscriptions();
 
         _eventsAlreadySubscribed = false;
     }

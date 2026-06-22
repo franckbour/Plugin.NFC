@@ -31,7 +31,7 @@ internal sealed class NFCImplementation_Android : Java.Lang.Object, INFC, NfcAda
     public event TagListeningStatusChangedEventHandler? OnTagListeningStatusChanged;
 
     private event OnNfcStatusChangedEventHandler? _onNfcStatusChangedInternal;
-    public event OnNfcStatusChangedEventHandler OnNfcStatusChanged
+    public event OnNfcStatusChangedEventHandler? OnNfcStatusChanged
     {
         add
         {
@@ -147,6 +147,21 @@ internal sealed class NFCImplementation_Android : Java.Lang.Object, INFC, NfcAda
     /// </summary>
     /// <param name="configuration"><see cref="NfcConfiguration"/></param>
     public void SetConfiguration(NfcConfiguration configuration) => Configuration.Update(configuration);
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public void ClearAllEventSubscriptions()
+    {
+        OnTagConnected = null;
+        OnTagDisconnected = null;
+        OnMessageReceived = null;
+        OnMessagePublished = null;
+        OnTagDiscovered = null;
+        OniOSReadingSessionCancelled = null;
+        OnTagListeningStatusChanged = null;
+        _onNfcStatusChangedInternal = null;
+    }
 
     /// <summary>
     /// Starts tags detection

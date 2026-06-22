@@ -92,6 +92,22 @@ internal sealed class NFCImplementation_Before_iOS13 : NFCNdefReaderSessionDeleg
     public void SetConfiguration(NfcConfiguration configuration) => Configuration.Update(configuration);
 
     /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public void ClearAllEventSubscriptions()
+    {
+        OnTagConnected = null;
+        OnTagDisconnected = null;
+        OnMessageReceived = null;
+        OnMessagePublished = null;
+        OnTagDiscovered = null;
+        OniOSReadingSessionCancelled = null;
+        OnTagListeningStatusChanged = null;
+        OnNfcStatusChanged = null;
+        OnTagListeningStatusChanged = null;
+    }
+
+    /// <summary>
     /// Starts tags detection
     /// </summary>
     public void StartListening()

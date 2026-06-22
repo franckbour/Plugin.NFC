@@ -41,6 +41,11 @@ public interface INFC
     void EnableLegacy(bool value);
 
     /// <summary>
+    /// Remove all event subscribers
+    /// </summary>
+    void ClearAllEventSubscriptions();
+
+    /// <summary>
     /// Starts tags detection
     /// </summary>
     void StartListening();
@@ -77,40 +82,40 @@ public interface INFC
     /// <summary>
     /// Event raised when tag is connected
     /// </summary>
-    event EventHandler OnTagConnected;
+    event EventHandler? OnTagConnected;
 
     /// <summary>
     /// Event raised when tag is disconnected
     /// </summary>
-    event EventHandler OnTagDisconnected;
+    event EventHandler? OnTagDisconnected;
 
     /// <summary>
     /// Event raised when ndef message is received
     /// </summary>
-    event NdefMessageReceivedEventHandler OnMessageReceived;
+    event NdefMessageReceivedEventHandler? OnMessageReceived;
 
     /// <summary>
     /// Event raised when a tag is discovered (Editing)
     /// </summary>
-    event TagDiscoveredEventHandler OnTagDiscovered;
+    event TagDiscoveredEventHandler? OnTagDiscovered;
 
     /// <summary>
     /// Event raised when ndef message has been published
     /// </summary>
-    event NdefMessagePublishedEventHandler OnMessagePublished;
+    event NdefMessagePublishedEventHandler? OnMessagePublished;
 
     /// <summary>
     /// Event raised when iOS NFC reading session is cancelled
     /// </summary>
-    event EventHandler OniOSReadingSessionCancelled;
+    event EventHandler? OniOSReadingSessionCancelled;
 
     /// <summary>
     /// Event raised when NFC status changes
     /// </summary>
-    event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
+    event OnNfcStatusChangedEventHandler? OnNfcStatusChanged;
 
     /// <summary>
     /// Event raised when NFC listener status changes
     /// </summary>
-    event TagListeningStatusChangedEventHandler OnTagListeningStatusChanged;
+    event TagListeningStatusChangedEventHandler? OnTagListeningStatusChanged;
 }

@@ -146,11 +146,11 @@ public event TagListeningStatusChangedEventHandler? OnTagListeningStatusChanged;
 
 // Android Only:
 // Event raised when NFC state has changed.
-public event OnNfcStatusChangedEventHandler OnNfcStatusChanged;
+public event OnNfcStatusChangedEventHandler? OnNfcStatusChanged;
 
 // iOS Only: 
 // Event raised when a user cancelled NFC session.
-public event EventHandler OniOSReadingSessionCancelled;
+public event EventHandler? OniOSReadingSessionCancelled;
 ```
 
 ### Launch app when a compatible tag is detected on Android
@@ -190,6 +190,9 @@ var record = new NFCNdefRecord {
 If the tag is `NdefFormatable`, the `StartPublishing(clearMessage: true)` method will format it.
 
 > **For more examples, see sample applications in the repository.**
+
+### Clear all event subscriptions
+* Call `ClearAllEventSubscriptions()` to remove all event subscribers at once.
 
 ## Tutorials
 

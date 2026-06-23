@@ -1,13 +1,11 @@
 ## Changelog
 
-### 1.0.1
+### 1.0.0
+- Remove Xamarin support
+- Update .NET Maui support
 - Update to .NET 10
 - Add ClearAllEventSubscription to remove all event subscribers at once
 - GitHub #111 : [ANDROID] Use newer api (NfcAdapter.IReaderCallback) to read tags (PR #121)
-
-### 1.0.0
-- Update .NET Maui support
-- Remove Xamarin support
 
 ### 0.1.26
 - GitHub #113 : [iOS] Fix Null reference Exception when tag contains no records

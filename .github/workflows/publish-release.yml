@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Download packages
         id: download-packages
-        uses: robinraju/release-downloader@v1.12
+        uses: robinraju/release-downloader@v1.13
         with:
           repository: ${{ github.repository }}
           tag: ${{ github.event.release.tag_name }}

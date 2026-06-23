@@ -1,0 +1,50 @@
+name: Close Stale Issues and PRs
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Tous les lundis à minuit
+  workflow_dispatch:
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Mark and close stale issues and PRs
+        uses: actions/stale@v10
+        with:
+          # --- Debug ---
+          debug-only: true
+
+          # --- Delays ---
+          days-before-stale: 180       # Inactive for 180 days → label stale
+          days-before-close: 14        # 14 days after the label → closure
+
+          # --- Issues ---
+          stale-issue-label: 'stale'
+          stale-issue-message: >
+            This issue has been inactive for 180 days. It will be automatically
+            closed in 14 days if no further activity is detected.
+            If it is still relevant, please leave a comment.
+          close-issue-message: >
+            This issue has been automatically closed after 180 days of inactivity.
+            It can be reopened if needed.
+
+          # --- Pull Requests ---
+          stale-pr-label: 'stale'
+          stale-pr-message: >
+            This pull request has been inactive for 180 days. It will be automatically
+            closed in 14 days if no further activity is detected.
+            If it is still relevant, please leave a comment.
+          close-pr-message: >
+            This pull request has been automatically closed after 180 days of inactivity.
+            It can be reopened if needed.
+
+          # --- Exclusions ---
+          exempt-issue-labels: 'pinned,security'
+          exempt-pr-labels: 'pinned,security'
+          exempt-all-milestones: true  # Do not touch issues/PRs linked to a milestone

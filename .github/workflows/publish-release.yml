@@ -4,10 +4,6 @@ on:
   release:
     types: [published]
 
-env:
-  mygetApiKey: ${{ secrets.MYGET_API_KEY }}
-  nugetApiKey: ${{ secrets.NUGET_API_KEY }}
-
 jobs:
   deploy:
     runs-on: windows-latest
@@ -32,8 +28,17 @@ jobs:
 
       # --- Push to MyGet ---
       - name: Push to MyGet
-        run: dotnet nuget push "Artifacts/*.nupkg" --api-key ${{ env.mygetApiKey }} --source https://www.myget.org/F/plugin-nfc/api/v3/index.json --skip-duplicate
+        run: dotnet nuget push "Artifacts/*.nupkg" --api-key ${{ secrets.MYGET_API_KEY  }} --source https://www.myget.org/F/plugin-nfc/api/v3/index.json --skip-duplicate
+
+      # Get a short-lived NuGet API key
+      - name: NuGet login (OIDC → temp API key)
+        if: ${{ !github.event.release.prerelease }}
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
 
       # --- Push to NuGet.org (only stable) ---
       - name: Push to NuGet.org
-        run: dotnet nuget push "Artifacts/*.nupkg" --api-key ${{ env.nugetApiKey }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        if: ${{ !github.event.release.prerelease }}
+        run: dotnet nuget push "Artifacts/*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

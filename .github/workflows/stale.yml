@@ -2,7 +2,7 @@ name: Close Stale Issues and PRs
 
 on:
   schedule:
-    - cron: '0 0 * * 1'  # Tous les lundis à minuit
+    - cron: '0 0 * * 1'  # Every Monday at 00:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -18,7 +18,9 @@ jobs:
         uses: actions/stale@v10
         with:
           # --- Debug ---
-          debug-only: true
+          debug-only: false
+
+          operations-per-run: 300
 
           # --- Delays ---
           days-before-stale: 180       # Inactive for 180 days → label stale
